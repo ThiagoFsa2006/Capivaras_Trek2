@@ -268,38 +268,67 @@
       return '#1b3320';
     }
 
-    // Busca valor na linha independente de caixa alta/baixa ou espaços no nome da coluna
-    function getProp(row, propName) {
-      const keys = Object.keys(row);
-      const matchedKey = keys.find(k => k.trim().toLowerCase().replace(/\s+/g, '') === propName.toLowerCase().replace(/\s+/g, ''));
-      return matchedKey ? row[matchedKey] : '';
+    // Função simples e nativa para ler CSV sem bibliotecas externas
+    function parseCSV(text) {
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 2) return [];
+
+      // Função para separar por vírgula considerando aspas
+      const splitLine = (line) => {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        result.push(current.trim().replace(/^"|"$/g, ''));
+        return result;
+      };
+
+      const headers = splitLine(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, ''));
+      
+      return lines.slice(1).map(line => {
+        const values = splitLine(line);
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header] = values[index] || '';
+        });
+        return {
+          nome: obj['nome'] || '',
+          nivel: obj['nivel'] || '',
+          foto: obj['foto'] || '',
+          regiao: obj['regiao'] || '',
+          distancia: obj['distancia'] || '',
+          tempoMedio: obj['tempomedio'] || obj['tempo'] || '',
+          resumo: obj['resumo'] || '',
+          descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || ''
+        };
+      });
     }
 
-    // Carregar dados via PapaParse
-    function loadTrilhas() {
-      Papa.parse(GOOGLE_SHEET_CSV_URL, {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-          trilhasData = results.data.map(row => ({
-            nome: getProp(row, 'nome'),
-            nivel: getProp(row, 'nivel'),
-            foto: getProp(row, 'foto'),
-            regiao: getProp(row, 'regiao'),
-            distancia: getProp(row, 'distancia'),
-            tempoMedio: getProp(row, 'tempoMedio') || getProp(row, 'tempo'),
-            resumo: getProp(row, 'resumo'),
-            descricaoCompleta: getProp(row, 'descricaoCompleta') || getProp(row, 'descricao')
-          })).filter(t => t.nome && t.nome.trim() !== "");
+    // Carregar dados usando o fetch nativo do navegador
+    async function loadTrilhas() {
+      const slider = document.getElementById('trilhasSlider');
+      try {
+        const response = await fetch(GOOGLE_SHEET_CSV_URL);
+        if (!response.ok) throw new Error('Falha ao buscar dados');
+        
+        const csvText = await response.text();
+        trilhasData = parseCSV(csvText).filter(t => t.nome !== '');
 
-          renderTrilhas();
-        },
-        error: function(err) {
-          console.error("Erro ao ler CSV:", err);
-          document.getElementById('trilhasSlider').innerHTML = '<p style="color: red; text-align: center; width: 100%;">Erro ao carregar os dados da planilha.</p>';
-        }
-      });
+        renderTrilhas();
+      } catch (err) {
+        console.error("Erro ao carregar o CSV:", err);
+        slider.innerHTML = '<p style="color: red; text-align: center; width: 100%;">Erro ao carregar as trilhas da planilha. Verifique a conexão ou a publicação da planilha.</p>';
+      }
     }
 
     const slider = document.getElementById('trilhasSlider');
@@ -307,7 +336,7 @@
     // Injetar Cards no Carrossel
     function renderTrilhas() {
       if (trilhasData.length === 0) {
-        slider.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha encontrada na planilha. Verifique se a primeira linha contém os cabeçalhos: nome, nivel, foto, regiao, distancia, tempoMedio, resumo, descricaoCompleta.</p>';
+        slider.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha encontrada na planilha.</p>';
         return;
       }
 
@@ -315,7 +344,7 @@
         const badgeColor = getBadgeColor(t.nivel);
         return `
           <article class="trilha-card" onclick="openModal(${index})">
-            <img src="${t.foto \vert{}\vert{} 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img" onerror="this.src='banner_home.jpg'">
+            <img src="${t.foto || 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img" onerror="this.src='banner_home.jpg'">
             <div class="trilha-info">
               <span class="badge-nivel" style="background-color: ${badgeColor};">${t.nivel || 'Moderado'}</span>
               <h3 class="trilha-titulo">${t.nome}</h3>
@@ -331,7 +360,7 @@
       }).join('');
     }
 
-    // Carrossel
+    // Navegação do Carrossel
     document.getElementById('nextBtn').addEventListener('click', () => {
       slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
     });
@@ -340,7 +369,7 @@
       slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
     });
 
-    // Modal
+    // Controle do Modal
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
