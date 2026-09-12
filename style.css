@@ -261,10 +261,10 @@ body {
   font-weight: 700;
 }
 
-/* Grade de 5 Cards Alinhados */
+/* Grade de 4 Cards Perfeitamente Alinhados */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -314,12 +314,19 @@ body {
   line-height: 1.5;
 }
 
-/* Footer */
+/* Footer com Logo Pequeno */
 .footer {
   background-color: #142116;
   color: #9eb0a0;
   padding: 40px 0 20px;
   text-align: center;
+}
+
+.footer-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
 }
 
 .footer-brand h3 {
@@ -334,7 +341,13 @@ body {
   font-size: 0.85rem;
 }
 
-/* Responsividade Mobile */
+/* Responsividade Mobile e Tablet */
+@media (max-width: 992px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .hero-content h1 {
     font-size: 2rem;
@@ -345,5 +358,8 @@ body {
   .transparency-card {
     flex-direction: column;
     text-align: center;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
   }
 }
