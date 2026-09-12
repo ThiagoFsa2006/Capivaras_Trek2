@@ -448,7 +448,8 @@
           resumo: obj['resumo'] || '',
           descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || '',
           detalhe: obj['detalhe'] || '',
-          adesivo: obj['adesivo'] || ''
+          adesivo: obj['adesivo'] || '',
+          data: obj['data'] || ''
         };
       });
     }
@@ -470,7 +471,7 @@
       }
     }
 
-    // Renderizar Seção de Conquistas Enxuta (Sem traços ou itens vazios)
+    // Renderizar Seção de Conquistas Enxuta
     function renderSummaryBoard() {
       const cumesList = document.getElementById('list-cumes');
       const travessiaList = document.getElementById('list-travessia');
@@ -534,6 +535,7 @@
               <h3 class="trilha-titulo">${t.nome}</h3>
               <p class="trilha-resumo">${t.resumo}</p>
               <ul class="trilha-meta">
+                ${t.data ? `<li>📅 <strong>Data:</strong> ${t.data}</li>` : ''}
                 <li>📍 <strong>Região:</strong> ${t.regiao}</li>
                 <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
                 <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio}</li>
@@ -577,6 +579,7 @@
 
       document.getElementById('modalTitulo').textContent = trilha.nome;
       document.getElementById('modalMeta').innerHTML = `
+        ${trilha.data ? `<li>📅 <strong>Data:</strong> ${trilha.data}</li>` : ''}
         <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
         <li>📏 <strong>Distância:</strong> ${trilha.distancia}</li>
         <li>⏱️ <strong>Tempo Médio:</strong> ${trilha.tempoMedio}</li>
