@@ -29,7 +29,7 @@
     </div>
   </header>
 
-  <!-- Hero Section Carousel -->
+  <!-- Hero Section (Carrossel 6s) -->
   <section id="home" class="hero">
     <div class="carousel">
       
@@ -64,7 +64,7 @@
       <button class="carousel-btn prev" onclick="moveSlide(-1)" aria-label="Anterior">&#10094;</button>
       <button class="carousel-btn next" onclick="moveSlide(1)" aria-label="Próximo">&#10095;</button>
 
-      <!-- Indicadores em Pontos (Opcional) -->
+      <!-- Indicadores -->
       <div class="dots-container">
         <span class="dot active" onclick="setSlide(0)"></span>
         <span class="dot" onclick="setSlide(1)"></span>
@@ -74,57 +74,60 @@
     </div>
   </section>
 
-<!-- Seção Sobre o Grupo -->
+  <!-- Seção Sobre o Grupo -->
   <section id="sobre" class="section">
     <div class="container">
       
-      <!-- Cabeçalho da Seção -->
+      <!-- Cabeçalho Principal -->
       <div class="section-header">
         <h2>Sobre o Grupo</h2>
-        <p class="section-desc lead-text">
+        <p class="section-desc">
           Somos um pequeno grupo de amigos e apaixonados pela natureza reunidos por um único propósito: explorar as montanhas e trilhas do Paraná (e ir além!), sempre em boa companhia, com respeito ao meio ambiente e verdadeiro espírito de aventura.
         </p>
       </div>
 
-      <!-- Banner de Transparência -->
-      <div class="info-box">
-        <h3>Transparência & Parceria</h3>
-        <p>Não somos guias profissionais nem agência de turismo. O grupo existe puramente como um espaço colaborativo para trocarmos experiências, nos mantermos atualizados sobre as trilhas e organizarmos nossas próximas saídas juntos.</p>
+      <!-- Banner Destaque de Transparência -->
+      <div class="transparency-card">
+        <div class="transparency-icon">🤝</div>
+        <div>
+          <h3>Transparência & Parceria</h3>
+          <p>Não somos guias profissionais nem agência de turismo. O grupo existe puramente como um espaço colaborativo para trocarmos experiências, nos mantermos atualizados sobre as trilhas e organizarmos nossas próximas saídas juntos.</p>
+        </div>
       </div>
 
-      <!-- O Que Você Encontra por Aqui -->
+      <!-- Grade O Que Você Encontra por Aqui -->
       <div class="section-subheader">
         <h3>O Que Você Encontra por Aqui</h3>
       </div>
 
-      <div class="cards-grid">
-        <div class="card">
-          <div class="card-icon">🏔️</div>
-          <h3>Registro de Conquistas</h3>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🏔️</div>
+          <h4>Registro de Conquistas</h4>
           <p>Montanhas que já subimos e os cumes onde colamos nosso adesivo oficial.</p>
         </div>
 
-        <div class="card">
-          <div class="card-icon">⛺</div>
-          <h3>Acampamentos & Aventuras</h3>
+        <div class="feature-card">
+          <div class="feature-icon">⛺</div>
+          <h4>Acampamentos & Aventuras</h4>
           <p>Memórias e galeria de fotos de cada acampamento e expedição.</p>
         </div>
 
-        <div class="card">
-          <div class="card-icon">📍</div>
-          <h3>Tracklogs & Dicas</h3>
+        <div class="feature-card">
+          <div class="feature-icon">📍</div>
+          <h4>Tracklogs & Dicas</h4>
           <p>Links de trajetos (GPX/Wikiloc), informações úteis, equipamentos recomendados e dicas de segurança.</p>
         </div>
 
-        <div class="card">
-          <div class="card-icon">📅</div>
-          <h3>Calendário de Trilhas</h3>
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h4>Calendário de Trilhas</h4>
           <p>Nossas próximas saídas planejadas.</p>
         </div>
 
-        <div class="card card-wide">
-          <div class="card-icon">🤝</div>
-          <h3>Conexão & Eventos</h3>
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <h4>Conexão & Eventos</h4>
           <p>Espaço para contato, integração e parcerias com outros grupos e eventos do universo outdoor.</p>
         </div>
       </div>
@@ -145,7 +148,7 @@
     </div>
   </footer>
 
-  <!-- Script de Controle do Carrossel (6s) -->
+  <!-- Script de Controle do Carrossel (6 segundos) -->
   <script>
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
