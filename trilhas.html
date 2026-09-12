@@ -535,10 +535,10 @@
               <h3 class="trilha-titulo">${t.nome}</h3>
               <p class="trilha-resumo">${t.resumo}</p>
               <ul class="trilha-meta">
-                ${t.data ? `<li>📅 <strong>Data:</strong> ${t.data}</li>` : ''}
                 <li>📍 <strong>Região:</strong> ${t.regiao}</li>
                 <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
                 <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio}</li>
+                ${t.data ? `<li>📅 <strong>Data:</strong> ${t.data}</li>` : ''}
               </ul>
             </div>
           </article>
@@ -579,10 +579,10 @@
 
       document.getElementById('modalTitulo').textContent = trilha.nome;
       document.getElementById('modalMeta').innerHTML = `
-        ${trilha.data ? `<li>📅 <strong>Data:</strong> ${trilha.data}</li>` : ''}
         <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
         <li>📏 <strong>Distância:</strong> ${trilha.distancia}</li>
         <li>⏱️ <strong>Tempo Médio:</strong> ${trilha.tempoMedio}</li>
+        ${trilha.data ? `<li>📅 <strong>Data:</strong> ${trilha.data}</li>` : ''}
       `;
       document.getElementById('modalDescricaoCompleta').textContent = trilha.descricaoCompleta;
 
