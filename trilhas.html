@@ -277,30 +277,43 @@
 
     const slider = document.getElementById('trilhasSlider');
 
+    // Mapeamento de Cores para as Tags de Nível
+    function getBadgeColor(nivel) {
+      const n = (nivel || '').toLowerCase().trim();
+      if (n.includes('muito fácil') || n.includes('muito facil')) return '#059669'; // Verde Claro
+      if (n.includes('fácil') || n.includes('facil')) return '#2d7a3e';            // Verde Escuro
+      if (n.includes('moderado')) return '#d97706';                                // Laranja
+      if (n.includes('muito difícil') || n.includes('muito dificil')) return '#7c3aed'; // Roxo
+      if (n.includes('difícil') || n.includes('dificil')) return '#dc2626';        // Vermelho
+      return '#1b3320'; // Cor padrão do projeto
+    }
+    
     // Injetar Cards no Carrossel
     function renderTrilhas() {
       if (trilhasData.length === 0) {
         slider.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha cadastrada ainda.</p>';
         return;
       }
-
-      slider.innerHTML = trilhasData.map((t, index) => `
-        <article class="trilha-card" onclick="openModal(${index})">
-          <img src="${t.foto || 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img">
-          <div class="trilha-info">
-            <span class="badge-nivel">${t.nivel || 'Trekking'}</span>
-            <h3 class="trilha-titulo">${t.nome}</h3>
-            <p class="trilha-resumo">${t.resumo}</p>
-            <ul class="trilha-meta">
-              <li>📍 <strong>Região:</strong> ${t.regiao}</li>
-              <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
-              <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio}</li>
-            </ul>
-          </div>
-        </article>
-      `).join('');
+    
+      slider.innerHTML = trilhasData.map((t, index) => {
+        const badgeColor = getBadgeColor(t.nivel);
+        return `
+          <article class="trilha-card" onclick="openModal(${index})">
+            <img src="${t.foto || 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img">
+            <div class="trilha-info">
+              <span class="badge-nivel" style="background-color: ${badgeColor};">${t.nivel || 'Moderado'}</span>
+              <h3 class="trilha-titulo">${t.nome}</h3>
+              <p class="trilha-resumo">${t.resumo}</p>
+              <ul class="trilha-meta">
+                <li>📍 <strong>Região:</strong> ${t.regiao}</li>
+                <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
+                <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio}</li>
+              </ul>
+            </div>
+          </article>
+        `;
+      }).join('');
     }
-
     // Navegação do Carrossel
     document.getElementById('nextBtn').addEventListener('click', () => {
       slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
