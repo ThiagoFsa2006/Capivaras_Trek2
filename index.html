@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -15,21 +15,23 @@
   <header class="navbar">
     <div class="container nav-container">
       <a href="#" class="brand">
-        <!-- Substitua 'logo.png' pelo caminho da sua imagem da logo -->
-        <img src="logo.png" alt="Logo Capivaras Trek" class="logo-img">
-        <span>Capivaras Trek</span>
+        <!-- Nome do arquivo da sua logo circular -->
+        <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
+        <span class="brand-name">Capivaras Trek</span>
       </a>
+      
       <nav class="nav-links">
-        <a href="#sobre">Sobre</a>
-        <a href="#diferenciais">Diferenciais</a>
-        <a href="#trilhas">Próximas Trilhas</a>
-        <a href="#contato" class="btn-nav">Contato</a>
+        <a href="#home">Home</a>
+        <a href="#trilhas">Trilhas</a>
+        <a href="#acervo">Acervo</a>
+        <a href="#calendario">Calendário</a>
+        <a href="#contato">Contato</a>
       </nav>
     </div>
   </header>
 
   <!-- Hero Section -->
-  <section class="hero">
+  <section id="home" class="hero">
     <div class="hero-overlay"></div>
     <div class="container hero-content">
       <h1>Explore as montanhas com quem entende do percurso.</h1>
@@ -39,62 +41,11 @@
   </section>
 
   <!-- Seção Sobre -->
-  <section id="sobre" class="section">
+  <section class="section">
     <div class="container">
       <div class="section-header">
         <h2>Sobre o Capivaras Trek</h2>
         <p class="section-desc">Conectamos praticantes de trekking e montanhismo a paisagens incríveis, garantindo organização, segurança e o verdadeiro espírito de aventura acima das nuvens.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Seção Diferenciais -->
-  <section id="diferenciais" class="section section-dark">
-    <div class="container">
-      <div class="cards-grid">
-        <div class="card">
-          <div class="card-icon">🥾</div>
-          <h3>Guias Experientes</h3>
-          <p>Conhecimento prático das trilhas e travessias da região para uma caminhada tranquila.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">🛡️</div>
-          <h3>Segurança no Percurso</h3>
-          <p>Planejamento completo de itinerário, verificação de clima e equipamentos recomendados.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">⛰️</div>
-          <h3>Espírito de Comunidade</h3>
-          <p>Grupo acolhedor focado em integração, respeito à natureza e boas memórias no cume.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Seção Próximas Trilhas -->
-  <section id="trilhas" class="section">
-    <div class="container">
-      <div class="section-header">
-        <h2>Próximas Expedições</h2>
-        <p class="section-desc">Escolha seu próximo destino e venha pra montanha com a gente.</p>
-      </div>
-      
-      <div class="cards-grid">
-        <div class="card card-trilha">
-          <div class="card-tag">Moderado</div>
-          <h3>Morro do Anhangava</h3>
-          <p class="trilha-info">📍 Quatro Barras/PR • 📅 Próximo Fim de Semana</p>
-          <p>Excelente caminhada com vista panorâmica e trechos de contemplação da Serra do Mar.</p>
-          <a href="#contato" class="btn-secondary">Garantir Vaga</a>
-        </div>
-
-        <div class="card card-trilha">
-          <div class="card-tag tag-hard">Desafiador</div>
-          <h3>Pico Paraná</h3>
-          <p class="trilha-info">📍 Antonina/PR • 📅 Em Breve</p>
-          <p>A maior montanha do sul do Brasil. Expedição clássica para quem busca superar limites.</p>
-          <a href="#contato" class="btn-secondary">Garantir Vaga</a>
-        </div>
       </div>
     </div>
   </section>
