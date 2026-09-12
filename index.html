@@ -14,7 +14,7 @@
   <!-- Header Fixo -->
   <header class="navbar">
     <div class="container nav-container">
-      <a href="#" class="brand">
+      <a href="index.html" class="brand">
         <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
         <span class="brand-name">Capivaras Trek</span>
       </a>
@@ -30,10 +30,11 @@
       <nav class="nav-links" id="nav-links">
         <a href="#home" onclick="closeMenu()">Home</a>
         <a href="#sobre" onclick="closeMenu()">Sobre</a>
-        <a href="#trilhas" onclick="closeMenu()">Trilhas</a>
-        <a href="#acervo" onclick="closeMenu()">Acervo</a>
-        <a href="#calendario" onclick="closeMenu()">Calendário</a>
-        <a href="#contato" onclick="closeMenu()">Contato</a>
+        <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
+        <a href="galeria.html" onclick="closeMenu()">Galeria</a>
+        <a href="#tracklogs" onclick="closeMenu()">Tracklogs</a>
+        <a href="calendario.html" onclick="closeMenu()">Calendário</a>
+        <a href="contato.html" onclick="closeMenu()">Contato</a>
       </nav>
     </div>
   </header>
@@ -104,7 +105,7 @@
         </div>
       </div>
 
-      <!-- Grade O Que Você Encontra por Aqui (4 Cards) -->
+      <!-- Grade O Que Você Encontra por Aqui -->
       <div class="section-subheader">
         <h3>O Que Você Encontra por Aqui</h3>
       </div>
@@ -154,7 +155,6 @@
 
   <!-- Scripts: Carrossel & Menu Mobile -->
   <script>
-    // Controle do Carrossel (6s)
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
@@ -185,7 +185,6 @@
       autoSlideTimer = setInterval(() => moveSlide(1), 6000);
     }
 
-    // Controle do Menu Hambúrguer Mobile
     const menuBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
