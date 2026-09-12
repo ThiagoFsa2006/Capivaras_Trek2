@@ -10,14 +10,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* Seção de Resumo por Categoria (Painel Verde) */
+    /* Seção de Resumo por Categoria (Painel Conquistas) */
     .summary-board {
       background-color: #1b3320;
       color: #ffffff;
-      padding: 35px 25px;
+      padding: 30px 25px 35px 25px;
       border-radius: 12px;
       margin-bottom: 40px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .summary-board-header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .summary-board-header h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
     }
 
     .summary-grid {
@@ -56,6 +72,12 @@
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .summary-list li.empty-item {
+      color: rgba(208, 224, 210, 0.4);
+      font-size: 0.85rem;
+      font-style: italic;
     }
 
     /* Mini Logo Adesivo */
@@ -300,34 +322,37 @@
   <main class="section">
     <div class="container">
       
-      <!-- Seção do Painel de Resumo por Categoria -->
+      <!-- Seção do Painel de Conquistas -->
       <section class="summary-board">
+        <div class="summary-board-header">
+          <h2>Conquistas</h2>
+        </div>
         <div class="summary-grid">
           <div class="summary-column">
             <h3>Cumes</h3>
             <ul class="summary-list" id="list-cumes">
-              <li>Carregando...</li>
+              <li class="empty-item">Aguardando...</li>
             </ul>
           </div>
 
           <div class="summary-column">
             <h3>Travessias</h3>
             <ul class="summary-list" id="list-travessia">
-              <li>Carregando...</li>
+              <li class="empty-item">Aguardando...</li>
             </ul>
           </div>
 
           <div class="summary-column">
             <h3>Travessia Circular</h3>
             <ul class="summary-list" id="list-circular">
-              <li>Carregando...</li>
+              <li class="empty-item">Aguardando...</li>
             </ul>
           </div>
 
           <div class="summary-column">
             <h3>Cachoeiras</h3>
             <ul class="summary-list" id="list-cachoeiras">
-              <li>Carregando...</li>
+              <li class="empty-item">Aguardando...</li>
             </ul>
           </div>
         </div>
@@ -356,7 +381,7 @@
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
         <span id="modalNivel" class="badge-nivel"></span>
         <span id="modalAdesivo" class="sticker-tag" style="display: none;">
-          <img src="logo.png" alt="Adesivo Logo" class="sticker-logo"> Adesivado
+          <img src="logo.png" alt="Adesivo Logo" class="sticker-logo"> Conquistado
         </span>
       </div>
 
@@ -460,7 +485,7 @@
       }
     }
 
-    // Renderizar Seção de Resumo Superior
+    // Renderizar Seção de Conquistas
     function renderSummaryBoard() {
       const cumesList = document.getElementById('list-cumes');
       const travessiaList = document.getElementById('list-travessia');
@@ -476,14 +501,14 @@
 
       trilhasData.forEach(item => {
         const d = (item.detalhe || '').toLowerCase().trim();
-        if (d.includes('cume')) categories.cumes.push(item);
+        if (d.includes('cumes') || d.includes('cume')) categories.cumes.push(item);
         else if (d.includes('circular')) categories.circular.push(item);
         else if (d.includes('travessia')) categories.travessia.push(item);
         else if (d.includes('cachoeira')) categories.cachoeiras.push(item);
       });
 
       const buildListHTML = (items) => {
-        if (items.length === 0) return '<li>-</li>';
+        if (items.length === 0) return '';
         return items.map(t => {
           const hasSticker = (t.adesivo || '').toLowerCase().trim() === 'sim';
           return `
