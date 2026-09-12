@@ -9,11 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- PapaParse para conversão de CSV do Google Sheets em JSON -->
+  <!-- PapaParse para conversão de CSV do Google Sheets -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
-    /* Estilos do Carrossel e Cards */
+    /* Carrossel e Cards */
     .carousel-container {
       position: relative;
       display: flex;
@@ -72,7 +72,6 @@
       text-transform: uppercase;
       color: #ffffff;
       margin-bottom: 10px;
-      background-color: #d97706;
     }
 
     .trilha-titulo {
@@ -101,7 +100,7 @@
       margin-bottom: 4px;
     }
 
-    /* Botões Laterais do Carrossel */
+    /* Botões Laterais */
     .nav-btn {
       background: #1b3320;
       color: #ffffff;
@@ -123,7 +122,7 @@
     .nav-btn.prev-btn { margin-right: 10px; }
     .nav-btn.next-btn { margin-left: 10px; }
 
-    /* Janela Pop-up (Modal) */
+    /* Modal Pop-up */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -159,7 +158,7 @@
       color: #556357;
     }
 
-    /* Regras de Adaptabilidade para Mobile e Tablet */
+    /* Responsividade */
     @media (max-width: 992px) {
       .trilha-card {
         min-width: calc((100% - 20px) / 2);
@@ -254,30 +253,11 @@
   </footer>
 
   <script>
-    // Link CSV fornecido do Google Sheets
     const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
 
     let trilhasData = [];
 
-    // Carregar dados via PapaParse
-    function loadTrilhas() {
-      Papa.parse(GOOGLE_SHEET_CSV_URL, {
-        download: true,
-        header: true,
-        complete: function(results) {
-          trilhasData = results.data.filter(row => row.nome && row.nome.trim() !== "");
-          renderTrilhas();
-        },
-        error: function(err) {
-          console.error("Erro ao ler CSV:", err);
-          document.getElementById('trilhasSlider').innerHTML = '<p style="color: red; text-align: center; width: 100%;">Não foi possível carregar as trilhas no momento.</p>';
-        }
-      });
-    }
-
-    const slider = document.getElementById('trilhasSlider');
-
-    // Mapeamento de Cores para as Tags de Nível
+    // Mapeador de Cores de Nível
     function getBadgeColor(nivel) {
       const n = (nivel || '').toLowerCase().trim();
       if (n.includes('muito fácil') || n.includes('muito facil')) return '#059669'; // Verde Claro
@@ -285,21 +265,57 @@
       if (n.includes('moderado')) return '#d97706';                                // Laranja
       if (n.includes('muito difícil') || n.includes('muito dificil')) return '#7c3aed'; // Roxo
       if (n.includes('difícil') || n.includes('dificil')) return '#dc2626';        // Vermelho
-      return '#1b3320'; // Cor padrão do projeto
+      return '#1b3320';
     }
-    
+
+    // Busca valor na linha independente de caixa alta/baixa ou espaços no nome da coluna
+    function getProp(row, propName) {
+      const keys = Object.keys(row);
+      const matchedKey = keys.find(k => k.trim().toLowerCase().replace(/\s+/g, '') === propName.toLowerCase().replace(/\s+/g, ''));
+      return matchedKey ? row[matchedKey] : '';
+    }
+
+    // Carregar dados via PapaParse
+    function loadTrilhas() {
+      Papa.parse(GOOGLE_SHEET_CSV_URL, {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          trilhasData = results.data.map(row => ({
+            nome: getProp(row, 'nome'),
+            nivel: getProp(row, 'nivel'),
+            foto: getProp(row, 'foto'),
+            regiao: getProp(row, 'regiao'),
+            distancia: getProp(row, 'distancia'),
+            tempoMedio: getProp(row, 'tempoMedio') || getProp(row, 'tempo'),
+            resumo: getProp(row, 'resumo'),
+            descricaoCompleta: getProp(row, 'descricaoCompleta') || getProp(row, 'descricao')
+          })).filter(t => t.nome && t.nome.trim() !== "");
+
+          renderTrilhas();
+        },
+        error: function(err) {
+          console.error("Erro ao ler CSV:", err);
+          document.getElementById('trilhasSlider').innerHTML = '<p style="color: red; text-align: center; width: 100%;">Erro ao carregar os dados da planilha.</p>';
+        }
+      });
+    }
+
+    const slider = document.getElementById('trilhasSlider');
+
     // Injetar Cards no Carrossel
     function renderTrilhas() {
       if (trilhasData.length === 0) {
-        slider.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha cadastrada ainda.</p>';
+        slider.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha encontrada na planilha. Verifique se a primeira linha contém os cabeçalhos: nome, nivel, foto, regiao, distancia, tempoMedio, resumo, descricaoCompleta.</p>';
         return;
       }
-    
+
       slider.innerHTML = trilhasData.map((t, index) => {
         const badgeColor = getBadgeColor(t.nivel);
         return `
           <article class="trilha-card" onclick="openModal(${index})">
-            <img src="${t.foto || 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img">
+            <img src="${t.foto \vert{}\vert{} 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img" onerror="this.src='banner_home.jpg'">
             <div class="trilha-info">
               <span class="badge-nivel" style="background-color: ${badgeColor};">${t.nivel || 'Moderado'}</span>
               <h3 class="trilha-titulo">${t.nome}</h3>
@@ -314,7 +330,8 @@
         `;
       }).join('');
     }
-    // Navegação do Carrossel
+
+    // Carrossel
     document.getElementById('nextBtn').addEventListener('click', () => {
       slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
     });
@@ -323,7 +340,7 @@
       slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
     });
 
-    // Controle do Modal
+    // Modal
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
@@ -331,8 +348,11 @@
       const trilha = trilhasData[index];
       if (!trilha) return;
 
+      const badgeColor = getBadgeColor(trilha.nivel);
+
       document.getElementById('modalImg').src = trilha.foto || 'banner_home.jpg';
-      document.getElementById('modalNivel').textContent = trilha.nivel || 'Trekking';
+      document.getElementById('modalNivel').textContent = trilha.nivel || 'Moderado';
+      document.getElementById('modalNivel').style.backgroundColor = badgeColor;
       document.getElementById('modalTitulo').textContent = trilha.nome;
       document.getElementById('modalMeta').innerHTML = `
         <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
