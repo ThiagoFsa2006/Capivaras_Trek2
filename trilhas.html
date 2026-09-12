@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trilhas | Capivaras Trek</title>
+  <title>Trilhas - Capivaras Trek</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,14 +11,14 @@
 </head>
 <body>
 
-  <!-- Header Fixo -->
+  <!-- Header / Navbar Fixo -->
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand">
         <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
         <span class="brand-name">Capivaras Trek</span>
       </a>
-      
+
       <!-- Botão Hambúrguer Mobile -->
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu">
         <span></span>
@@ -30,28 +30,101 @@
       <nav class="nav-links" id="nav-links">
         <a href="index.html#home" onclick="closeMenu()">Home</a>
         <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
-        <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
+        <a href="trilhas.html" class="active" onclick="closeMenu()">Trilhas</a>
         <a href="galeria.html" onclick="closeMenu()">Galeria</a>
-        <a href="index.html#tracklogs" onclick="closeMenu()">Tracklogs</a>
+        <a href="tracklogs.html" onclick="closeMenu()">Tracklogs</a>
         <a href="calendario.html" onclick="closeMenu()">Calendário</a>
         <a href="contato.html" onclick="closeMenu()">Contato</a>
       </nav>
     </div>
   </header>
 
-  <!-- Conteúdo Principal Reservado -->
-  <main class="page-content container" style="padding-top: 140px; padding-bottom: 80px; min-height: 70vh;">
-    <div class="section-header">
-      <h2>Trilhas e Expedições</h2>
-      <p class="section-desc">
-        Em breve: catálogo completo com nossas principais travessias, subidas de cume, níveis de dificuldade e rotas mapeadas.
+  <!-- Banner Secundário / Topo -->
+  <section class="page-header section" style="padding-top: 120px; padding-bottom: 40px; background-color: #1b3320; color: #ffffff; text-align: center;">
+    <div class="container">
+      <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 10px;">Explorar Trilhas</h1>
+      <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1.05rem;">
+        Conheça as rotas e montanhas exploradas pelo Capivaras Trek no Paraná e região. Verifique os níveis de dificuldade e prepare sua aventura!
       </p>
+    </div>
+  </section>
+
+  <!-- Conteúdo Principal de Trilhas -->
+  <main class="section">
+    <div class="container">
+      
+      <!-- Cabeçalho da Seção e Níveis de Dificuldade -->
+      <div class="section-header">
+        <h2>Nossas Montanhas & Destinos</h2>
+        <p class="section-desc">
+          Abaixo você encontra informações detalhadas sobre os trechos já registrados por nossa comunidade.
+        </p>
+      </div>
+
+      <!-- Grade de Cards de Trilhas -->
+      <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        
+        <!-- Card 1: Taipabuçu -->
+        <article class="feature-card" style="text-align: left; align-items: flex-start; padding: 0; overflow: hidden;">
+          <img src="banner_home.jpg" alt="Cume do Taipabuçu" style="width: 100%; height: 200px; object-fit: cover;">
+          <div style="padding: 20px; width: 100%;">
+            <span style="background-color: #d97706; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Exigente / Técnico</span>
+            <h3 style="color: #1b3320; font-size: 1.3rem; margin: 10px 0 6px 0;">Cume do Taipabuçu</h3>
+            <p style="color: #556357; font-size: 0.9rem; margin-bottom: 14px;">
+              Localizado na Serra do Mar paranaense, oferece visuais incríveis e exige bom preparo físico em mata fechada e terrenos íngremes.
+            </p>
+            <ul style="list-style: none; padding: 0; margin-bottom: 16px; font-size: 0.85rem; color: #3d4a3f;">
+              <li>📍 <strong>Região:</strong> Campina Grande do Sul - PR</li>
+              <li>📏 <strong>Distância:</strong> ~12 km (volta)</li>
+              <li>⏱️ <strong>Tempo Médio:</strong> 6h a 8h</li>
+            </ul>
+            <a href="tracklogs.html" style="display: inline-block; background-color: #1b3320; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Ver Tracklog GPX</a>
+          </div>
+        </article>
+
+        <!-- Card 2: Cachoeira da Lapinha -->
+        <article class="feature-card" style="text-align: left; align-items: flex-start; padding: 0; overflow: hidden;">
+          <img src="banner_home1.jpg" alt="Cachoeira da Lapinha" style="width: 100%; height: 200px; object-fit: cover;">
+          <div style="padding: 20px; width: 100%;">
+            <span style="background-color: #2d7a3e; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Moderado</span>
+            <h3 style="color: #1b3320; font-size: 1.3rem; margin: 10px 0 6px 0;">Cachoeira da Lapinha</h3>
+            <p style="color: #556357; font-size: 0.9rem; margin-bottom: 14px;">
+              Caminhada agradável em meio à vegetação nativa de araucárias, finalizando com uma bela queda d'água e áreas para descanso.
+            </p>
+            <ul style="list-style: none; padding: 0; margin-bottom: 16px; font-size: 0.85rem; color: #3d4a3f;">
+              <li>📍 <strong>Região:</strong> Região Metropolitana de Curitiba</li>
+              <li>📏 <strong>Distância:</strong> ~8 km (volta)</li>
+              <li>⏱️ <strong>Tempo Médio:</strong> 4h</li>
+            </ul>
+            <a href="tracklogs.html" style="display: inline-block; background-color: #1b3320; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Ver Tracklog GPX</a>
+          </div>
+        </article>
+
+        <!-- Card 3: Cume do Anhangava -->
+        <article class="feature-card" style="text-align: left; align-items: flex-start; padding: 0; overflow: hidden;">
+          <img src="banner_home2.jpg" alt="Cume do Anhangava" style="width: 100%; height: 200px; object-fit: cover;">
+          <div style="padding: 20px; width: 100%;">
+            <span style="background-color: #2d7a3e; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Moderado / Clássico</span>
+            <h3 style="color: #1b3320; font-size: 1.3rem; margin: 10px 0 6px 0;">Morro do Anhangava</h3>
+            <p style="color: #556357; font-size: 0.9rem; margin-bottom: 14px;">
+              A verdadeira escola de montanhismo do Paraná. Possui trechos de caminhada, degraus de pedra e trechos com grampos de via ferrata.
+            </p>
+            <ul style="list-style: none; padding: 0; margin-bottom: 16px; font-size: 0.85rem; color: #3d4a3f;">
+              <li>📍 <strong>Região:</strong> Quatro Barras - PR</li>
+              <li>📏 <strong>Distância:</strong> ~7 km (volta)</li>
+              <li>⏱️ <strong>Tempo Médio:</strong> 3h30 a 5h</li>
+            </ul>
+            <a href="tracklogs.html" style="display: inline-block; background-color: #1b3320; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Ver Tracklog GPX</a>
+          </div>
+        </article>
+
+      </div>
     </div>
   </main>
 
-  <!-- Rodapé -->
-  <footer id="contato" class="footer">
-    <div class="container footer-content">
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
       <div class="footer-brand">
         <img src="logo.png" alt="Capivaras Trek Logo" class="footer-logo">
         <h3>Capivaras Trek</h3>
@@ -63,21 +136,20 @@
     </div>
   </footer>
 
-  <!-- Script Menu Mobile -->
   <script>
-    const menuBtn = document.getElementById('mobile-menu-btn');
+    // Toggle Menu Mobile
+    const mobileBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
-    menuBtn.addEventListener('click', () => {
-      menuBtn.classList.toggle('active');
+    mobileBtn.addEventListener('click', () => {
+      mobileBtn.classList.toggle('active');
       navLinks.classList.toggle('active');
     });
 
     function closeMenu() {
-      menuBtn.classList.remove('active');
+      mobileBtn.classList.remove('active');
       navLinks.classList.remove('active');
     }
   </script>
-
 </body>
 </html>
