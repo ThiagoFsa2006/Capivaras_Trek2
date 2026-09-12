@@ -19,12 +19,21 @@
         <span class="brand-name">Capivaras Trek</span>
       </a>
       
-      <nav class="nav-links">
-        <a href="#home">Home</a>
-        <a href="#trilhas">Trilhas</a>
-        <a href="#Galeria">Galeria</a>
-        <a href="#calendario">Calendário</a>
-        <a href="#contato">Contato</a>
+      <!-- Botão Hambúrguer Mobile -->
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Links de Navegação -->
+      <nav class="nav-links" id="nav-links">
+        <a href="#home" onclick="closeMenu()">Home</a>
+        <a href="#sobre" onclick="closeMenu()">Sobre</a>
+        <a href="#trilhas" onclick="closeMenu()">Trilhas</a>
+        <a href="#acervo" onclick="closeMenu()">Acervo</a>
+        <a href="#calendario" onclick="closeMenu()">Calendário</a>
+        <a href="#contato" onclick="closeMenu()">Contato</a>
       </nav>
     </div>
   </header>
@@ -80,7 +89,7 @@
       
       <!-- Cabeçalho Principal -->
       <div class="section-header">
-        <h2>Sobre os Capivaras</h2>
+        <h2>Sobre o Grupo</h2>
         <p class="section-desc">
           Somos um pequeno grupo de amigos e apaixonados pela natureza reunidos por um único propósito: explorar as montanhas e trilhas do Paraná (e ir além!), sempre em boa companhia, com respeito ao meio ambiente e verdadeiro espírito de aventura.
         </p>
@@ -133,7 +142,6 @@
   <footer id="contato" class="footer">
     <div class="container footer-content">
       <div class="footer-brand">
-        <!-- Logo Pequeno no Rodapé -->
         <img src="logo.png" alt="Capivaras Trek Logo" class="footer-logo">
         <h3>Capivaras Trek</h3>
         <p>Vivendo a montanha de forma autêntica e segura.</p>
@@ -144,8 +152,9 @@
     </div>
   </footer>
 
-  <!-- Script de Controle do Carrossel (6 segundos) -->
+  <!-- Scripts: Carrossel & Menu Mobile -->
   <script>
+    // Controle do Carrossel (6s)
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
@@ -174,6 +183,20 @@
     function resetTimer() {
       clearInterval(autoSlideTimer);
       autoSlideTimer = setInterval(() => moveSlide(1), 6000);
+    }
+
+    // Controle do Menu Hambúrguer Mobile
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.getElementById('nav-links');
+
+    menuBtn.addEventListener('click', () => {
+      menuBtn.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+
+    function closeMenu() {
+      menuBtn.classList.remove('active');
+      navLinks.classList.remove('active');
     }
   </script>
 
