@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracklogs | Capivaras Trek</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Header Fixo -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand">
+        <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
+        <span class="brand-name">Capivaras Trek</span>
+      </a>
+      
+      <!-- Botão Hambúrguer Mobile -->
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Links de Navegação -->
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#home" onclick="closeMenu()">Home</a>
+        <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
+        <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
+        <a href="galeria.html" onclick="closeMenu()">Galeria</a>
+        <a href="tracklogs.html" onclick="closeMenu()">Tracklogs</a>
+        <a href="calendario.html" onclick="closeMenu()">Calendário</a>
+        <a href="contato.html" onclick="closeMenu()">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal Reservado -->
+  <main class="page-content container" style="padding-top: 140px; padding-bottom: 80px; min-height: 70vh;">
+    <div class="section-header">
+      <h2>Tracklogs & Rotas</h2>
+      <p class="section-desc">
+        Em breve: acervo de arquivos GPX, links do Wikiloc, rotas detalhadas e pontos de waypoint para navegação segura.
+      </p>
+    </div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer id="contato" class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <img src="logo.png" alt="Capivaras Trek Logo" class="footer-logo">
+        <h3>Capivaras Trek</h3>
+        <p>Vivendo a montanha de forma autêntica e segura.</p>
+      </div>
+      <div class="footer-copy">
+        <p>&copy; 2026 Capivaras Trek. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script Menu Mobile -->
+  <script>
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.getElementById('nav-links');
+
+    menuBtn.addEventListener('click', () => {
+      menuBtn.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+
+    function closeMenu() {
+      menuBtn.classList.remove('active');
+      navLinks.classList.remove('active');
+    }
+  </script>
+
+</body>
+</html>
