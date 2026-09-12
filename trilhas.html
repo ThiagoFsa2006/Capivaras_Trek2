@@ -10,25 +10,25 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* Painel de Conquistas Superior */
+    /* Painel Conquistas Superior */
     .summary-board {
       background-color: #1b3320;
       color: #ffffff;
-      padding: 20px;
+      padding: 18px 20px 22px 20px;
       border-radius: 8px;
       margin-bottom: 30px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
 
     .summary-board-header {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .summary-board-header h2 {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 800;
       color: #ffffff;
       margin: 0;
@@ -44,7 +44,7 @@
 
     .summary-column {
       padding: 0 10px;
-      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      border-right: 1px solid rgba(255, 255, 255, 0.25);
     }
 
     .summary-column:last-child {
@@ -54,7 +54,7 @@
     .summary-column h3 {
       font-size: 1.05rem;
       font-weight: 800;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       color: #ffffff;
     }
 
@@ -80,26 +80,27 @@
       vertical-align: middle;
     }
 
-    /* Estrutura de Lista Completa (Card em Largura Total) */
+    /* Lista de Cards Horizontal/Empilhada de Largura Total */
     .trilhas-list-container {
       display: flex;
       flex-direction: column;
-      gap: 30px;
+      gap: 24px;
       width: 100%;
       margin: 20px 0;
     }
 
     .trilha-card {
       width: 100%;
-      background: #fafaf5;
-      border: 1px solid #e1e8e2;
-      border-radius: 8px;
+      background: #fafaf7;
+      border: 1px solid #e2e7e3;
+      border-radius: 6px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       display: flex;
-      flex-direction: column;
+      flex-direction: row; /* Imagem na esquerda, texto na direita */
+      align-items: stretch;
     }
 
     .trilha-card:hover {
@@ -108,44 +109,48 @@
       border-color: #2d7a3e;
     }
 
-    /* Container de Imagem Centralizada */
-    .trilha-img-container {
-      width: 100%;
-      background-color: #f0f3f0;
+    /* Imagem compacta alinhada à esquerda */
+    .trilha-img-box {
+      width: 280px;
+      min-width: 280px;
+      background: #eef2ef;
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 10px 0;
+      justify-content: center;
+      padding: 12px;
     }
 
     .trilha-img {
-      max-width: 400px;
       width: 100%;
-      height: 200px;
+      height: 180px;
       object-fit: cover;
-      border-radius: 6px;
+      border-radius: 4px;
     }
 
-    /* Seções Internas do Card */
-    .trilha-section {
-      padding: 16px 20px;
-      border-top: 1px solid #e5ebe6;
+    /* Conteúdo do Card (Lado Direito) */
+    .trilha-info {
+      padding: 16px 24px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: center;
     }
 
     .card-header-badge {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .badge-nivel {
-      padding: 4px 12px;
+      padding: 4px 14px;
       border-radius: 4px;
       font-size: 0.75rem;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       color: #ffffff;
+      letter-spacing: 0.5px;
     }
 
     .sticker-tag {
@@ -155,39 +160,41 @@
       background: rgba(27, 51, 32, 0.08);
       border: 1px solid #1b3320;
       color: #1b3320;
-      padding: 3px 10px;
+      padding: 2px 8px;
       border-radius: 12px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
     }
 
     .trilha-titulo {
       color: #1b3320;
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       font-weight: 800;
       margin-bottom: 6px;
+      letter-spacing: -0.3px;
     }
 
     .trilha-resumo {
       color: #556357;
       font-size: 0.95rem;
+      margin-bottom: 14px;
       line-height: 1.5;
-      margin: 0;
     }
 
     .trilha-meta {
       list-style: none;
-      padding: 0;
+      padding: 10px 0 0 0;
       margin: 0;
-      font-size: 0.9rem;
+      border-top: 1px dashed #e1e8e2;
+      font-size: 0.88rem;
       color: #3d4a3f;
     }
 
     .trilha-meta li {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    /* Pop-up Modal */
+    /* Modal Pop-up */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -231,20 +238,28 @@
       }
       .summary-column {
         border-right: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
         padding-bottom: 10px;
       }
       .summary-column:last-child {
         border-bottom: none;
       }
     }
+    @media (max-width: 768px) {
+      .trilha-card {
+        flex-direction: column; /* Em telas menores empilha imagem no topo */
+      }
+      .trilha-img-box {
+        width: 100%;
+        min-width: 100%;
+      }
+      .trilha-img {
+        height: 200px;
+      }
+    }
     @media (max-width: 600px) {
       .summary-grid {
         grid-template-columns: 1fr;
-      }
-      .trilha-img {
-        max-width: 100%;
-        border-radius: 0;
       }
     }
   </style>
@@ -275,7 +290,7 @@
     </div>
   </header>
 
-  <!-- Banner Superior -->
+  <!-- Banner do Topo -->
   <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
       <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Capivaras Trek</h1>
@@ -317,7 +332,7 @@
         </div>
       </section>
 
-      <!-- Lista Empilhada em Largura Total -->
+      <!-- Lista Empilhada (Imagem na Esquerda, Texto na Direita em Largura Total) -->
       <div class="trilhas-list-container" id="trilhasList">
         <p style="padding: 20px; text-align: center; width: 100%;">Carregando dados da planilha...</p>
       </div>
@@ -325,7 +340,7 @@
     </div>
   </main>
 
-  <!-- Modal -->
+  <!-- Modal Detalhado -->
   <div class="modal-overlay" id="trilhaModal">
     <div class="modal-content">
       <button class="modal-close" id="modalClose">&times;</button>
@@ -493,20 +508,18 @@
         return `
           <article class="trilha-card" onclick="openModal(${index})">
             
-            <div class="trilha-img-container">
+            <div class="trilha-img-box">
               <img src="${t.foto || 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img" onerror="this.src='banner_home.jpg'">
             </div>
 
-            <div class="trilha-section">
+            <div class="trilha-info">
               <div class="card-header-badge">
                 <span class="badge-nivel" style="background-color: ${badgeColor};">${t.nivel || 'Moderado'}</span>
                 ${hasSticker ? `<span class="sticker-tag"><img src="logo.png" alt="Adesivo" class="sticker-logo"> Conquistado</span>` : ''}
               </div>
               <h3 class="trilha-titulo">${t.nome}</h3>
               <p class="trilha-resumo">${t.resumo}</p>
-            </div>
-
-            <div class="trilha-section">
+              
               <ul class="trilha-meta">
                 <li>📍 <strong>Região:</strong> ${t.regiao}</li>
                 <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
