@@ -1,3 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capivaras Trek | Expedições e Montanhismo</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Header Fixo -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="brand">
+        <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
+        <span class="brand-name">Capivaras Trek</span>
+      </a>
+      
+      <nav class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#trilhas">Trilhas</a>
+        <a href="#acervo">Acervo</a>
+        <a href="#calendario">Calendário</a>
+        <a href="#contato">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section Carousel -->
+  <section id="home" class="hero">
+    <div class="carousel">
+      
+      <!-- Slide 1 -->
+      <div class="slide active">
+        <img src="banner_home.jpg" alt="Cume do Taipabuçu" class="slide-bg slide-1">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+          <h1>Cume do Taipabuçu</h1>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="slide">
+        <img src="banner_home1.jpg" alt="Cachoeira da Lapinha" class="slide-bg slide-2">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+          <h1>Cachoeira da Lapinha</h1>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="slide">
+        <img src="banner_home2.jpg" alt="Cume do Anhangava" class="slide-bg slide-3">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+          <h1>Cume do Anhangava</h1>
+        </div>
+      </div>
+
+      <!-- Controles de Navegação -->
+      <button class="carousel-btn prev" onclick="moveSlide(-1)" aria-label="Anterior">&#10094;</button>
+      <button class="carousel-btn next" onclick="moveSlide(1)" aria-label="Próximo">&#10095;</button>
+
+      <!-- Indicadores em Pontos (Opcional) -->
+      <div class="dots-container">
+        <span class="dot active" onclick="setSlide(0)"></span>
+        <span class="dot" onclick="setSlide(1)"></span>
+        <span class="dot" onclick="setSlide(2)"></span>
+      </div>
+
+    </div>
+  </section>
+
 <!-- Seção Sobre o Grupo -->
   <section id="sobre" class="section">
     <div class="container">
@@ -55,3 +131,52 @@
 
     </div>
   </section>
+
+  <!-- Rodapé -->
+  <footer id="contato" class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <h3>Capivaras Trek</h3>
+        <p>Vivendo a montanha de forma autêntica e segura.</p>
+      </div>
+      <div class="footer-copy">
+        <p>&copy; 2026 Capivaras Trek. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script de Controle do Carrossel (6s) -->
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    let autoSlideTimer = setInterval(() => moveSlide(1), 6000);
+
+    function showSlide(index) {
+      slides.forEach(s => s.classList.remove('active'));
+      dots.forEach(d => d.classList.remove('active'));
+      
+      currentSlide = (index + slides.length) % slides.length;
+      
+      slides[currentSlide].classList.add('active');
+      if (dots.length) dots[currentSlide].classList.add('active');
+    }
+
+    function moveSlide(step) {
+      resetTimer();
+      showSlide(currentSlide + step);
+    }
+
+    function setSlide(index) {
+      resetTimer();
+      showSlide(index);
+    }
+
+    function resetTimer() {
+      clearInterval(autoSlideTimer);
+      autoSlideTimer = setInterval(() => moveSlide(1), 6000);
+    }
+  </script>
+
+</body>
+</html>
