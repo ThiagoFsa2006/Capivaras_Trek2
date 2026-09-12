@@ -1,145 +1,116 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capivaras Trek | Expedições e Montanhismo</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
 
-body {
-    color: #2b2b2b;
-    background-color: #fcfcfc;
-    line-height: 1.6;
-}
+  <!-- Header Fixo -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="brand">
+        <!-- Substitua 'logo.png' pelo caminho da sua imagem da logo -->
+        <img src="logo.png" alt="Logo Capivaras Trek" class="logo-img">
+        <span>Capivaras Trek</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#sobre">Sobre</a>
+        <a href="#diferenciais">Diferenciais</a>
+        <a href="#trilhas">Próximas Trilhas</a>
+        <a href="#contato" class="btn-nav">Contato</a>
+      </nav>
+    </div>
+  </header>
 
-.container {
-    width: 90%;
-    max-width: 1100px;
-    margin: 0 auto;
-}
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <h1>Explore as montanhas com quem entende do percurso.</h1>
+      <p>Travessias, subidas de cume e experiências outdoor com a galera do Capivaras Trek.</p>
+      <a href="#trilhas" class="btn-primary">Participar da Próxima Expedição</a>
+    </div>
+  </section>
 
-/* Navbar */
-.navbar {
-    background-color: #1c3320;
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
+  <!-- Seção Sobre -->
+  <section id="sobre" class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Sobre o Capivaras Trek</h2>
+        <p class="section-desc">Conectamos praticantes de trekking e montanhismo a paisagens incríveis, garantindo organização, segurança e o verdadeiro espírito de aventura acima das nuvens.</p>
+      </div>
+    </div>
+  </section>
 
-.nav-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+  <!-- Seção Diferenciais -->
+  <section id="diferenciais" class="section section-dark">
+    <div class="container">
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon">🥾</div>
+          <h3>Guias Experientes</h3>
+          <p>Conhecimento prático das trilhas e travessias da região para uma caminhada tranquila.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛡️</div>
+          <h3>Segurança no Percurso</h3>
+          <p>Planejamento completo de itinerário, verificação de clima e equipamentos recomendados.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⛰️</div>
+          <h3>Espírito de Comunidade</h3>
+          <p>Grupo acolhedor focado em integração, respeito à natureza e boas memórias no cume.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-.logo {
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 1.3rem;
-}
+  <!-- Seção Próximas Trilhas -->
+  <section id="trilhas" class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Próximas Expedições</h2>
+        <p class="section-desc">Escolha seu próximo destino e venha pra montanha com a gente.</p>
+      </div>
+      
+      <div class="cards-grid">
+        <div class="card card-trilha">
+          <div class="card-tag">Moderado</div>
+          <h3>Morro do Anhangava</h3>
+          <p class="trilha-info">📍 Quatro Barras/PR • 📅 Próximo Fim de Semana</p>
+          <p>Excelente caminhada com vista panorâmica e trechos de contemplação da Serra do Mar.</p>
+          <a href="#contato" class="btn-secondary">Garantir Vaga</a>
+        </div>
 
-.navbar nav a {
-    color: #e0e0e0;
-    text-decoration: none;
-    margin-left: 1.5rem;
-    font-size: 0.95rem;
-}
+        <div class="card card-trilha">
+          <div class="card-tag tag-hard">Desafiador</div>
+          <h3>Pico Paraná</h3>
+          <p class="trilha-info">📍 Antonina/PR • 📅 Em Breve</p>
+          <p>A maior montanha do sul do Brasil. Expedição clássica para quem busca superar limites.</p>
+          <a href="#contato" class="btn-secondary">Garantir Vaga</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-.navbar nav a.btn-nav {
-    background-color: #437a4c;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    color: #fff;
-}
+  <!-- Rodapé -->
+  <footer id="contato" class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <h3>Capivaras Trek</h3>
+        <p>Vivendo a montanha de forma autêntica e segura.</p>
+      </div>
+      <div class="footer-copy">
+        <p>&copy; 2026 Capivaras Trek. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
 
-/* Hero Section */
-.hero {
-    background: linear-gradient(rgba(28, 51, 32, 0.85), rgba(28, 51, 32, 0.85)), url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80');
-    background-size: cover;
-    background-position: center;
-    color: #ffffff;
-    text-align: center;
-    padding: 6rem 1rem;
-}
-
-.hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.hero p {
-    font-size: 1.2rem;
-    max-width: 600px;
-    margin: 0 auto 2rem auto;
-    color: #d1e2d4;
-}
-
-.btn-primary {
-    display: inline-block;
-    background-color: #2e7d32;
-    color: #ffffff;
-    padding: 0.9rem 2rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background 0.2s;
-}
-
-.btn-primary:hover {
-    background-color: #1b5e20;
-}
-
-/* Seções */
-.section {
-    padding: 4rem 0;
-}
-
-.bg-light {
-    background-color: #f0f4f1;
-}
-
-.section h2 {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    color: #1c3320;
-}
-
-/* Cards Grid */
-.grid-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.card {
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.card h3 {
-    margin-bottom: 0.8rem;
-    color: #1c3320;
-}
-
-/* Rodapé */
-footer {
-    background-color: #111a12;
-    color: #888;
-    text-align: center;
-    padding: 2rem 0;
-    font-size: 0.9rem;
-}
-
-/* Responsivo para Celular */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 1.8rem;
-    }
-    .navbar nav a {
-        margin-left: 0.8rem;
-    }
-}
+</body>
+</html>
