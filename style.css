@@ -1,5 +1,5 @@
 :root {
-  /* Ajuste de Posição Vertical das Imagens do Banner (Padrão 50% = Centralizado) */
+  /* Posições verticais personalizadas das imagens do carrossel */
   --banner-pos-1: 45%;
   --banner-pos-2: 40%;
   --banner-pos-3: 70%;
@@ -69,14 +69,14 @@ body {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
 }
 
 .nav-links a {
   color: #ffffff;
   text-decoration: none;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: opacity 0.2s ease;
 }
 
@@ -105,7 +105,6 @@ body {
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* Animação do botão X */
 .mobile-menu-btn.active span:nth-child(1) {
   transform: translateY(8.5px) rotate(45deg);
 }
@@ -379,7 +378,7 @@ body {
   font-size: 0.85rem;
 }
 
-/* --- REGRAS MOBILE E TABLET (Menu Hambúrguer) --- */
+/* --- REGRAS MOBILE E TABLET --- */
 @media (max-width: 992px) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
