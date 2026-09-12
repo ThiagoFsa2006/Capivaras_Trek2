@@ -8,10 +8,174 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Estilos Específicos do Carrossel de Trilhas */
+    .carousel-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .trilhas-slider {
+      display: flex;
+      gap: 20px;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      width: 100%;
+      padding: 10px 0;
+    }
+
+    .trilha-card {
+      min-width: calc((100% - 40px) / 3);
+      max-width: calc((100% - 40px) / 3);
+      background: #ffffff;
+      border: 1px solid #e1e8e2;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .trilha-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .trilha-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .trilha-info {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .badge-nivel {
+      align-self: flex-start;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .badge-exigente { background-color: #d97706; }
+    .badge-moderado { background-color: #2d7a3e; }
+    .badge-facil { background-color: #059669; }
+
+    .trilha-titulo {
+      color: #1b3320;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .trilha-resumo {
+      color: #556357;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .trilha-meta {
+      list-style: none;
+      padding: 0;
+      margin-top: auto;
+      font-size: 0.85rem;
+      color: #3d4a3f;
+    }
+
+    .trilha-meta li {
+      margin-bottom: 4px;
+    }
+
+    /* Setas de Navegação do Carrossel */
+    .nav-btn {
+      background: #1b3320;
+      color: #ffffff;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 10;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+
+    .nav-btn:hover { background: #2d7a3e; }
+    .nav-btn.prev-btn { margin-right: 10px; }
+    .nav-btn.next-btn { margin-left: 10px; }
+
+    /* Estilos da Janela Pop-up (Modal) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-content {
+      background: #ffffff;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      padding: 24px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.8rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #556357;
+    }
+
+    /* Adaptação Mobile */
+    @media (max-width: 992px) {
+      .trilha-card {
+        min-width: calc((100% - 20px) / 2);
+        max-width: calc((100% - 20px) / 2);
+      }
+    }
+    @media (max-width: 600px) {
+      .trilha-card {
+        min-width: 100%;
+        max-width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Header / Navbar Fixo -->
+  <!-- Header / Navbar -->
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand">
@@ -19,14 +183,10 @@
         <span class="brand-name">Capivaras Trek</span>
       </a>
 
-      <!-- Botão Hambúrguer Mobile -->
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
 
-      <!-- Links de Navegação -->
       <nav class="nav-links" id="nav-links">
         <a href="index.html#home" onclick="closeMenu()">Home</a>
         <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
@@ -39,88 +199,44 @@
     </div>
   </header>
 
-  <!-- Banner Secundário / Topo -->
+  <!-- Banner da Página -->
   <section class="page-header section" style="padding-top: 120px; padding-bottom: 40px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
-      <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 10px;">Explorar Trilhas</h1>
+      <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 10px;">Cumes & Trilhas Visitadas</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1.05rem;">
-        Conheça as rotas e montanhas exploradas pelo Capivaras Trek no Paraná e região. Verifique os níveis de dificuldade e prepare sua aventura!
+        Explore nosso histórico de registros de montanha. Clique em qualquer card para ver os detalhes completos da rota.
       </p>
     </div>
   </section>
 
-  <!-- Conteúdo Principal de Trilhas -->
+  <!-- Carrossel de Trilhas -->
   <main class="section">
     <div class="container">
-      
-      <!-- Cabeçalho da Seção e Níveis de Dificuldade -->
-      <div class="section-header">
-        <h2>Nossas Montanhas & Destinos</h2>
-        <p class="section-desc">
-          Abaixo você encontra informações detalhadas sobre os trechos já registrados por nossa comunidade.
-        </p>
-      </div>
-
-      <!-- Grade de Cards de Trilhas -->
-      <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+      <div class="carousel-container">
+        <button class="nav-btn prev-btn" id="prevBtn">❮</button>
         
-        <!-- Card 1: Taipabuçu -->
-        <article class="feature-card" style="text-align: left; align-items: flex-start; padding: 0; overflow: hidden;">
-          <img src="banner_home.jpg" alt="Cume do Taipabuçu" style="width: 100%; height: 200px; object-fit: cover;">
-          <div style="padding: 20px; width: 100%;">
-            <span style="background-color: #d97706; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Exigente / Técnico</span>
-            <h3 style="color: #1b3320; font-size: 1.3rem; margin: 10px 0 6px 0;">Cume do Taipabuçu</h3>
-            <p style="color: #556357; font-size: 0.9rem; margin-bottom: 14px;">
-              Localizado na Serra do Mar paranaense, oferece visuais incríveis e exige bom preparo físico em mata fechada e terrenos íngremes.
-            </p>
-            <ul style="list-style: none; padding: 0; margin-bottom: 16px; font-size: 0.85rem; color: #3d4a3f;">
-              <li>📍 <strong>Região:</strong> Campina Grande do Sul - PR</li>
-              <li>📏 <strong>Distância:</strong> ~12 km (volta)</li>
-              <li>⏱️ <strong>Tempo Médio:</strong> 6h a 8h</li>
-            </ul>
-            <a href="tracklogs.html" style="display: inline-block; background-color: #1b3320; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Ver Tracklog GPX</a>
-          </div>
-        </article>
+        <div class="trilhas-slider" id="trilhasSlider">
+          <!-- Os Cards serão injetados dinamicamente via JS -->
+        </div>
 
-        <!-- Card 2: Cachoeira da Lapinha -->
-        <article class="feature-card" style="text-align: left; align-items: flex-start; padding: 0; overflow: hidden;">
-          <img src="banner_home1.jpg" alt="Cachoeira da Lapinha" style="width: 100%; height: 200px; object-fit: cover;">
-          <div style="padding: 20px; width: 100%;">
-            <span style="background-color: #2d7a3e; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Moderado</span>
-            <h3 style="color: #1b3320; font-size: 1.3rem; margin: 10px 0 6px 0;">Cachoeira da Lapinha</h3>
-            <p style="color: #556357; font-size: 0.9rem; margin-bottom: 14px;">
-              Caminhada agradável em meio à vegetação nativa de araucárias, finalizando com uma bela queda d'água e áreas para descanso.
-            </p>
-            <ul style="list-style: none; padding: 0; margin-bottom: 16px; font-size: 0.85rem; color: #3d4a3f;">
-              <li>📍 <strong>Região:</strong> Região Metropolitana de Curitiba</li>
-              <li>📏 <strong>Distância:</strong> ~8 km (volta)</li>
-              <li>⏱️ <strong>Tempo Médio:</strong> 4h</li>
-            </ul>
-            <a href="tracklogs.html" style="display: inline-block; background-color: #1b3320; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Ver Tracklog GPX</a>
-          </div>
-        </article>
-
-        <!-- Card 3: Cume do Anhangava -->
-        <article class="feature-card" style="text-align: left; align-items: flex-start; padding: 0; overflow: hidden;">
-          <img src="banner_home2.jpg" alt="Cume do Anhangava" style="width: 100%; height: 200px; object-fit: cover;">
-          <div style="padding: 20px; width: 100%;">
-            <span style="background-color: #2d7a3e; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">Moderado / Clássico</span>
-            <h3 style="color: #1b3320; font-size: 1.3rem; margin: 10px 0 6px 0;">Morro do Anhangava</h3>
-            <p style="color: #556357; font-size: 0.9rem; margin-bottom: 14px;">
-              A verdadeira escola de montanhismo do Paraná. Possui trechos de caminhada, degraus de pedra e trechos com grampos de via ferrata.
-            </p>
-            <ul style="list-style: none; padding: 0; margin-bottom: 16px; font-size: 0.85rem; color: #3d4a3f;">
-              <li>📍 <strong>Região:</strong> Quatro Barras - PR</li>
-              <li>📏 <strong>Distância:</strong> ~7 km (volta)</li>
-              <li>⏱️ <strong>Tempo Médio:</strong> 3h30 a 5h</li>
-            </ul>
-            <a href="tracklogs.html" style="display: inline-block; background-color: #1b3320; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Ver Tracklog GPX</a>
-          </div>
-        </article>
-
+        <button class="nav-btn next-btn" id="nextBtn">❯</button>
       </div>
     </div>
   </main>
+
+  <!-- Modal (Pop-up de Detalhes da Trilha) -->
+  <div class="modal-overlay" id="trilhaModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <img id="modalImg" src="" alt="" style="width: 100%; height: 260px; object-fit: cover; border-radius: 8px; margin-bottom: 16px;">
+      <span id="modalNivel" class="badge-nivel"></span>
+      <h2 id="modalTitulo" style="color: #1b3320; font-size: 1.8rem; margin: 8px 0;"></h2>
+      <ul class="trilha-meta" id="modalMeta" style="margin-bottom: 16px; font-size: 0.95rem;"></ul>
+      <hr style="border: 0; border-top: 1px solid #e1e8e2; margin: 16px 0;">
+      <h4 style="color: #1b3320; margin-bottom: 8px;">Descrição Detalhada</h4>
+      <p id="modalDescricaoCompleta" style="color: #435245; line-height: 1.7; font-size: 0.95rem;"></p>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer class="footer">
@@ -137,19 +253,107 @@
   </footer>
 
   <script>
-    // Toggle Menu Mobile
-    const mobileBtn = document.getElementById('mobile-menu-btn');
-    const navLinks = document.getElementById('nav-links');
+    // 1. ESTRUTURA DE DADOS (Cadastre suas novas trilhas aqui facilmente!)
+    const trilhasData = [
+      {
+        id: 1,
+        nome: "Cume do Taipabuçu",
+        nivel: "Exigente / Técnico",
+        classeNivel: "badge-exigente",
+        foto: "banner_home.jpg",
+        resumo: "Localizado na Serra do Mar paranaense, oferece visuais incríveis e exige bom preparo físico em mata fechada e terrenos íngremes.",
+        regiao: "Campina Grande do Sul - PR",
+        distancia: "~12 km (volta)",
+        tempoMedio: "6h a 8h",
+        descricaoCompleta: "O Taipabuçu é uma das montanhas mais imponentes da Serra do Mar Paranaense. A caminhada se inicia próxima à represa do Capivari e segue por cristas íngremes com bastante vegetação de altitude. O topo proporciona uma vista incrível do Pico Paraná e do mar de nuvens nos dias frios."
+      },
+      {
+        id: 2,
+        nome: "Cachoeira da Lapinha",
+        nivel: "Moderado",
+        classeNivel: "badge-moderado",
+        foto: "banner_home1.jpg",
+        resumo: "Caminhada agradável em meio à vegetação nativa de araucárias, finalizando com uma bela queda d'água e áreas para descanso.",
+        regiao: "Região Metropolitana de Curitiba",
+        distancia: "~8 km (volta)",
+        tempoMedio: "4h",
+        descricaoCompleta: "Rota perfeita para quem busca contato com a natureza sem encarar grandes subidas técnicas. O percurso acompanha o leito do rio entre trechos sombreados de mata nativa, terminando no poço principal da cachoeira."
+      },
+      {
+        id: 3,
+        nome: "Morro do Anhangava",
+        nivel: "Moderado / Clássico",
+        classeNivel: "badge-moderado",
+        foto: "banner_home2.jpg",
+        resumo: "A verdadeira escola de montanhismo do Paraná. Possui trechos de caminhada, degraus de pedra e trechos com grampos de via ferrata.",
+        regiao: "Quatro Barras - PR",
+        distancia: "~7 km (volta)",
+        tempoMedio: "3h30 a 5h",
+        descricaoCompleta: "Conhecido como o campo de treinamento dos montanhistas curitibanos, o Anhangava mistura subidas em pedra, trechos equipados com grampos e um cume espetacular com vista 360º para Curitiba e para a Serra do Mar."
+      }
+    ];
 
-    mobileBtn.addEventListener('click', () => {
-      mobileBtn.classList.toggle('active');
-      navLinks.classList.toggle('active');
+    // 2. RENDERIZAÇÃO DOS CARDS
+    const slider = document.getElementById('trilhasSlider');
+
+    function renderTrilhas() {
+      slider.innerHTML = trilhasData.map(t => `
+        <article class="trilha-card" onclick="openModal(${t.id})">
+          <img src="${t.foto}" alt="${t.nome}" class="trilha-img">
+          <div class="trilha-info">
+            <span class="badge-nivel ${t.classeNivel}">${t.nivel}</span>
+            <h3 class="trilha-titulo">${t.nome}</h3>
+            <p class="trilha-resumo">${t.resumo}</p>
+            <ul class="trilha-meta">
+              <li>📍 <strong>Região:</strong> ${t.regiao}</li>
+              <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
+              <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio}</li>
+            </ul>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    renderTrilhas();
+
+    // 3. NAVEGAÇÃO DO CARROSSEL
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    nextBtn.addEventListener('click', () => {
+      slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
     });
 
-    function closeMenu() {
-      mobileBtn.classList.remove('active');
-      navLinks.classList.remove('active');
+    prevBtn.addEventListener('click', () => {
+      slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
+    });
+
+    // 4. LÓGICA DO MODAL (VER MAIS INFORMAÇÕES)
+    const modal = document.getElementById('trilhaModal');
+    const modalClose = document.getElementById('modalClose');
+
+    function openModal(id) {
+      const trilha = trilhasData.find(item => item.id === id);
+      if (!trilha) return;
+
+      document.getElementById('modalImg').src = trilha.foto;
+      document.getElementById('modalNivel').textContent = trilha.nivel;
+      document.getElementById('modalNivel').className = `badge-nivel ${trilha.classeNivel}`;
+      document.getElementById('modalTitulo').textContent = trilha.nome;
+      document.getElementById('modalMeta').innerHTML = `
+        <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
+        <li>📏 <strong>Distância:</strong> ${trilha.distancia}</li>
+        <li>⏱️ <strong>Tempo Médio:</strong> ${trilha.tempoMedio}</li>
+      `;
+      document.getElementById('modalDescricaoCompleta').textContent = trilha.descricaoCompleta;
+
+      modal.classList.add('active');
     }
+
+    modalClose.addEventListener('click', () => modal.classList.remove('active'));
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
   </script>
 </body>
 </html>
