@@ -15,7 +15,6 @@
   <header class="navbar">
     <div class="container nav-container">
       <a href="#" class="brand">
-        <!-- Nome do arquivo da sua logo circular -->
         <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
         <span class="brand-name">Capivaras Trek</span>
       </a>
@@ -30,13 +29,48 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
+  <!-- Hero Section Carousel -->
   <section id="home" class="hero">
-    <div class="hero-overlay"></div>
-    <div class="container hero-content">
-      <h1>Explore as montanhas com quem entende do percurso.</h1>
-      <p>Travessias, subidas de cume e experiências outdoor com a galera do Capivaras Trek.</p>
-      <a href="#trilhas" class="btn-primary">Participar da Próxima Expedição</a>
+    <div class="carousel">
+      
+      <!-- Slide 1 -->
+      <div class="slide active">
+        <img src="banner_home.jpg" alt="Cume do Taipabuçu" class="slide-bg slide-1">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+          <h1>Cume do Taipabuçu</h1>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="slide">
+        <img src="banner_home1.jpg" alt="Cachoeira da Lapinha" class="slide-bg slide-2">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+          <h1>Cachoeira da Lapinha</h1>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="slide">
+        <img src="banner_home2.jpg" alt="Cume do Anhangava" class="slide-bg slide-3">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+          <h1>Cume do Anhangava</h1>
+        </div>
+      </div>
+
+      <!-- Controles de Navegação -->
+      <button class="carousel-btn prev" onclick="moveSlide(-1)" aria-label="Anterior">&#10094;</button>
+      <button class="carousel-btn next" onclick="moveSlide(1)" aria-label="Próximo">&#10095;</button>
+
+      <!-- Indicadores em Pontos (Opcional) -->
+      <div class="dots-container">
+        <span class="dot active" onclick="setSlide(0)"></span>
+        <span class="dot" onclick="setSlide(1)"></span>
+        <span class="dot" onclick="setSlide(2)"></span>
+      </div>
+
     </div>
   </section>
 
@@ -62,6 +96,39 @@
       </div>
     </div>
   </footer>
+
+  <!-- Script de Controle do Carrossel (6s) -->
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    let autoSlideTimer = setInterval(() => moveSlide(1), 6000);
+
+    function showSlide(index) {
+      slides.forEach(s => s.classList.remove('active'));
+      dots.forEach(d => d.classList.remove('active'));
+      
+      currentSlide = (index + slides.length) % slides.length;
+      
+      slides[currentSlide].classList.add('active');
+      if (dots.length) dots[currentSlide].classList.add('active');
+    }
+
+    function moveSlide(step) {
+      resetTimer();
+      showSlide(currentSlide + step);
+    }
+
+    function setSlide(index) {
+      resetTimer();
+      showSlide(index);
+    }
+
+    function resetTimer() {
+      clearInterval(autoSlideTimer);
+      autoSlideTimer = setInterval(() => moveSlide(1), 6000);
+    }
+  </script>
 
 </body>
 </html>
