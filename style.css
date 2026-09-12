@@ -234,3 +234,52 @@ body {
   padding-top: 16px;
   font-size: 0.85rem;
 }
+
+/* Seção Sobre & Grid de Pilares */
+.section-desc {
+  max-width: 780px;
+  margin: 0 auto 40px auto;
+  color: #4a574c;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.card {
+  background: #ffffff;
+  padding: 28px 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  border: 1px solid #e2e8e3;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.card-icon {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+
+.card h3 {
+  color: #1b3320;
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.card p {
+  color: #556357;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
