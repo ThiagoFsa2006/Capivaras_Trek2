@@ -10,40 +10,40 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* Seção de Resumo por Categoria (Painel Conquistas) */
+    /* Seção Conquistas Enxuta */
     .summary-board {
       background-color: #1b3320;
       color: #ffffff;
-      padding: 30px 25px 35px 25px;
+      padding: 16px 20px 20px 20px;
       border-radius: 12px;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
 
     .summary-board-header {
       text-align: center;
-      margin-bottom: 24px;
-      padding-bottom: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .summary-board-header h2 {
-      font-size: 1.6rem;
+      font-size: 1.3rem;
       font-weight: 800;
       color: #ffffff;
       margin: 0;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.3px;
       text-transform: uppercase;
     }
 
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
+      gap: 15px;
     }
 
     .summary-column {
-      padding: 0 15px;
+      padding: 0 10px;
       border-right: 1px solid rgba(255, 255, 255, 0.25);
     }
 
@@ -52,9 +52,9 @@
     }
 
     .summary-column h3 {
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: 800;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       color: #ffffff;
       letter-spacing: -0.3px;
     }
@@ -66,24 +66,17 @@
     }
 
     .summary-list li {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: #d0e0d2;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .summary-list li.empty-item {
-      color: rgba(208, 224, 210, 0.4);
-      font-size: 0.85rem;
-      font-style: italic;
-    }
-
-    /* Mini Logo Adesivo */
     .sticker-logo {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       object-fit: contain;
       vertical-align: middle;
     }
@@ -256,12 +249,12 @@
     @media (max-width: 992px) {
       .summary-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 25px;
+        gap: 15px;
       }
       .summary-column {
         border-right: none;
         border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-        padding-bottom: 15px;
+        padding-bottom: 10px;
       }
       .summary-column:last-child {
         border-bottom: none;
@@ -309,7 +302,7 @@
   </header>
 
   <!-- Banner do Topo -->
-  <section class="page-header section" style="padding-top: 120px; padding-bottom: 40px; background-color: #1b3320; color: #ffffff; text-align: center;">
+  <section class="page-header section" style="padding-top: 120px; padding-bottom: 30px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
       <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 10px;">Cumes & Trilhas Visitadas</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1.05rem;">
@@ -319,10 +312,10 @@
   </section>
 
   <!-- Conteúdo Principal -->
-  <main class="section">
+  <main class="section" style="padding-top: 40px;">
     <div class="container">
       
-      <!-- Seção do Painel de Conquistas -->
+      <!-- Painel de Conquistas Enxuto -->
       <section class="summary-board">
         <div class="summary-board-header">
           <h2>Conquistas</h2>
@@ -330,30 +323,22 @@
         <div class="summary-grid">
           <div class="summary-column">
             <h3>Cumes</h3>
-            <ul class="summary-list" id="list-cumes">
-              <li class="empty-item">Aguardando...</li>
-            </ul>
+            <ul class="summary-list" id="list-cumes"></ul>
           </div>
 
           <div class="summary-column">
             <h3>Travessias</h3>
-            <ul class="summary-list" id="list-travessia">
-              <li class="empty-item">Aguardando...</li>
-            </ul>
+            <ul class="summary-list" id="list-travessia"></ul>
           </div>
 
           <div class="summary-column">
             <h3>Travessia Circular</h3>
-            <ul class="summary-list" id="list-circular">
-              <li class="empty-item">Aguardando...</li>
-            </ul>
+            <ul class="summary-list" id="list-circular"></ul>
           </div>
 
           <div class="summary-column">
             <h3>Cachoeiras</h3>
-            <ul class="summary-list" id="list-cachoeiras">
-              <li class="empty-item">Aguardando...</li>
-            </ul>
+            <ul class="summary-list" id="list-cachoeiras"></ul>
           </div>
         </div>
       </section>
@@ -485,7 +470,7 @@
       }
     }
 
-    // Renderizar Seção de Conquistas
+    // Renderizar Seção de Conquistas Enxuta (Sem traços ou itens vazios)
     function renderSummaryBoard() {
       const cumesList = document.getElementById('list-cumes');
       const travessiaList = document.getElementById('list-travessia');
@@ -508,7 +493,6 @@
       });
 
       const buildListHTML = (items) => {
-        if (items.length === 0) return '';
         return items.map(t => {
           const hasSticker = (t.adesivo || '').toLowerCase().trim() === 'sim';
           return `
