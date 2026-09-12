@@ -9,8 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- PapaParse para conversão de CSV do Google Sheets em JSON -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
   <style>
-    /* Estilos Específicos do Carrossel de Trilhas */
+    /* Estilos do Carrossel e Cards */
     .carousel-container {
       position: relative;
       display: flex;
@@ -44,6 +47,7 @@
     .trilha-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      border-color: #2d7a3e;
     }
 
     .trilha-img {
@@ -66,13 +70,10 @@
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      color: #fff;
+      color: #ffffff;
       margin-bottom: 10px;
+      background-color: #d97706;
     }
-
-    .badge-exigente { background-color: #d97706; }
-    .badge-moderado { background-color: #2d7a3e; }
-    .badge-facil { background-color: #059669; }
 
     .trilha-titulo {
       color: #1b3320;
@@ -100,7 +101,7 @@
       margin-bottom: 4px;
     }
 
-    /* Setas de Navegação do Carrossel */
+    /* Botões Laterais do Carrossel */
     .nav-btn {
       background: #1b3320;
       color: #ffffff;
@@ -122,7 +123,7 @@
     .nav-btn.prev-btn { margin-right: 10px; }
     .nav-btn.next-btn { margin-left: 10px; }
 
-    /* Estilos da Janela Pop-up (Modal) */
+    /* Janela Pop-up (Modal) */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -158,7 +159,7 @@
       color: #556357;
     }
 
-    /* Adaptação Mobile */
+    /* Regras de Adaptabilidade para Mobile e Tablet */
     @media (max-width: 992px) {
       .trilha-card {
         min-width: calc((100% - 20px) / 2);
@@ -175,7 +176,7 @@
 </head>
 <body>
 
-  <!-- Header / Navbar -->
+  <!-- Header Fixo -->
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand">
@@ -199,12 +200,12 @@
     </div>
   </header>
 
-  <!-- Banner da Página -->
+  <!-- Banner do Topo -->
   <section class="page-header section" style="padding-top: 120px; padding-bottom: 40px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
       <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 10px;">Cumes & Trilhas Visitadas</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1.05rem;">
-        Explore nosso histórico de registros de montanha. Clique em qualquer card para ver os detalhes completos da rota.
+        Confira o histórico de montanhas exploradas pelo Capivaras Trek. Clique em qualquer card para ver a descrição completa.
       </p>
     </div>
   </section>
@@ -213,18 +214,18 @@
   <main class="section">
     <div class="container">
       <div class="carousel-container">
-        <button class="nav-btn prev-btn" id="prevBtn">❮</button>
+        <button class="nav-btn prev-btn" id="prevBtn" aria-label="Anterior">❮</button>
         
         <div class="trilhas-slider" id="trilhasSlider">
-          <!-- Os Cards serão injetados dinamicamente via JS -->
+          <p style="padding: 20px; text-align: center; width: 100%;">Carregando dados da planilha...</p>
         </div>
 
-        <button class="nav-btn next-btn" id="nextBtn">❯</button>
+        <button class="nav-btn next-btn" id="nextBtn" aria-label="Próximo">❯</button>
       </div>
     </div>
   </main>
 
-  <!-- Modal (Pop-up de Detalhes da Trilha) -->
+  <!-- Modal com Detalhes da Trilha -->
   <div class="modal-overlay" id="trilhaModal">
     <div class="modal-content">
       <button class="modal-close" id="modalClose">&times;</button>
@@ -253,55 +254,41 @@
   </footer>
 
   <script>
-    // 1. ESTRUTURA DE DADOS (Cadastre suas novas trilhas aqui facilmente!)
-    const trilhasData = [
-      {
-        id: 1,
-        nome: "Cume do Taipabuçu",
-        nivel: "Exigente / Técnico",
-        classeNivel: "badge-exigente",
-        foto: "banner_home.jpg",
-        resumo: "Localizado na Serra do Mar paranaense, oferece visuais incríveis e exige bom preparo físico em mata fechada e terrenos íngremes.",
-        regiao: "Campina Grande do Sul - PR",
-        distancia: "~12 km (volta)",
-        tempoMedio: "6h a 8h",
-        descricaoCompleta: "O Taipabuçu é uma das montanhas mais imponentes da Serra do Mar Paranaense. A caminhada se inicia próxima à represa do Capivari e segue por cristas íngremes com bastante vegetação de altitude. O topo proporciona uma vista incrível do Pico Paraná e do mar de nuvens nos dias frios."
-      },
-      {
-        id: 2,
-        nome: "Cachoeira da Lapinha",
-        nivel: "Moderado",
-        classeNivel: "badge-moderado",
-        foto: "banner_home1.jpg",
-        resumo: "Caminhada agradável em meio à vegetação nativa de araucárias, finalizando com uma bela queda d'água e áreas para descanso.",
-        regiao: "Região Metropolitana de Curitiba",
-        distancia: "~8 km (volta)",
-        tempoMedio: "4h",
-        descricaoCompleta: "Rota perfeita para quem busca contato com a natureza sem encarar grandes subidas técnicas. O percurso acompanha o leito do rio entre trechos sombreados de mata nativa, terminando no poço principal da cachoeira."
-      },
-      {
-        id: 3,
-        nome: "Morro do Anhangava",
-        nivel: "Moderado / Clássico",
-        classeNivel: "badge-moderado",
-        foto: "banner_home2.jpg",
-        resumo: "A verdadeira escola de montanhismo do Paraná. Possui trechos de caminhada, degraus de pedra e trechos com grampos de via ferrata.",
-        regiao: "Quatro Barras - PR",
-        distancia: "~7 km (volta)",
-        tempoMedio: "3h30 a 5h",
-        descricaoCompleta: "Conhecido como o campo de treinamento dos montanhistas curitibanos, o Anhangava mistura subidas em pedra, trechos equipados com grampos e um cume espetacular com vista 360º para Curitiba e para a Serra do Mar."
-      }
-    ];
+    // Link CSV fornecido do Google Sheets
+    const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
 
-    // 2. RENDERIZAÇÃO DOS CARDS
+    let trilhasData = [];
+
+    // Carregar dados via PapaParse
+    function loadTrilhas() {
+      Papa.parse(GOOGLE_SHEET_CSV_URL, {
+        download: true,
+        header: true,
+        complete: function(results) {
+          trilhasData = results.data.filter(row => row.nome && row.nome.trim() !== "");
+          renderTrilhas();
+        },
+        error: function(err) {
+          console.error("Erro ao ler CSV:", err);
+          document.getElementById('trilhasSlider').innerHTML = '<p style="color: red; text-align: center; width: 100%;">Não foi possível carregar as trilhas no momento.</p>';
+        }
+      });
+    }
+
     const slider = document.getElementById('trilhasSlider');
 
+    // Injetar Cards no Carrossel
     function renderTrilhas() {
-      slider.innerHTML = trilhasData.map(t => `
-        <article class="trilha-card" onclick="openModal(${t.id})">
-          <img src="${t.foto}" alt="${t.nome}" class="trilha-img">
+      if (trilhasData.length === 0) {
+        slider.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha cadastrada ainda.</p>';
+        return;
+      }
+
+      slider.innerHTML = trilhasData.map((t, index) => `
+        <article class="trilha-card" onclick="openModal(${index})">
+          <img src="${t.foto || 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img">
           <div class="trilha-info">
-            <span class="badge-nivel ${t.classeNivel}">${t.nivel}</span>
+            <span class="badge-nivel">${t.nivel || 'Trekking'}</span>
             <h3 class="trilha-titulo">${t.nome}</h3>
             <p class="trilha-resumo">${t.resumo}</p>
             <ul class="trilha-meta">
@@ -314,31 +301,25 @@
       `).join('');
     }
 
-    renderTrilhas();
-
-    // 3. NAVEGAÇÃO DO CARROSSEL
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-
-    nextBtn.addEventListener('click', () => {
+    // Navegação do Carrossel
+    document.getElementById('nextBtn').addEventListener('click', () => {
       slider.scrollBy({ left: slider.clientWidth, behavior: 'smooth' });
     });
 
-    prevBtn.addEventListener('click', () => {
+    document.getElementById('prevBtn').addEventListener('click', () => {
       slider.scrollBy({ left: -slider.clientWidth, behavior: 'smooth' });
     });
 
-    // 4. LÓGICA DO MODAL (VER MAIS INFORMAÇÕES)
+    // Controle do Modal
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
-    function openModal(id) {
-      const trilha = trilhasData.find(item => item.id === id);
+    function openModal(index) {
+      const trilha = trilhasData[index];
       if (!trilha) return;
 
-      document.getElementById('modalImg').src = trilha.foto;
-      document.getElementById('modalNivel').textContent = trilha.nivel;
-      document.getElementById('modalNivel').className = `badge-nivel ${trilha.classeNivel}`;
+      document.getElementById('modalImg').src = trilha.foto || 'banner_home.jpg';
+      document.getElementById('modalNivel').textContent = trilha.nivel || 'Trekking';
       document.getElementById('modalTitulo').textContent = trilha.nome;
       document.getElementById('modalMeta').innerHTML = `
         <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
@@ -354,6 +335,23 @@
     modal.addEventListener('click', (e) => {
       if (e.target === modal) modal.classList.remove('active');
     });
+
+    // Inicialização
+    loadTrilhas();
+
+    // Menu Mobile
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.getElementById('nav-links');
+
+    mobileBtn.addEventListener('click', () => {
+      mobileBtn.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+
+    function closeMenu() {
+      mobileBtn.classList.remove('active');
+      navLinks.classList.remove('active');
+    }
   </script>
 </body>
 </html>
