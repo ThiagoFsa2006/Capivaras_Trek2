@@ -10,12 +10,87 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
+    /* Controls Bar (Filtros e Ordenação) */
+    .controls-bar {
+      display: flex;
+      gap: 16px;
+      margin: 0 0 24px 0;
+      flex-wrap: wrap;
+      background: #ffffff;
+      padding: 16px 20px;
+      border-radius: 10px;
+      border: 1px solid #dcdfdc;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1px solid #c2d6c5;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      color: #1b3320;
+      outline: none;
+      transition: border-color 0.2s ease;
+      background: #fafcfb;
+    }
+
+    .search-input:focus {
+      border-color: #2d7a3e;
+      background: #ffffff;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #7a8a7c;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .sort-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sort-box label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1b3320;
+    }
+
+    .sort-select {
+      padding: 10px 14px;
+      border: 1px solid #c2d6c5;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #1b3320;
+      background: #fafcfb;
+      outline: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .sort-select:focus {
+      border-color: #2d7a3e;
+    }
+
     /* Grade de Álbuns de Galeria */
     .galeria-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
-      margin: 30px 0;
+      margin: 10px 0 30px 0;
     }
 
     .galeria-card {
@@ -158,6 +233,13 @@
       .galeria-grid {
         grid-template-columns: 1fr;
       }
+      .controls-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .sort-box {
+        justify-content: space-between;
+      }
     }
   </style>
 </head>
@@ -202,6 +284,23 @@
   <main class="section" style="padding-top: 30px;">
     <div class="container">
       
+      <!-- Controles de Filtro e Ordenação -->
+      <div class="controls-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nome da trilha..." oninput="filterAndRenderGaleria()">
+        </div>
+        <div class="sort-box">
+          <label for="sortSelect">Ordenar por:</label>
+          <select id="sortSelect" class="sort-select" onchange="filterAndRenderGaleria()">
+            <option value="data-desc">Mais recente primeiro</option>
+            <option value="data-asc">Mais antigo primeiro</option>
+            <option value="nome-asc">Nome (A-Z)</option>
+            <option value="nome-desc">Nome (Z-A)</option>
+          </select>
+        </div>
+      </div>
+
       <!-- Grade de Álbuns -->
       <div class="galeria-grid" id="galeriaGrid">
         <p style="padding: 20px; text-align: center; width: 100%; grid-column: 1 / -1;">Carregando galeria...</p>
@@ -226,6 +325,8 @@
 
   <script>
     const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+
+    let galeriaData = [];
 
     function parseCSV(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -262,6 +363,19 @@
       });
     }
 
+    // Auxiliar para converter datas (ex: DD/MM/YYYY) em timestamp para ordenação precisa
+    function parseDateToTimestamp(dateStr) {
+      if (!dateStr || typeof dateStr !== 'string') return 0;
+      const parts = dateStr.trim().split('/');
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day).getTime();
+      }
+      return 0;
+    }
+
     async function loadGaleria() {
       const gridContainer = document.getElementById('galeriaGrid');
       try {
@@ -271,30 +385,51 @@
         const csvText = await response.text();
         const parsedData = parseCSV(csvText);
 
-        // Mapeia todas as trilhas da Página 1
-        const albuns = parsedData.map(obj => ({
+        galeriaData = parsedData.map(obj => ({
           nome: obj['nome'] || '',
           foto: obj['foto'] || '',
           data: obj['data'] || '',
           linkGoogleFotos: obj['linkgooglefotos'] || obj['googlefotos'] || obj['linkfotos'] || ''
         })).filter(item => item.nome !== '');
 
-        renderGaleria(albuns);
+        filterAndRenderGaleria();
       } catch (err) {
         console.error("Erro ao carregar a galeria:", err);
         gridContainer.innerHTML = '<p style="color: red; text-align: center; width: 100%; grid-column: 1 / -1;">Erro ao carregar os álbuns de fotos.</p>';
       }
     }
 
-    function renderGaleria(albuns) {
+    function filterAndRenderGaleria() {
       const gridContainer = document.getElementById('galeriaGrid');
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      const sortValue = document.getElementById('sortSelect').value;
 
-      if (albuns.length === 0) {
-        gridContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #556357; grid-column: 1 / -1;">Nenhuma trilha cadastrada no momento.</p>';
+      // 1. Filtrar pelo nome da trilha
+      let filtered = galeriaData.filter(item => {
+        return item.nome.toLowerCase().includes(searchTerm);
+      });
+
+      // 2. Ordenar
+      filtered.sort((a, b) => {
+        if (sortValue === 'data-desc') {
+          return parseDateToTimestamp(b.data) - parseDateToTimestamp(a.data);
+        } else if (sortValue === 'data-asc') {
+          return parseDateToTimestamp(a.data) - parseDateToTimestamp(b.data);
+        } else if (sortValue === 'nome-asc') {
+          return a.nome.localeCompare(b.nome);
+        } else if (sortValue === 'nome-desc') {
+          return b.nome.localeCompare(a.nome);
+        }
+        return 0;
+      });
+
+      // 3. Renderizar resultados
+      if (filtered.length === 0) {
+        gridContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #556357; grid-column: 1 / -1; padding: 30px 0;">Nenhuma trilha encontrada para o termo pesquisado.</p>';
         return;
       }
 
-      gridContainer.innerHTML = albuns.map(item => {
+      gridContainer.innerHTML = filtered.map(item => {
         const hasLink = item.linkGoogleFotos && item.linkGoogleFotos.trim() !== '';
 
         const imageMarkup = item.foto 
