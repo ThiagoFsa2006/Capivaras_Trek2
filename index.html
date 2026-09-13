@@ -156,15 +156,15 @@
       gap: 6px;
     }
 
-    /* LINHA DO TEMPO REFORMULADA (SEM SCROLL LATERAL / TUDO VISÍVEL E ALTERNADO) */
+    /* LINHA DO TEMPO COM ALTURA AUMENTADA E FONTE REDUZIDA */
     .timeline-scroll-wrapper {
       width: 100%;
-      height: 320px;
+      height: 420px; /* Altura aumentada para dar espaço aos nomes */
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 40px;
+      padding: 0 45px;
       box-sizing: border-box;
     }
 
@@ -179,7 +179,7 @@
       position: absolute;
       top: -38px;
       transform: translateX(-50%);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 800;
       color: #a3c9a8;
       letter-spacing: 0.5px;
@@ -216,16 +216,16 @@
       transform: scaleY(1.4);
     }
 
-    /* Nó Superior (Data em Cima / Nome em Cima) */
+    /* Nó Superior */
     .timeline-node.top-node {
-      top: -160px;
-      height: 160px;
+      top: -210px;
+      height: 210px;
       justify-content: flex-end;
     }
 
     .timeline-node.top-node .timeline-date {
-      margin-bottom: 6px;
-      font-size: 0.82rem;
+      margin-bottom: 4px;
+      font-size: 0.75rem; /* Letra reduzida em 1pt */
       font-weight: 800;
       color: #ffffff;
       white-space: nowrap;
@@ -234,37 +234,37 @@
     .timeline-node.top-node .timeline-name {
       writing-mode: vertical-rl;
       transform: rotate(180deg);
-      font-size: 0.82rem;
+      font-size: 0.75rem; /* Letra reduzida em 1pt */
       font-weight: 600;
       color: #d0e0d2;
       white-space: nowrap;
-      margin-bottom: 8px;
-      max-height: 110px;
+      margin-bottom: 6px;
+      max-height: 160px;
       transition: color 0.2s;
     }
 
-    /* Nó Inferior (Nome em Baixo / Data em Baixo) */
+    /* Nó Inferior */
     .timeline-node.bottom-node {
       top: 0px;
-      height: 160px;
+      height: 210px;
       justify-content: flex-start;
     }
 
     .timeline-node.bottom-node .timeline-name {
       writing-mode: vertical-rl;
       transform: rotate(180deg);
-      font-size: 0.82rem;
+      font-size: 0.75rem; /* Letra reduzida em 1pt */
       font-weight: 600;
       color: #d0e0d2;
       white-space: nowrap;
-      margin-top: 8px;
-      max-height: 110px;
+      margin-top: 6px;
+      max-height: 160px;
       transition: color 0.2s;
     }
 
     .timeline-node.bottom-node .timeline-date {
-      margin-top: 6px;
-      font-size: 0.82rem;
+      margin-top: 4px;
+      font-size: 0.75rem; /* Letra reduzida em 1pt */
       font-weight: 800;
       color: #ffffff;
       white-space: nowrap;
@@ -861,7 +861,7 @@
       cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
     }
 
-    // Renderiza Seção 2: LINHA DO TEMPO (Ziguezague 100% visível na tela)
+    // Renderiza Seção 2: LINHA DO TEMPO (Com 'Hoje' encostado na direita e mais espaço vertical)
     function renderTimeline() {
       const track = document.getElementById('timelineTrack');
       if (!trilhasData || trilhasData.length === 0) {
@@ -895,14 +895,14 @@
       }
 
       const startTs = new Date(previousYear, 0, 1).getTime();
-      const endTs = new Date(currentYear, 11, 31).getTime();
+      const endTs = new Date().getTime(); // Finaliza exatamente na data de HOJE para expandir o espaço visual
       const totalDuration = endTs - startTs;
 
       let htmlMarkup = '';
 
       const posPrevYear = 0;
       const posCurrYear = ((new Date(currentYear, 0, 1).getTime() - startTs) / totalDuration) * 100;
-      const posNow = ((new Date().getTime() - startTs) / totalDuration) * 100;
+      const posNow = 100; // 'Hoje' encostado no final da linha do tempo
 
       htmlMarkup += `
         <div class="timeline-year-marker" style="left: ${posPrevYear}%;">${previousYear}</div>
@@ -911,8 +911,8 @@
         <div class="timeline-year-marker" style="left: ${posCurrYear}%;">${currentYear}</div>
         <div class="timeline-year-line" style="left: ${posCurrYear}%;"></div>
 
-        <div class="timeline-year-marker" style="left: ${Math.min(posNow, 100)}%; color: #4ade80;">hoje</div>
-        <div class="timeline-year-line" style="left: ${Math.min(posNow, 100)}%; background-color: #4ade80;"></div>
+        <div class="timeline-year-marker" style="left: ${posNow}%; color: #4ade80;">hoje</div>
+        <div class="timeline-year-line" style="left: ${posNow}%; background-color: #4ade80;"></div>
       `;
 
       filteredEvents.forEach((evt, idx) => {
