@@ -367,237 +367,224 @@
   </footer>
 
   <script>
-    // URL da Página 1 (Cards Principais)
-    const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+  const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+  const GOOGLE_SHEET_PAGINA2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=795321596&single=true&output=csv';
 
-    // URL da Página 2 (Conquistas) - COLE O NÚMERO DO SEU GID DA PÁGINA 2 AQUI:
-    const GOOGLE_SHEET_PAGINA2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=795321596&single=true&output=csv';
-    
-    let trilhasData = [];
-    let conquistasData = [];
+  let trilhasData = [];
+  let conquistasData = [];
 
-    function getBadgeColor(nivel) {
-      const n = (nivel || '').toLowerCase().trim();
-      if (n.includes('muito fácil') || n.includes('muito facil')) return '#059669';
-      if (n.includes('fácil') || n.includes('facil')) return '#2d7a3e';
-      if (n.includes('moderado')) return '#d97706';
-      if (n.includes('muito difícil') || n.includes('muito dificil')) return '#7c3aed';
-      if (n.includes('difícil') || n.includes('dificil')) return '#dc2626';
-      return '#1b3320';
-    }
+  function getBadgeColor(nivel) {
+    const n = (nivel || '').toLowerCase().trim();
+    if (n.includes('muito fácil') || n.includes('muito facil')) return '#059669';
+    if (n.includes('fácil') || n.includes('facil')) return '#2d7a3e';
+    if (n.includes('moderado')) return '#d97706';
+    if (n.includes('muito difícil') || n.includes('muito dificil')) return '#7c3aed';
+    if (n.includes('difícil') || n.includes('dificil')) return '#dc2626';
+    return '#1b3320';
+  }
 
-    function parseCSV(text) {
-      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      if (lines.length < 2) return [];
+  function parseCSV(text) {
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length < 2) return [];
 
-      const splitLine = (line) => {
-        const result = [];
-        let current = '';
-        let inQuotes = false;
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          if (char === '"') {
-            inQuotes = !inQuotes;
-          } else if (char === ',' && !inQuotes) {
-            result.push(current.trim().replace(/^"|"$/g, ''));
-            current = '';
-          } else {
-            current += char;
-          }
+    const splitLine = (line) => {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim().replace(/^"|"$/g, ''));
+          current = '';
+        } else {
+          current += char;
         }
-        result.push(current.trim().replace(/^"|"$/g, ''));
-        return result;
-      };
-
-      const headers = splitLine(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, ''));
-
-      return lines.slice(1).map(line => {
-        const values = splitLine(line);
-        const obj = {};
-        headers.forEach((header, index) => {
-          obj[header] = values[index] || '';
-        });
-        return obj;
-      });
-    }
-
-    async function loadData() {
-      const listContainer = document.getElementById('trilhasList');
-      try {
-        // 1. Carrega Página 1 (Cards)
-        const response1 = await fetch(GOOGLE_SHEET_PAGINA1_URL);
-        if (response1.ok) {
-          const csvText1 = await response1.text();
-          const parsed1 = parseCSV(csvText1);
-          trilhasData = parsed1.map(obj => ({
-            nome: obj['nome'] || '',
-            nivel: obj['nivel'] || '',
-            foto: obj['foto'] || '',
-            regiao: obj['regiao'] || '',
-            distancia: obj['distancia'] || '',
-            tempoMedio: obj['tempomedio'] || obj['tempo'] || '',
-            resumo: obj['resumo'] || '',
-            descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || '',
-            data: obj['data'] || ''
-          })).filter(t => t.nome !== '');
-        }
-
-        // 2. Carrega Página 2 (Conquistas)
-        try {
-          const response2 = await fetch(GOOGLE_SHEET_PAGINA2_URL);
-          if (response2.ok) {
-            const csvText2 = await response2.text();
-            const parsed2 = parseCSV(csvText2);
-            conquistasData = parsed2.map(obj => ({
-              nome: obj['nome'] || '',
-              detalhe: obj['detalhe'] || '',
-              adesivo: obj['adesivo'] || ''
-            })).filter(c => c.nome !== '');
-          }
-        } catch (e) {
-          console.warn("Erro ao buscar Página 2 de conquistas:", e);
-        }
-
-        renderSummaryBoard();
-        renderTrilhas();
-      } catch (err) {
-        console.error("Erro ao carregar o CSV:", err);
-        listContainer.innerHTML = '<p style="color: red; text-align: center; width: 100%;">Erro ao carregar as trilhas da planilha.</p>';
       }
-    }
+      result.push(current.trim().replace(/^"|"$/g, ''));
+      return result;
+    };
 
-    // Renderiza o Painel Conquistas tolerando variações de texto na coluna "detalhe"
-    function renderSummaryBoard() {
-      const cumesList = document.getElementById('list-cumes');
-      const travessiaList = document.getElementById('list-travessia');
-      const circularList = document.getElementById('list-circular');
-      const cachoeirasList = document.getElementById('list-cachoeiras');
+    const headers = splitLine(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, ''));
 
-      const categories = {
-        cumes: [],
-        travessia: [],
-        circular: [],
-        cachoeiras: []
-      };
-
-      conquistasData.forEach(item => {
-        const d = (item.detalhe || '').toLowerCase().trim();
-        if (d.includes('cume')) {
-          categories.cumes.push(item);
-        } else if (d.includes('circular')) {
-          categories.circular.push(item);
-        } else if (d.includes('travessia')) {
-          categories.travessia.push(item);
-        } else if (d.includes('cachoeira')) {
-          categories.cachoeiras.push(item);
-        }
+    return lines.slice(1).map(line => {
+      const values = splitLine(line);
+      const obj = {};
+      headers.forEach((header, index) => {
+        obj[header] = values[index] || '';
       });
+      return obj;
+    });
+  }
 
-      const buildListHTML = (items) => {
-        return items.map(t => {
-          const hasSticker = (t.adesivo || '').toLowerCase().trim() === 'sim';
-          return `
-            <li>
-              ${t.nome}
-              ${hasSticker ? '<img src="logo.png" alt="Adesivo" class="sticker-logo" title="Conquistado & Adesivado!">' : ''}
-            </li>
-          `;
-        }).join('');
-      };
-
-      cumesList.innerHTML = buildListHTML(categories.cumes);
-      travessiaList.innerHTML = buildListHTML(categories.travessia);
-      circularList.innerHTML = buildListHTML(categories.circular);
-      cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
-    }
-
+  async function loadData() {
     const listContainer = document.getElementById('trilhasList');
-
-    function renderTrilhas() {
-      if (trilhasData.length === 0) {
-        listContainer.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha encontrada na planilha.</p>';
-        return;
+    try {
+      // 1. Carrega Página 1 (Cards)
+      const response1 = await fetch(GOOGLE_SHEET_PAGINA1_URL);
+      if (response1.ok) {
+        const csvText1 = await response1.text();
+        const parsed1 = parseCSV(csvText1);
+        trilhasData = parsed1.map(obj => ({
+          nome: obj['nome'] || '',
+          nivel: obj['nivel'] || '',
+          foto: obj['foto'] || '',
+          regiao: obj['regiao'] || '',
+          distancia: obj['distancia'] || '',
+          tempoMedio: obj['tempomedio'] || obj['tempo'] || '',
+          resumo: obj['resumo'] || '',
+          descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || '',
+          data: obj['data'] || ''
+        })).filter(t => t.nome !== '');
       }
 
-      listContainer.innerHTML = trilhasData.map((t, index) => {
-        const badgeColor = getBadgeColor(t.nivel);
+      // 2. Carrega Página 2 (Conquistas)
+      try {
+        const response2 = await fetch(GOOGLE_SHEET_PAGINA2_URL);
+        if (response2.ok) {
+          const csvText2 = await response2.text();
+          const parsed2 = parseCSV(csvText2);
+          conquistasData = parsed2.map(obj => ({
+            nome: obj['nome'] || '',
+            detalhe: obj['detalhe'] || '',
+            adesivo: obj['adesivo'] || ''
+          })).filter(c => c.nome !== '');
+        }
+      } catch (e) {
+        console.warn("Erro ao buscar dados da Página 2:", e);
+      }
 
+      renderSummaryBoard();
+      renderTrilhas();
+    } catch (err) {
+      console.error("Erro ao carregar o CSV:", err);
+      listContainer.innerHTML = '<p style="color: red; text-align: center; width: 100%;">Erro ao carregar as trilhas da planilha.</p>';
+    }
+  }
+
+  function renderSummaryBoard() {
+    const cumesList = document.getElementById('list-cumes');
+    const travessiaList = document.getElementById('list-travessia');
+    const circularList = document.getElementById('list-circular');
+    const cachoeirasList = document.getElementById('list-cachoeiras');
+
+    const categories = {
+      cumes: [],
+      travessia: [],
+      circular: [],
+      cachoeiras: []
+    };
+
+    conquistasData.forEach(item => {
+      const d = (item.detalhe || '').toLowerCase().trim();
+      if (d.includes('cume')) categories.cumes.push(item);
+      else if (d.includes('circular')) categories.circular.push(item);
+      else if (d.includes('travessia')) categories.travessia.push(item);
+      else if (d.includes('cachoeira')) categories.cachoeiras.push(item);
+    });
+
+    const buildListHTML = (items) => {
+      return items.map(t => {
+        const hasSticker = (t.adesivo || '').toLowerCase().trim() === 'sim';
         return `
-          <article class="trilha-card" onclick="openModal(${index})">
-            
-            <div class="trilha-img-box">
-              <img src="${t.foto || 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img" onerror="this.src='banner_home.jpg'">
-            </div>
-
-            <div class="trilha-info">
-              <div>
-                <div class="card-header-badge">
-                  <span class="badge-nivel" style="background-color: ${badgeColor};">${t.nivel || 'Moderado'}</span>
-                </div>
-                <h3 class="trilha-titulo">${t.nome}</h3>
-                <p class="trilha-resumo">${t.resumo}</p>
-              </div>
-              
-              <ul class="trilha-meta">
-                <li>📍 <strong>Região:</strong> ${t.regiao}</li>
-                <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
-                <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio}</li>
-                ${t.data ? `<li>📅 <strong>Data:</strong> ${t.data}</li>` : ''}
-              </ul>
-            </div>
-
-          </article>
+          <li>
+            ${t.nome}
+            ${hasSticker ? '<img src="logo.png" alt="Adesivo" class="sticker-logo" title="Conquistado & Adesivado!">' : ''}
+          </li>
         `;
       }).join('');
+    };
+
+    cumesList.innerHTML = buildListHTML(categories.cumes);
+    travessiaList.innerHTML = buildListHTML(categories.travessia);
+    circularList.innerHTML = buildListHTML(categories.circular);
+    cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
+  }
+
+  const listContainer = document.getElementById('trilhasList');
+
+  function renderTrilhas() {
+    if (trilhasData.length === 0) {
+      listContainer.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha encontrada na planilha.</p>';
+      return;
     }
 
-    // Modal
-    const modal = document.getElementById('trilhaModal');
-    const modalClose = document.getElementById('modalClose');
+    listContainer.innerHTML = trilhasData.map((t, index) => {
+      const badgeColor = getBadgeColor(t.nivel);
 
-    function openModal(index) {
-      const trilha = trilhasData[index];
-      if (!trilha) return;
-
-      const badgeColor = getBadgeColor(trilha.nivel);
-
-      document.getElementById('modalImg').src = trilha.foto || 'banner_home.jpg';
-      document.getElementById('modalNivel').textContent = trilha.nivel || 'Moderado';
-      document.getElementById('modalNivel').style.backgroundColor = badgeColor;
-
-      document.getElementById('modalTitulo').textContent = trilha.nome;
-      document.getElementById('modalMeta').innerHTML = `
-        <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
-        <li>📏 <strong>Distância:</strong> ${trilha.distancia}</li>
-        <li>⏱️ <strong>Tempo Médio:</strong> ${trilha.tempoMedio}</li>
-        ${trilha.data ? `<li>📅 <strong>Data:</strong> ${trilha.data}</li>` : ''}
+      return `
+        <article class="trilha-card" onclick="openModal(${index})">
+          <div class="trilha-img-box">
+            <img src="${t.foto || 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img" onerror="this.src='banner_home.jpg'">
+          </div>
+          <div class="trilha-info">
+            <div>
+              <div class="card-header-badge">
+                <span class="badge-nivel" style="background-color: ${badgeColor};">${t.nivel || 'Moderado'}</span>
+              </div>
+              <h3 class="trilha-titulo">${t.nome}</h3>
+              <p class="trilha-resumo">${t.resumo}</p>
+            </div>
+            <ul class="trilha-meta">
+              <li>📍 <strong>Região:</strong> ${t.regiao}</li>
+              <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
+              <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio}</li>
+              ${t.data ? `<li>📅 <strong>Data:</strong> ${t.data}</li>` : ''}
+            </ul>
+          </div>
+        </article>
       `;
-      document.getElementById('modalDescricaoCompleta').textContent = trilha.descricaoCompleta;
+    }).join('');
+  }
 
-      modal.classList.add('active');
-    }
+  // Modal
+  const modal = document.getElementById('trilhaModal');
+  const modalClose = document.getElementById('modalClose');
 
-    modalClose.addEventListener('click', () => modal.classList.remove('active'));
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('active');
-    });
+  function openModal(index) {
+    const trilha = trilhasData[index];
+    if (!trilha) return;
 
-    // Inicialização
-    loadData();
+    const badgeColor = getBadgeColor(trilha.nivel);
 
-    // Menu Mobile
-    const mobileBtn = document.getElementById('mobile-menu-btn');
-    const navLinks = document.getElementById('nav-links');
+    document.getElementById('modalImg').src = trilha.foto || 'banner_home.jpg';
+    document.getElementById('modalNivel').textContent = trilha.nivel || 'Moderado';
+    document.getElementById('modalNivel').style.backgroundColor = badgeColor;
 
-    mobileBtn.addEventListener('click', () => {
-      mobileBtn.classList.toggle('active');
-      navLinks.classList.toggle('active');
-    });
+    document.getElementById('modalTitulo').textContent = trilha.nome;
+    document.getElementById('modalMeta').innerHTML = `
+      <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
+      <li>📏 <strong>Distância:</strong> ${trilha.distancia}</li>
+      <li>⏱️ <strong>Tempo Médio:</strong> ${trilha.tempoMedio}</li>
+      ${trilha.data ? `<li>📅 <strong>Data:</strong> ${trilha.data}</li>` : ''}
+    `;
+    document.getElementById('modalDescricaoCompleta').textContent = trilha.descricaoCompleta;
 
-    function closeMenu() {
-      mobileBtn.classList.remove('active');
-      navLinks.classList.remove('active');
-    }
-  </script>
+    modal.classList.add('active');
+  }
+
+  modalClose.addEventListener('click', () => modal.classList.remove('active'));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('active');
+  });
+
+  // Inicialização
+  loadData();
+
+  // Menu Mobile
+  const mobileBtn = document.getElementById('mobile-menu-btn');
+  const navLinks = document.getElementById('nav-links');
+
+  mobileBtn.addEventListener('click', () => {
+    mobileBtn.classList.toggle('active');
+    navLinks.classList.toggle('active');
+  });
+
+  function closeMenu() {
+    mobileBtn.classList.remove('active');
+    navLinks.classList.remove('active');
+  }
+</script>
 </body>
 </html>
