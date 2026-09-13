@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* Estilos do Carrossel Hero */
+    /* Estilos do Carrossel Hero Dinâmico */
     .hero-carousel {
       position: relative;
       width: 100%;
@@ -118,11 +118,124 @@
       transform: scale(1.25);
     }
 
+    /* Seções Internas da Home */
+    .section {
+      padding: 80px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .section-header h2 {
+      font-size: 2.2rem;
+      color: #1b3320;
+      margin-bottom: 16px;
+      font-weight: 800;
+    }
+
+    .section-desc {
+      max-width: 820px;
+      margin: 0 auto;
+      color: #3d4a3f;
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+
+    .transparency-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background-color: #eaf2eb;
+      border-left: 5px solid #2d7a3e;
+      padding: 24px 28px;
+      border-radius: 8px;
+      max-width: 850px;
+      margin: 0 auto 50px auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .transparency-icon {
+      font-size: 2.2rem;
+    }
+
+    .transparency-card h3 {
+      color: #1b3320;
+      font-size: 1.3rem;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .transparency-card p {
+      color: #3d4a3f;
+      font-size: 0.98rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .section-subheader {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .section-subheader h3 {
+      font-size: 1.6rem;
+      color: #1b3320;
+      font-weight: 800;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: #ffffff;
+      border: 1px solid #e1e8e2;
+      border-radius: 10px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .feature-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+    }
+
+    .feature-card h4 {
+      color: #1b3320;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: #556357;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    @media (max-width: 992px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
     @media (max-width: 768px) {
       .hero-content h1 { font-size: 2rem; }
       .carousel-btn { width: 38px; height: 38px; font-size: 1.1rem; }
       .carousel-btn.prev { left: 10px; }
       .carousel-btn.next { right: 10px; }
+      .transparency-card { flex-direction: column; text-align: center; }
+      .features-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -152,7 +265,7 @@
     </div>
   </header>
 
-  <!-- Carrossel Hero (Conectado à Página3 da Planilha) -->
+  <!-- Carrossel Hero (Página3 do Google Sheets) -->
   <section class="hero-carousel" id="home">
     <div id="slidesContainer">
       <div style="padding-top: 200px; text-align: center; color: #ffffff; font-size: 1.1rem;">Carregando fotos...</div>
@@ -164,13 +277,59 @@
     <div class="dots-container" id="dotsContainer"></div>
   </section>
 
-  <!-- Conteúdo de Exemplo da Página Home -->
-  <main class="section" id="sobre" style="padding: 60px 0; text-align: center;">
+  <!-- Seção Sobre o Grupo & Recursos -->
+  <main class="section" id="sobre">
     <div class="container">
-      <h2 style="font-size: 2.2rem; color: #1b3320; margin-bottom: 16px;">Sobre o Grupo</h2>
-      <p style="max-width: 800px; margin: 0 auto; color: #556357; line-height: 1.7; font-size: 1.05rem;">
-        O Capivaras Trek é um grupo dedicado a explorar cumes, travessias e cachoeiras, conectando pessoas à natureza de forma autêntica e segura.
-      </p>
+      
+      <!-- Cabeçalho Principal -->
+      <div class="section-header">
+        <h2>Sobre o Grupo</h2>
+        <p class="section-desc">
+          Somos um pequeno grupo de amigos e apaixonados pela natureza reunidos por um único propósito: explorar as montanhas e trilhas do Paraná (e ir além!), sempre em boa companhia, com respeito ao meio ambiente e verdadeiro espírito de aventura.
+        </p>
+      </div>
+
+      <!-- Banner Destaque de Transparência -->
+      <div class="transparency-card">
+        <div class="transparency-icon">🤝</div>
+        <div>
+          <h3>Transparência & Parceria</h3>
+          <p>Não somos guias profissionais nem agência de turismo. O grupo existe puramente como um espaço colaborativo para trocarmos experiências, nos mantermos atualizados sobre as trilhas e organizarmos nossas próximas saídas juntos.</p>
+        </div>
+      </div>
+
+      <!-- Subcabeçalho da Grade -->
+      <div class="section-subheader">
+        <h3>O Que Você Encontra por Aqui</h3>
+      </div>
+
+      <!-- Grade de Recursos -->
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🏔️</div>
+          <h4>Registro de Conquistas</h4>
+          <p>Montanhas que já subimos e os cumes onde colamos nosso adesivo oficial.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⛺</div>
+          <h4>Acampamentos & Aventuras</h4>
+          <p>Memórias e galeria de fotos de cada acampamento e expedição.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📍</div>
+          <h4>Tracklogs & Dicas</h4>
+          <p>Links de trajetos (GPX/Wikiloc), informações úteis, equipamentos recomendados e dicas de segurança.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h4>Calendário de Trilhas</h4>
+          <p>Nossas próximas saídas planejadas.</p>
+        </div>
+      </div>
+
     </div>
   </main>
 
@@ -189,13 +348,11 @@
   </footer>
 
   <script>
-    // Link CSV da Página3 da planilha
     const GOOGLE_SHEET_PAGINA3_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=9544756&single=true&output=csv';
 
     let currentSlideIndex = 0;
     let carouselTimer = null;
 
-    // Parser manual de CSV
     function parseCSV(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       if (lines.length < 2) return [];
@@ -234,7 +391,6 @@
       });
     }
 
-    // Carregar imagens da planilha
     async function loadHomeCarousel() {
       const slidesContainer = document.getElementById('slidesContainer');
       try {
@@ -255,7 +411,6 @@
       }
     }
 
-    // Renderizar HTML dos slides
     function renderCarousel(slides) {
       const slidesContainer = document.getElementById('slidesContainer');
       const dotsContainer = document.getElementById('dotsContainer');
@@ -277,7 +432,6 @@
       resetTimer();
     }
 
-    // Navegação
     function showSlide(index) {
       const slides = document.querySelectorAll('.slide');
       const dots = document.querySelectorAll('.dot');
@@ -314,10 +468,8 @@
       }, 5000);
     }
 
-    // Inicialização
     loadHomeCarousel();
 
-    // Menu Mobile
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
