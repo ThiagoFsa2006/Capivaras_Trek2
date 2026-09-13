@@ -101,7 +101,7 @@
       display: flex;
       flex-direction: row;
       align-items: stretch;
-      max-height: 160px; /* Limita a altura máxima do card em desktop */
+      max-height: 160px;
     }
 
     .trilha-card:hover {
@@ -110,7 +110,6 @@
       border-color: #2d7a3e;
     }
 
-    /* Imagem Reduzida na Altura */
     .trilha-img-box {
       width: 240px;
       min-width: 240px;
@@ -127,7 +126,6 @@
       display: block;
     }
 
-    /* Informações do Card com Menos Espaço Sobrando */
     .trilha-info {
       padding: 10px 18px;
       display: flex;
@@ -151,19 +149,6 @@
       text-transform: uppercase;
       color: #ffffff;
       letter-spacing: 0.5px;
-    }
-
-    .sticker-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(27, 51, 32, 0.08);
-      border: 1px solid #1b3320;
-      color: #1b3320;
-      padding: 1px 8px;
-      border-radius: 12px;
-      font-size: 0.72rem;
-      font-weight: 700;
     }
 
     .trilha-titulo {
@@ -191,7 +176,7 @@
       color: #3d4a3f;
       display: flex;
       flex-wrap: wrap;
-      gap: 4px 16px; /* Exibe os metadados mais enxutos */
+      gap: 4px 16px;
     }
 
     .trilha-meta li {
@@ -357,9 +342,6 @@
       
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
         <span id="modalNivel" class="badge-nivel"></span>
-        <span id="modalAdesivo" class="sticker-tag" style="display: none;">
-          <img src="logo.png" alt="Adesivo Logo" class="sticker-logo"> Adesivado
-        </span>
       </div>
 
       <h2 id="modalTitulo" style="color: #1b3320; font-size: 1.8rem; margin: 8px 0;"></h2>
@@ -376,7 +358,7 @@
       <div class="footer-brand">
         <img src="logo.png" alt="Capivaras Trek Logo" class="footer-logo">
         <h3>Capivaras Trek</h3>
-        <p>Vivendo a montanha de forma autêntica e segura.</B></p>
+        <p>Vivendo a montanha de forma autêntica e segura.</p>
       </div>
       <div class="footer-copy">
         <p>&copy; 2026 Capivaras Trek. Todos os direitos reservados.</p>
@@ -385,9 +367,15 @@
   </footer>
 
   <script>
-    const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+    // URL da Página 1 (Cards Principais - sem colunas detalhe/adesivo)
+    const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+
+    // URL da Página 2 (Tabela Conquistas - colunas nome, detalhe, adesivo)
+    // Substitua SEU_GID_PAGINA_2 pelo gid obtido da aba Página2 no Google Sheets
+    const GOOGLE_SHEET_PAGINA2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=SEU_GID_PAGINA_2&single=true&output=csv';
 
     let trilhasData = [];
+    let conquistasData = [];
 
     function getBadgeColor(nivel) {
       const n = (nivel || '').toLowerCase().trim();
@@ -430,30 +418,46 @@
         headers.forEach((header, index) => {
           obj[header] = values[index] || '';
         });
-        return {
-          nome: obj['nome'] || '',
-          nivel: obj['nivel'] || '',
-          foto: obj['foto'] || '',
-          regiao: obj['regiao'] || '',
-          distancia: obj['distancia'] || '',
-          tempoMedio: obj['tempomedio'] || obj['tempo'] || '',
-          resumo: obj['resumo'] || '',
-          descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || '',
-          detalhe: obj['detalhe'] || '',
-          adesivo: obj['adesivo'] || '',
-          data: obj['data'] || ''
-        };
+        return obj;
       });
     }
 
-    async function loadTrilhas() {
+    async function loadData() {
       const listContainer = document.getElementById('trilhasList');
       try {
-        const response = await fetch(GOOGLE_SHEET_CSV_URL);
-        if (!response.ok) throw new Error('Falha ao buscar dados');
-        
-        const csvText = await response.text();
-        trilhasData = parseCSV(csvText).filter(t => t.nome !== '');
+        // Carrega Página 1 (Cards)
+        const response1 = await fetch(GOOGLE_SHEET_PAGINA1_URL);
+        if (response1.ok) {
+          const csvText1 = await response1.text();
+          const parsed1 = parseCSV(csvText1);
+          trilhasData = parsed1.map(obj => ({
+            nome: obj['nome'] || '',
+            nivel: obj['nivel'] || '',
+            foto: obj['foto'] || '',
+            regiao: obj['regiao'] || '',
+            distancia: obj['distancia'] || '',
+            tempoMedio: obj['tempomedio'] || obj['tempo'] || '',
+            resumo: obj['resumo'] || '',
+            descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || '',
+            data: obj['data'] || ''
+          })).filter(t => t.nome !== '');
+        }
+
+        // Carrega Página 2 (Conquistas)
+        try {
+          const response2 = await fetch(GOOGLE_SHEET_PAGINA2_URL);
+          if (response2.ok) {
+            const csvText2 = await response2.text();
+            const parsed2 = parseCSV(csvText2);
+            conquistasData = parsed2.map(obj => ({
+              nome: obj['nome'] || '',
+              detalhe: obj['detalhe'] || '',
+              adesivo: obj['adesivo'] || ''
+            })).filter(c => c.nome !== '');
+          }
+        } catch (e) {
+          console.warn("Página 2 indisponível ou gid não configurado.");
+        }
 
         renderSummaryBoard();
         renderTrilhas();
@@ -463,6 +467,7 @@
       }
     }
 
+    // Preenche o painel Conquistas usando a Página 2
     function renderSummaryBoard() {
       const cumesList = document.getElementById('list-cumes');
       const travessiaList = document.getElementById('list-travessia');
@@ -476,7 +481,7 @@
         cachoeiras: []
       };
 
-      trilhasData.forEach(item => {
+      conquistasData.forEach(item => {
         const d = (item.detalhe || '').toLowerCase().trim();
         if (d.includes('cumes') || d.includes('cume')) categories.cumes.push(item);
         else if (d.includes('circular')) categories.circular.push(item);
@@ -504,6 +509,7 @@
 
     const listContainer = document.getElementById('trilhasList');
 
+    // Renderiza a lista de cards sem a tag "Adesivado"
     function renderTrilhas() {
       if (trilhasData.length === 0) {
         listContainer.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha encontrada na planilha.</p>';
@@ -512,7 +518,6 @@
 
       listContainer.innerHTML = trilhasData.map((t, index) => {
         const badgeColor = getBadgeColor(t.nivel);
-        const hasSticker = (t.adesivo || '').toLowerCase().trim() === 'sim';
 
         return `
           <article class="trilha-card" onclick="openModal(${index})">
@@ -525,7 +530,6 @@
               <div>
                 <div class="card-header-badge">
                   <span class="badge-nivel" style="background-color: ${badgeColor};">${t.nivel || 'Moderado'}</span>
-                  ${hasSticker ? `<span class="sticker-tag"><img src="logo.png" alt="Adesivo" class="sticker-logo"> Adesivado</span>` : ''}
                 </div>
                 <h3 class="trilha-titulo">${t.nome}</h3>
                 <p class="trilha-resumo">${t.resumo}</p>
@@ -544,7 +548,7 @@
       }).join('');
     }
 
-    // Modal
+    // Modal Pop-up
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
@@ -553,18 +557,10 @@
       if (!trilha) return;
 
       const badgeColor = getBadgeColor(trilha.nivel);
-      const hasSticker = (trilha.adesivo || '').toLowerCase().trim() === 'sim';
 
       document.getElementById('modalImg').src = trilha.foto || 'banner_home.jpg';
       document.getElementById('modalNivel').textContent = trilha.nivel || 'Moderado';
       document.getElementById('modalNivel').style.backgroundColor = badgeColor;
-
-      const modalAdesivo = document.getElementById('modalAdesivo');
-      if (hasSticker) {
-        modalAdesivo.style.display = 'inline-flex';
-      } else {
-        modalAdesivo.style.display = 'none';
-      }
 
       document.getElementById('modalTitulo').textContent = trilha.nome;
       document.getElementById('modalMeta').innerHTML = `
@@ -584,7 +580,7 @@
     });
 
     // Inicialização
-    loadTrilhas();
+    loadData();
 
     // Menu Mobile
     const mobileBtn = document.getElementById('mobile-menu-btn');
