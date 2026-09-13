@@ -10,11 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* Painel Conquistas Superior Retrátil */
+    /* Painel Conquistas Superior Retrátil com Legenda */
     .summary-board {
       background-color: #1b3320;
       color: #ffffff;
-      padding: 16px 20px 20px 20px;
+      padding: 16px 20px 16px 20px;
       border-radius: 8px;
       margin-bottom: 25px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
@@ -64,7 +64,8 @@
       transition: transform 0.3s ease;
     }
 
-    .summary-board.collapsed .summary-grid {
+    .summary-board.collapsed .summary-grid,
+    .summary-board.collapsed .summary-legend {
       display: none;
     }
 
@@ -116,7 +117,7 @@
       gap: 6px;
     }
 
-    /* Variações do Adesivo/Selo */
+    /* Imagem da Etiqueta / Transparência */
     .sticker-logo {
       width: 16px;
       height: 16px;
@@ -125,8 +126,27 @@
     }
 
     .sticker-logo.translucent {
-      opacity: 0.4; /* 30% de transparência pedida */
+      opacity: 0.3; /* 30% de transparência apenas na etiqueta */
       filter: grayscale(40%);
+    }
+
+    /* Legenda do Quadro de Conquistas */
+    .summary-legend {
+      margin-top: 18px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      font-size: 0.8rem;
+      color: #d0e0d2;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     /* Controles de Filtro e Ordenação */
@@ -220,6 +240,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center center;
       display: block;
     }
 
@@ -374,13 +395,14 @@
         <span></span><span></span><span></span>
       </button>
 
+      <!-- Links de Navegação -->
       <nav class="nav-links" id="nav-links">
         <a href="index.html#home" onclick="closeMenu()">Home</a>
         <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
-        <a href="trilhas.html" class="active" onclick="closeMenu()">Trilhas</a>
+        <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
         <a href="galeria.html" onclick="closeMenu()">Galeria</a>
         <a href="tracklogs.html" onclick="closeMenu()">Tracklogs</a>
-        <a href="calendario.html" onclick="closeMenu()">Calendário</a>
+        <a href="calendario.html" class="active" onclick="closeMenu()">Calendário</a>
         <a href="contato.html" onclick="closeMenu()">Contato</a>
       </nav>
     </div>
@@ -401,7 +423,7 @@
   <main class="section" style="padding-top: 30px;">
     <div class="container">
       
-      <!-- Painel Conquistas Verde (Retrátil) -->
+      <!-- Painel Conquistas Verde (Retrátil com Legenda) -->
       <section class="summary-board" id="summaryBoard">
         <div class="summary-board-header" onclick="toggleSummary()">
           <h2>CONQUISTAS</h2>
@@ -410,6 +432,7 @@
             <span class="toggle-icon" id="toggleIcon">▲</span>
           </button>
         </div>
+
         <div class="summary-grid">
           <div class="summary-column">
             <h3>Cumes</h3>
@@ -431,6 +454,18 @@
             <ul class="summary-list" id="list-cachoeiras"></ul>
           </div>
         </div>
+
+        <!-- Legenda dos Adesivos -->
+        <div class="summary-legend">
+          <div class="legend-item">
+            <img src="logo.png" alt="Adesivado" class="sticker-logo">
+            <span>Adesivado</span>
+          </div>
+          <div class="legend-item">
+            <img src="logo.png" alt="Não tem caixinha" class="sticker-logo translucent">
+            <span>Não tem caixinha</span>
+          </div>
+        </div>
       </section>
 
       <!-- Barra de Filtros e Ordenação -->
@@ -450,7 +485,7 @@
         </div>
       </div>
 
-      <!-- Lista Empilhada de Cards -->
+      <!-- Lista Empilhada de Cards Compactos -->
       <div class="trilhas-list-container" id="trilhasList">
         <p style="padding: 20px; text-align: center; width: 100%;">Carregando dados da planilha...</p>
       </div>
@@ -497,7 +532,7 @@
     let trilhasData = [];
     let conquistasData = [];
 
-    // Função de Troca (Expandir / Recolher)
+    // Expandir / Recolher Painel
     function toggleSummary() {
       const board = document.getElementById('summaryBoard');
       const text = document.getElementById('toggleText');
@@ -558,7 +593,6 @@
       });
     }
 
-    // Converter string de data (ex: "12/09/2026") em Timestamp para ordenação
     function parseDateToTimestamp(dateStr) {
       if (!dateStr) return 0;
       const parts = dateStr.trim().split('/');
@@ -631,19 +665,20 @@
         else if (d.includes('travessia')) categories.travessia.push(item);
         else if (d.includes('cachoeira')) categories.cachoeiras.push(item);
       });
+
       const buildListHTML = (items) => {
         return items.map(t => {
           const stickerVal = (t.adesivo || '').toLowerCase().trim();
           const isSim = stickerVal === 'sim';
           const isNa = stickerVal === 'na';
-      
+
           let stickerMarkup = '';
           if (isSim) {
-            stickerMarkup = '<img src="logo.png" alt="Adesivo" class="sticker-logo" title="Conquistado & Adesivado!">';
+            stickerMarkup = '<img src="logo.png" alt="Adesivo" class="sticker-logo" title="Adesivado">';
           } else if (isNa) {
-            stickerMarkup = '<img src="logo.png" alt="Adesivo" class="sticker-logo translucent" title="Opção Na (Etiqueta com 30% de transparência)">';
+            stickerMarkup = '<img src="logo.png" alt="Adesivo" class="sticker-logo translucent" title="Não tem caixinha">';
           }
-      
+
           return `
             <li>
               ${t.nome}
@@ -659,7 +694,6 @@
       cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
     }
 
-    // Filtragem e Ordenação dos Cards Principais
     function filterAndRenderTrilhas() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
       const sortValue = document.getElementById('sortSelect').value;
@@ -691,9 +725,11 @@
 
         return `
           <article class="trilha-card" onclick="openModal(${originalIndex})">
+            
             <div class="trilha-img-box">
               <img src="${t.foto || 'banner_home.jpg'}" alt="${t.nome}" class="trilha-img" onerror="this.src='banner_home.jpg'">
             </div>
+
             <div class="trilha-info">
               <div>
                 <div class="card-header-badge">
@@ -702,6 +738,7 @@
                 <h3 class="trilha-titulo">${t.nome}</h3>
                 <p class="trilha-resumo">${t.resumo}</p>
               </div>
+              
               <ul class="trilha-meta">
                 <li>📍 <strong>Região:</strong> ${t.regiao}</li>
                 <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
@@ -709,12 +746,13 @@
                 ${t.data ? `<li>📅 <strong>Data:</strong> ${t.data}</li>` : ''}
               </ul>
             </div>
+
           </article>
         `;
       }).join('');
     }
 
-    // Modal Pop-up
+    // Modal
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
