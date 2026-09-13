@@ -156,34 +156,28 @@
       gap: 6px;
     }
 
-    /* Estilos Corrigidos da Linha do Tempo (Espaçada e Legível) */
+    /* LINHA DO TEMPO REFORMULADA (SEM SCROLL LATERAL / TUDO VISÍVEL E ALTERNADO) */
     .timeline-scroll-wrapper {
-      overflow-x: auto;
-      padding: 60px 30px 140px 30px;
-      margin-top: 10px;
-    }
-
-    .timeline-scroll-wrapper::-webkit-scrollbar {
-      height: 6px;
-    }
-    .timeline-scroll-wrapper::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 3px;
+      width: 100%;
+      height: 320px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 40px;
+      box-sizing: border-box;
     }
 
     .timeline-track {
       position: relative;
-      display: flex;
-      align-items: center;
-      min-width: max-content;
+      width: 100%;
       height: 2px;
       background-color: rgba(255, 255, 255, 0.4);
-      margin: 0 auto;
     }
 
     .timeline-year-marker {
       position: absolute;
-      top: -42px;
+      top: -38px;
       transform: translateX(-50%);
       font-size: 0.9rem;
       font-weight: 800;
@@ -193,9 +187,9 @@
 
     .timeline-year-line {
       position: absolute;
-      top: -20px;
+      top: -16px;
       width: 2px;
-      height: 40px;
+      height: 34px;
       background-color: #a3c9a8;
       transform: translateX(-50%);
     }
@@ -222,30 +216,61 @@
       transform: scaleY(1.4);
     }
 
-    .timeline-date-top {
-      position: absolute;
-      bottom: 26px;
-      font-size: 0.8rem;
+    /* Nó Superior (Data em Cima / Nome em Cima) */
+    .timeline-node.top-node {
+      top: -160px;
+      height: 160px;
+      justify-content: flex-end;
+    }
+
+    .timeline-node.top-node .timeline-date {
+      margin-bottom: 6px;
+      font-size: 0.82rem;
       font-weight: 800;
       color: #ffffff;
       white-space: nowrap;
     }
 
-    .timeline-name-bottom {
-      position: absolute;
-      top: 26px;
+    .timeline-node.top-node .timeline-name {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
       font-size: 0.82rem;
       font-weight: 600;
       color: #d0e0d2;
       white-space: nowrap;
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
-      text-align: right;
-      max-height: 160px;
+      margin-bottom: 8px;
+      max-height: 110px;
       transition: color 0.2s;
     }
 
-    .timeline-node:hover .timeline-name-bottom {
+    /* Nó Inferior (Nome em Baixo / Data em Baixo) */
+    .timeline-node.bottom-node {
+      top: 0px;
+      height: 160px;
+      justify-content: flex-start;
+    }
+
+    .timeline-node.bottom-node .timeline-name {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #d0e0d2;
+      white-space: nowrap;
+      margin-top: 8px;
+      max-height: 110px;
+      transition: color 0.2s;
+    }
+
+    .timeline-node.bottom-node .timeline-date {
+      margin-top: 6px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .timeline-node:hover .timeline-name {
       color: #ffffff;
     }
 
@@ -598,7 +623,7 @@
             </button>
           </div>
 
-          <!-- Trilho Horizontal da Linha do Tempo -->
+          <!-- Área Ajustada de Visualização Total -->
           <div class="timeline-scroll-wrapper">
             <div class="timeline-track" id="timelineTrack">
               <p style="color: #d0e0d2; text-align: center; width: 100%;">Carregando linha do tempo...</p>
@@ -836,7 +861,7 @@
       cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
     }
 
-    // Renderiza Seção 2: LINHA DO TEMPO (Ano Atual e Anterior com Espaçamento Ajustado)
+    // Renderiza Seção 2: LINHA DO TEMPO (Ziguezague 100% visível na tela)
     function renderTimeline() {
       const track = document.getElementById('timelineTrack');
       if (!trilhasData || trilhasData.length === 0) {
@@ -872,38 +897,47 @@
       const startTs = new Date(previousYear, 0, 1).getTime();
       const endTs = new Date(currentYear, 11, 31).getTime();
       const totalDuration = endTs - startTs;
-      
-      // Largura expandida para 1800px para despoluir a visualização das datas
-      const totalWidthPx = 1800;
-
-      track.style.width = `${totalWidthPx}px`;
 
       let htmlMarkup = '';
 
       const posPrevYear = 0;
-      const posCurrYear = ((new Date(currentYear, 0, 1).getTime() - startTs) / totalDuration) * totalWidthPx;
-      const posNow = ((new Date().getTime() - startTs) / totalDuration) * totalWidthPx;
+      const posCurrYear = ((new Date(currentYear, 0, 1).getTime() - startTs) / totalDuration) * 100;
+      const posNow = ((new Date().getTime() - startTs) / totalDuration) * 100;
 
       htmlMarkup += `
-        <div class="timeline-year-marker" style="left: ${posPrevYear}px;">${previousYear}</div>
-        <div class="timeline-year-line" style="left: ${posPrevYear}px;"></div>
+        <div class="timeline-year-marker" style="left: ${posPrevYear}%;">${previousYear}</div>
+        <div class="timeline-year-line" style="left: ${posPrevYear}%;"></div>
 
-        <div class="timeline-year-marker" style="left: ${posCurrYear}px;">${currentYear}</div>
-        <div class="timeline-year-line" style="left: ${posCurrYear}px;"></div>
+        <div class="timeline-year-marker" style="left: ${posCurrYear}%;">${currentYear}</div>
+        <div class="timeline-year-line" style="left: ${posCurrYear}%;"></div>
 
-        <div class="timeline-year-marker" style="left: ${Math.min(posNow, totalWidthPx)}px; color: #4ade80;">hoje</div>
-        <div class="timeline-year-line" style="left: ${Math.min(posNow, totalWidthPx)}px; background-color: #4ade80;"></div>
+        <div class="timeline-year-marker" style="left: ${Math.min(posNow, 100)}%; color: #4ade80;">hoje</div>
+        <div class="timeline-year-line" style="left: ${Math.min(posNow, 100)}%; background-color: #4ade80;"></div>
       `;
 
-      filteredEvents.forEach(evt => {
-        const leftPercent = ((evt.timestamp - startTs) / totalDuration) * totalWidthPx;
-        htmlMarkup += `
-          <div class="timeline-node" style="left: ${leftPercent}px;" onclick="openModal(${evt.originalIndex})" title="${evt.nome} (${evt.data})">
-            <span class="timeline-date-top">${evt.dayMonth}</span>
-            <div class="timeline-tick"></div>
-            <span class="timeline-name-bottom">${evt.nome}</span>
-          </div>
-        `;
+      filteredEvents.forEach((evt, idx) => {
+        const leftPercent = ((evt.timestamp - startTs) / totalDuration) * 100;
+        const isEven = idx % 2 === 0;
+
+        if (isEven) {
+          // Exibe acima da linha
+          htmlMarkup += `
+            <div class="timeline-node top-node" style="left: ${leftPercent}%;" onclick="openModal(${evt.originalIndex})" title="${evt.nome} (${evt.data})">
+              <span class="timeline-date">${evt.dayMonth}</span>
+              <span class="timeline-name">${evt.nome}</span>
+              <div class="timeline-tick"></div>
+            </div>
+          `;
+        } else {
+          // Exibe abaixo da linha
+          htmlMarkup += `
+            <div class="timeline-node bottom-node" style="left: ${leftPercent}%;" onclick="openModal(${evt.originalIndex})" title="${evt.nome} (${evt.data})">
+              <div class="timeline-tick"></div>
+              <span class="timeline-name">${evt.nome}</span>
+              <span class="timeline-date">${evt.dayMonth}</span>
+            </div>
+          `;
+        }
       });
 
       track.innerHTML = htmlMarkup;
