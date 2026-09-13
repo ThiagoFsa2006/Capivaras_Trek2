@@ -31,10 +31,15 @@
       color: inherit;
     }
 
-    .galeria-card:hover {
+    .galeria-card.has-link:hover {
       transform: translateY(-4px);
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
       border-color: #2d7a3e;
+      cursor: pointer;
+    }
+
+    .galeria-card.disabled {
+      cursor: default;
     }
 
     .galeria-img-box {
@@ -53,7 +58,7 @@
       transition: transform 0.3s ease;
     }
 
-    .galeria-card:hover .galeria-img {
+    .galeria-card.has-link:hover .galeria-img {
       transform: scale(1.05);
     }
 
@@ -131,10 +136,16 @@
       gap: 8px;
     }
 
-    .galeria-card:hover .btn-abrir-album {
+    .galeria-card.has-link:hover .btn-abrir-album {
       background-color: #2d7a3e;
       color: #ffffff;
       border-color: #2d7a3e;
+    }
+
+    .btn-abrir-album.disabled-btn {
+      background-color: #f0f2f0;
+      color: #8c998e;
+      border-color: #d5ded7;
     }
 
     /* Responsividade */
@@ -182,7 +193,7 @@
     <div class="container">
       <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Galeria de Aventuras</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
-        Confira nossos registros fotográficos completos de cada expedição. Clique no álbum para abrir a pasta oficial no Google Fotos.
+        Confira alguns registros fotográficos das paisagens por onde passamos em cada trilha.
       </p>
     </div>
   </section>
@@ -260,13 +271,13 @@
         const csvText = await response.text();
         const parsedData = parseCSV(csvText);
 
-        // Mapeia e filtra apenas os itens que possuem link no Google Fotos
+        // Mapeia todas as trilhas da Página 1
         const albuns = parsedData.map(obj => ({
           nome: obj['nome'] || '',
           foto: obj['foto'] || '',
           data: obj['data'] || '',
           linkGoogleFotos: obj['linkgooglefotos'] || obj['googlefotos'] || obj['linkfotos'] || ''
-        })).filter(item => item.nome !== '' && item.linkGoogleFotos !== '');
+        })).filter(item => item.nome !== '');
 
         renderGaleria(albuns);
       } catch (err) {
@@ -279,34 +290,61 @@
       const gridContainer = document.getElementById('galeriaGrid');
 
       if (albuns.length === 0) {
-        gridContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #556357; grid-column: 1 / -1;">Nenhum álbum de fotos cadastrado no momento.</p>';
+        gridContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #556357; grid-column: 1 / -1;">Nenhuma trilha cadastrada no momento.</p>';
         return;
       }
 
       gridContainer.innerHTML = albuns.map(item => {
+        const hasLink = item.linkGoogleFotos && item.linkGoogleFotos.trim() !== '';
+
         const imageMarkup = item.foto 
           ? `<img src="${item.foto}" alt="${item.nome}" class="galeria-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\\'no-image-placeholder\\'>No Image</div>';">`
           : `<div class="no-image-placeholder">No Image</div>`;
 
-        return `
-          <a href="${item.linkGoogleFotos}" target="_blank" rel="noopener noreferrer" class="galeria-card">
-            <div class="galeria-img-box">
-              ${imageMarkup}
-              <span class="badge-google-fotos">📸 Google Fotos</span>
-            </div>
-            
-            <div class="galeria-info">
-              <div>
-                <h3 class="galeria-titulo">${item.nome}</h3>
-                ${item.data ? `<div class="galeria-data">📅 <span>${item.data}</span></div>` : ''}
+        const badgeMarkup = hasLink 
+          ? `<span class="badge-google-fotos">📸 Google Fotos</span>` 
+          : '';
+
+        const buttonMarkup = hasLink 
+          ? `<div class="btn-abrir-album"><span>Ver Fotos da Trilha</span> ↗</div>` 
+          : `<div class="btn-abrir-album disabled-btn"><span>Fotos em breve ⏳</span></div>`;
+
+        if (hasLink) {
+          return `
+            <a href="${item.linkGoogleFotos}" target="_blank" rel="noopener noreferrer" class="galeria-card has-link">
+              <div class="galeria-img-box">
+                ${imageMarkup}
+                ${badgeMarkup}
               </div>
               
-              <div class="btn-abrir-album">
-                <span>Ver Fotos da Trilha</span> ↗
+              <div class="galeria-info">
+                <div>
+                  <h3 class="galeria-titulo">${item.nome}</h3>
+                  ${item.data ? `<div class="galeria-data">📅 <span>${item.data}</span></div>` : ''}
+                </div>
+                
+                ${buttonMarkup}
+              </div>
+            </a>
+          `;
+        } else {
+          return `
+            <div class="galeria-card disabled">
+              <div class="galeria-img-box">
+                ${imageMarkup}
+              </div>
+              
+              <div class="galeria-info">
+                <div>
+                  <h3 class="galeria-titulo">${item.nome}</h3>
+                  ${item.data ? `<div class="galeria-data">📅 <span>${item.data}</span></div>` : ''}
+                </div>
+                
+                ${buttonMarkup}
               </div>
             </div>
-          </a>
-        `;
+          `;
+        }
       }).join('');
     }
 
