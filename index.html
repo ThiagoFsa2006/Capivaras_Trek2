@@ -18,7 +18,7 @@
       margin-bottom: 25px;
     }
 
-    /* Painel de Estilo Base para Conquistas e Linha do Tempo */
+    /* Painel Base (Verde) para Conquistas e Linha do Tempo */
     .summary-board {
       background-color: #1b3320;
       color: #ffffff;
@@ -156,10 +156,10 @@
       gap: 6px;
     }
 
-    /* Estilos da Linha do Tempo */
+    /* Estilos Corrigidos da Linha do Tempo (Espaçada e Legível) */
     .timeline-scroll-wrapper {
       overflow-x: auto;
-      padding: 45px 20px 70px 20px;
+      padding: 60px 30px 140px 30px;
       margin-top: 10px;
     }
 
@@ -183,9 +183,9 @@
 
     .timeline-year-marker {
       position: absolute;
-      top: -32px;
+      top: -42px;
       transform: translateX(-50%);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 800;
       color: #a3c9a8;
       letter-spacing: 0.5px;
@@ -193,9 +193,9 @@
 
     .timeline-year-line {
       position: absolute;
-      top: -12px;
+      top: -20px;
       width: 2px;
-      height: 26px;
+      height: 40px;
       background-color: #a3c9a8;
       transform: translateX(-50%);
     }
@@ -211,7 +211,7 @@
 
     .timeline-tick {
       width: 3px;
-      height: 16px;
+      height: 18px;
       background-color: #ffffff;
       border-radius: 2px;
       transition: transform 0.2s, background-color 0.2s;
@@ -224,8 +224,8 @@
 
     .timeline-date-top {
       position: absolute;
-      bottom: 22px;
-      font-size: 0.82rem;
+      bottom: 26px;
+      font-size: 0.8rem;
       font-weight: 800;
       color: #ffffff;
       white-space: nowrap;
@@ -233,14 +233,15 @@
 
     .timeline-name-bottom {
       position: absolute;
-      top: 22px;
+      top: 26px;
       font-size: 0.82rem;
       font-weight: 600;
       color: #d0e0d2;
       white-space: nowrap;
       writing-mode: vertical-rl;
       transform: rotate(180deg);
-      max-height: 140px;
+      text-align: right;
+      max-height: 160px;
       transition: color 0.2s;
     }
 
@@ -248,7 +249,7 @@
       color: #ffffff;
     }
 
-    /* Controles de Filtro e Cards */
+    /* Controles de Filtro e Ordenação */
     .filter-bar {
       display: flex;
       justify-content: space-between;
@@ -297,6 +298,7 @@
       outline: none;
     }
 
+    /* Cards Empilhados */
     .trilhas-list-container {
       display: flex;
       flex-direction: column;
@@ -541,7 +543,7 @@
       <!-- Container das Seções Expandíveis (Conquistas + Linha do Tempo) -->
       <div class="expandable-sections-container">
 
-        <!-- 1. Painel Conquistas Verde (Retrátil com Legenda) -->
+        <!-- 1. Painel Conquistas (Retrátil) -->
         <section class="summary-board" id="summaryBoard">
           <div class="summary-board-header" onclick="toggleBoard('summaryBoard', 'toggleTextConquistas')">
             <h2>CONQUISTAS</h2>
@@ -670,7 +672,7 @@
     let trilhasData = [];
     let conquistasData = [];
 
-    // Função Genérica para Expandir/Recolher os Painéis
+    // Alternar Painéis Retráteis
     function toggleBoard(boardId, textId) {
       const board = document.getElementById(boardId);
       const text = document.getElementById(textId);
@@ -782,7 +784,7 @@
       }
     }
 
-    // Renderiza Seção 1: CONQUISTAS
+    // Renderiza Seção 1: CONQUISTAS (Ordenado A-Z)
     function renderSummaryBoard() {
       const cumesList = document.getElementById('list-cumes');
       const travessiaList = document.getElementById('list-travessia');
@@ -834,7 +836,7 @@
       cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
     }
 
-    // Renderiza Seção 2: LINHA DO TEMPO (Ano Atual e Anterior)
+    // Renderiza Seção 2: LINHA DO TEMPO (Ano Atual e Anterior com Espaçamento Ajustado)
     function renderTimeline() {
       const track = document.getElementById('timelineTrack');
       if (!trilhasData || trilhasData.length === 0) {
@@ -870,7 +872,9 @@
       const startTs = new Date(previousYear, 0, 1).getTime();
       const endTs = new Date(currentYear, 11, 31).getTime();
       const totalDuration = endTs - startTs;
-      const totalWidthPx = 1100;
+      
+      // Largura expandida para 1800px para despoluir a visualização das datas
+      const totalWidthPx = 1800;
 
       track.style.width = `${totalWidthPx}px`;
 
@@ -905,7 +909,7 @@
       track.innerHTML = htmlMarkup;
     }
 
-    // Renderiza Cards com Filtro e Ordenação
+    // Renderiza Lista de Cards
     function filterAndRenderTrilhas() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
       const sortValue = document.getElementById('sortSelect').value;
@@ -969,7 +973,7 @@
       }).join('');
     }
 
-    // Modal
+    // Modal Pop-up
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
