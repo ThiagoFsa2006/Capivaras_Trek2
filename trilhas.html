@@ -367,12 +367,12 @@
   </footer>
 
   <script>
-    // URL da Página 1 (Cards Principais - sem colunas detalhe/adesivo)
+    // URL da Página 1 (Cards Principais)
     const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
 
-    // URL da Página 2 (Tabela Conquistas - colunas nome, detalhe, adesivo)
-    // Substitua SEU_GID_PAGINA_2 pelo gid obtido da aba Página2 no Google Sheets
-    const GOOGLE_SHEET_PAGINA2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=SEU_GID_PAGINA_2&single=true&output=csv';
+    // URL da Página 2 (Conquistas) - COLE O NÚMERO DO SEU GID DA PÁGINA 2 AQUI:
+    const PAGINA_2_GID = '795321596'; 
+    const GOOGLE_SHEET_PAGINA2_URL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=${PAGINA_2_GID}&single=true&output=csv`;
 
     let trilhasData = [];
     let conquistasData = [];
@@ -425,7 +425,7 @@
     async function loadData() {
       const listContainer = document.getElementById('trilhasList');
       try {
-        // Carrega Página 1 (Cards)
+        // 1. Carrega Página 1 (Cards)
         const response1 = await fetch(GOOGLE_SHEET_PAGINA1_URL);
         if (response1.ok) {
           const csvText1 = await response1.text();
@@ -443,7 +443,7 @@
           })).filter(t => t.nome !== '');
         }
 
-        // Carrega Página 2 (Conquistas)
+        // 2. Carrega Página 2 (Conquistas)
         try {
           const response2 = await fetch(GOOGLE_SHEET_PAGINA2_URL);
           if (response2.ok) {
@@ -456,7 +456,7 @@
             })).filter(c => c.nome !== '');
           }
         } catch (e) {
-          console.warn("Página 2 indisponível ou gid não configurado.");
+          console.warn("Erro ao buscar Página 2 de conquistas:", e);
         }
 
         renderSummaryBoard();
@@ -467,7 +467,7 @@
       }
     }
 
-    // Preenche o painel Conquistas usando a Página 2
+    // Renderiza o Painel Conquistas tolerando variações de texto na coluna "detalhe"
     function renderSummaryBoard() {
       const cumesList = document.getElementById('list-cumes');
       const travessiaList = document.getElementById('list-travessia');
@@ -483,10 +483,15 @@
 
       conquistasData.forEach(item => {
         const d = (item.detalhe || '').toLowerCase().trim();
-        if (d.includes('cumes') || d.includes('cume')) categories.cumes.push(item);
-        else if (d.includes('circular')) categories.circular.push(item);
-        else if (d.includes('travessia')) categories.travessia.push(item);
-        else if (d.includes('cachoeira')) categories.cachoeiras.push(item);
+        if (d.includes('cume')) {
+          categories.cumes.push(item);
+        } else if (d.includes('circular')) {
+          categories.circular.push(item);
+        } else if (d.includes('travessia')) {
+          categories.travessia.push(item);
+        } else if (d.includes('cachoeira')) {
+          categories.cachoeiras.push(item);
+        }
       });
 
       const buildListHTML = (items) => {
@@ -495,7 +500,7 @@
           return `
             <li>
               ${t.nome}
-              ${hasSticker ? '<img src="logo.png" alt="Adesivo" class="sticker-logo" title="Cume Conquistado & Adesivado!">' : ''}
+              ${hasSticker ? '<img src="logo.png" alt="Adesivo" class="sticker-logo" title="Conquistado & Adesivado!">' : ''}
             </li>
           `;
         }).join('');
@@ -509,7 +514,6 @@
 
     const listContainer = document.getElementById('trilhasList');
 
-    // Renderiza a lista de cards sem a tag "Adesivado"
     function renderTrilhas() {
       if (trilhasData.length === 0) {
         listContainer.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha encontrada na planilha.</p>';
@@ -548,7 +552,7 @@
       }).join('');
     }
 
-    // Modal Pop-up
+    // Modal
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
