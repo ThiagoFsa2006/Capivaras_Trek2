@@ -10,13 +10,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* Painel Conquistas Superior Retrátil com Legenda */
+    /* Container dos Quadros Superiores */
+    .expandable-sections-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    /* Painel Base (Verde) para Conquistas e Linha do Tempo */
     .summary-board {
       background-color: #1b3320;
       color: #ffffff;
-      padding: 16px 20px 16px 20px;
+      padding: 16px 20px;
       border-radius: 8px;
-      margin-bottom: 25px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
       transition: all 0.3s ease;
     }
@@ -64,14 +71,11 @@
       transition: transform 0.3s ease;
     }
 
+    /* Estados Recolhidos */
     .summary-board.collapsed .summary-grid,
-    .summary-board.collapsed .summary-legend {
+    .summary-board.collapsed .summary-legend,
+    .summary-board.collapsed .timeline-scroll-wrapper {
       display: none;
-    }
-
-    .summary-board.collapsed {
-      padding-bottom: 16px;
-      margin-bottom: 20px;
     }
 
     .summary-board.collapsed .summary-board-header {
@@ -79,6 +83,11 @@
       padding-bottom: 0;
     }
 
+    .summary-board.collapsed .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Estilos do Painel Conquistas */
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -117,7 +126,6 @@
       gap: 6px;
     }
 
-    /* Imagem da Etiqueta / Transparência */
     .sticker-logo {
       width: 16px;
       height: 16px;
@@ -130,7 +138,6 @@
       filter: grayscale(40%);
     }
 
-    /* Legenda do Quadro de Conquistas */
     .summary-legend {
       margin-top: 18px;
       padding-top: 10px;
@@ -147,6 +154,124 @@
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    /* LINHA DO TEMPO COM ALTURA 500PX */
+    .timeline-scroll-wrapper {
+      width: 100%;
+      height: 500px; /* Altura ajustada para 500px */
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 45px;
+      box-sizing: border-box;
+    }
+
+    .timeline-track {
+      position: relative;
+      width: 100%;
+      height: 2px;
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .timeline-year-marker {
+      position: absolute;
+      top: -38px;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #a3c9a8;
+      letter-spacing: 0.5px;
+    }
+
+    .timeline-year-line {
+      position: absolute;
+      top: -16px;
+      width: 2px;
+      height: 34px;
+      background-color: #a3c9a8;
+      transform: translateX(-50%);
+    }
+
+    .timeline-node {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
+
+    .timeline-tick {
+      width: 3px;
+      height: 18px;
+      background-color: #ffffff;
+      border-radius: 2px;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .timeline-node:hover .timeline-tick {
+      background-color: #4ade80;
+      transform: scaleY(1.4);
+    }
+
+    /* Nó Superior com Altura Expandida */
+    .timeline-node.top-node {
+      top: -250px;
+      height: 250px;
+      justify-content: flex-end;
+    }
+
+    .timeline-node.top-node .timeline-date {
+      margin-bottom: 4px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .timeline-node.top-node .timeline-name {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #d0e0d2;
+      white-space: nowrap;
+      margin-bottom: 6px;
+      max-height: 200px;
+      transition: color 0.2s;
+    }
+
+    /* Nó Inferior com Altura Expandida */
+    .timeline-node.bottom-node {
+      top: 0px;
+      height: 250px;
+      justify-content: flex-start;
+    }
+
+    .timeline-node.bottom-node .timeline-name {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #d0e0d2;
+      white-space: nowrap;
+      margin-top: 6px;
+      max-height: 200px;
+      transition: color 0.2s;
+    }
+
+    .timeline-node.bottom-node .timeline-date {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .timeline-node:hover .timeline-name {
+      color: #ffffff;
     }
 
     /* Controles de Filtro e Ordenação */
@@ -198,7 +323,7 @@
       outline: none;
     }
 
-    /* Lista de Cards Compactos */
+    /* Cards Empilhados */
     .trilhas-list-container {
       display: flex;
       flex-direction: column;
@@ -247,7 +372,6 @@
       display: block;
     }
 
-    /* Estilo para quando não houver imagem na planilha */
     .no-image-placeholder {
       width: 100%;
       height: 100%;
@@ -441,50 +565,73 @@
   <main class="section" style="padding-top: 30px;">
     <div class="container">
       
-      <!-- Painel Conquistas Verde (Retrátil com Legenda) -->
-      <section class="summary-board" id="summaryBoard">
-        <div class="summary-board-header" onclick="toggleSummary()">
-          <h2>CONQUISTAS</h2>
-          <button class="toggle-btn" aria-label="Recolher ou Expandir Painel">
-            <span id="toggleText">Recolher</span>
-            <span class="toggle-icon" id="toggleIcon">▲</span>
-          </button>
-        </div>
+      <!-- Container das Seções Expandíveis (Conquistas + Timeline) -->
+      <div class="expandable-sections-container">
 
-        <div class="summary-grid">
-          <div class="summary-column">
-            <h3>Cumes</h3>
-            <ul class="summary-list" id="list-cumes"></ul>
+        <!-- 1. Painel Conquistas (Recolhido por padrão) -->
+        <section class="summary-board collapsed" id="summaryBoard">
+          <div class="summary-board-header" onclick="toggleBoard('summaryBoard', 'toggleTextConquistas')">
+            <h2>CONQUISTAS</h2>
+            <button class="toggle-btn" aria-label="Recolher ou Expandir Painel">
+              <span id="toggleTextConquistas">Expandir</span>
+              <span class="toggle-icon">▲</span>
+            </button>
           </div>
 
-          <div class="summary-column">
-            <h3>Travessias</h3>
-            <ul class="summary-list" id="list-travessia"></ul>
+          <div class="summary-grid">
+            <div class="summary-column">
+              <h3>Cumes</h3>
+              <ul class="summary-list" id="list-cumes"></ul>
+            </div>
+
+            <div class="summary-column">
+              <h3>Travessias</h3>
+              <ul class="summary-list" id="list-travessia"></ul>
+            </div>
+
+            <div class="summary-column">
+              <h3>Travessia Circular</h3>
+              <ul class="summary-list" id="list-circular"></ul>
+            </div>
+
+            <div class="summary-column">
+              <h3>Cachoeiras</h3>
+              <ul class="summary-list" id="list-cachoeiras"></ul>
+            </div>
           </div>
 
-          <div class="summary-column">
-            <h3>Travessia Circular</h3>
-            <ul class="summary-list" id="list-circular"></ul>
+          <!-- Legenda dos Adesivos -->
+          <div class="summary-legend">
+            <div class="legend-item">
+              <img src="logo.png" alt="Adesivado" class="sticker-logo">
+              <span>Adesivado</span>
+            </div>
+            <div class="legend-item">
+              <img src="logo.png" alt="Não tem caixinha" class="sticker-logo translucent">
+              <span>Não tem caixinha</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Painel Timeline (Recolhido por padrão) -->
+        <section class="summary-board collapsed" id="timelineBoard">
+          <div class="summary-board-header" onclick="toggleBoard('timelineBoard', 'toggleTextTimeline')">
+            <h2>TIMELINE DOS CAPIVARAS</h2>
+            <button class="toggle-btn" aria-label="Expandir ou Recolher Linha do Tempo">
+              <span id="toggleTextTimeline">Expandir</span>
+              <span class="toggle-icon">▲</span>
+            </button>
           </div>
 
-          <div class="summary-column">
-            <h3>Cachoeiras</h3>
-            <ul class="summary-list" id="list-cachoeiras"></ul>
+          <!-- Área de Visualização de 500px -->
+          <div class="timeline-scroll-wrapper">
+            <div class="timeline-track" id="timelineTrack">
+              <p style="color: #d0e0d2; text-align: center; width: 100%;">Carregando linha do tempo...</p>
+            </div>
           </div>
-        </div>
+        </section>
 
-        <!-- Legenda dos Adesivos -->
-        <div class="summary-legend">
-          <div class="legend-item">
-            <img src="logo.png" alt="Adesivado" class="sticker-logo">
-            <span>Adesivado</span>
-          </div>
-          <div class="legend-item">
-            <img src="logo.png" alt="Não tem caixinha" class="sticker-logo translucent">
-            <span>Não tem caixinha</span>
-          </div>
-        </div>
-      </section>
+      </div>
 
       <!-- Barra de Filtros e Ordenação -->
       <div class="filter-bar">
@@ -550,19 +697,16 @@
     let trilhasData = [];
     let conquistasData = [];
 
-    // Expandir / Recolher Painel
-    function toggleSummary() {
-      const board = document.getElementById('summaryBoard');
-      const text = document.getElementById('toggleText');
-      const icon = document.getElementById('toggleIcon');
+    // Alternar Painéis Retráteis
+    function toggleBoard(boardId, textId) {
+      const board = document.getElementById(boardId);
+      const text = document.getElementById(textId);
       
       board.classList.toggle('collapsed');
       if (board.classList.contains('collapsed')) {
         text.textContent = 'Expandir';
-        icon.style.transform = 'rotate(180deg)';
       } else {
         text.textContent = 'Recolher';
-        icon.style.transform = 'rotate(0deg)';
       }
     }
 
@@ -657,6 +801,7 @@
         }
 
         renderSummaryBoard();
+        renderTimeline();
         filterAndRenderTrilhas();
       } catch (err) {
         console.error("Erro ao carregar o CSV:", err);
@@ -664,6 +809,7 @@
       }
     }
 
+    // Renderiza Seção 1: CONQUISTAS (Ordenado A-Z)
     function renderSummaryBoard() {
       const cumesList = document.getElementById('list-cumes');
       const travessiaList = document.getElementById('list-travessia');
@@ -715,6 +861,83 @@
       cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
     }
 
+    // Renderiza Seção 2: TIMELINE DOS CAPIVARAS (Apenas Ano Atual)
+    function renderTimeline() {
+      const track = document.getElementById('timelineTrack');
+      if (!trilhasData || trilhasData.length === 0) {
+        track.innerHTML = '<p style="color: #d0e0d2;">Nenhuma trilha encontrada para a linha do tempo.</p>';
+        return;
+      }
+
+      const currentYear = new Date().getFullYear(); // Ano Atual (2026)
+
+      // Filtragem estrita somente para eventos do ANO ATUAL
+      const filteredEvents = trilhasData
+        .map((item, originalIndex) => {
+          const ts = parseDateToTimestamp(item.data);
+          if (!ts) return null;
+          const dateObj = new Date(ts);
+          const year = dateObj.getFullYear();
+          return {
+            ...item,
+            timestamp: ts,
+            year: year,
+            dayMonth: item.data.substring(0, 5),
+            originalIndex: originalIndex
+          };
+        })
+        .filter(item => item && item.year === currentYear)
+        .sort((a, b) => a.timestamp - b.timestamp);
+
+      if (filteredEvents.length === 0) {
+        track.innerHTML = `<p style="color: #d0e0d2; text-align: center; width: 100%;">Nenhuma atividade registrada em ${currentYear}.</p>`;
+        return;
+      }
+
+      const startTs = new Date(currentYear, 0, 1).getTime();
+      const endTs = new Date().getTime(); // Finaliza hoje
+      const totalDuration = Math.max(endTs - startTs, 1);
+
+      let htmlMarkup = '';
+
+      const posCurrYear = 0;
+      const posNow = 100;
+
+      htmlMarkup += `
+        <div class="timeline-year-marker" style="left: ${posCurrYear}%;">${currentYear}</div>
+        <div class="timeline-year-line" style="left: ${posCurrYear}%;"></div>
+
+        <div class="timeline-year-marker" style="left: ${posNow}%; color: #4ade80;">hoje</div>
+        <div class="timeline-year-line" style="left: ${posNow}%; background-color: #4ade80;"></div>
+      `;
+
+      filteredEvents.forEach((evt, idx) => {
+        const leftPercent = ((evt.timestamp - startTs) / totalDuration) * 100;
+        const isEven = idx % 2 === 0;
+
+        if (isEven) {
+          htmlMarkup += `
+            <div class="timeline-node top-node" style="left: ${leftPercent}%;" onclick="openModal(${evt.originalIndex})" title="${evt.nome} (${evt.data})">
+              <span class="timeline-date">${evt.dayMonth}</span>
+              <span class="timeline-name">${evt.nome}</span>
+              <div class="timeline-tick"></div>
+            </div>
+          `;
+        } else {
+          htmlMarkup += `
+            <div class="timeline-node bottom-node" style="left: ${leftPercent}%;" onclick="openModal(${evt.originalIndex})" title="${evt.nome} (${evt.data})">
+              <div class="timeline-tick"></div>
+              <span class="timeline-name">${evt.nome}</span>
+              <span class="timeline-date">${evt.dayMonth}</span>
+            </div>
+          `;
+        }
+      });
+
+      track.innerHTML = htmlMarkup;
+    }
+
+    // Renderiza Lista de Cards
     function filterAndRenderTrilhas() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
       const sortValue = document.getElementById('sortSelect').value;
@@ -744,7 +967,6 @@
         const badgeColor = getBadgeColor(t.nivel);
         const originalIndex = trilhasData.indexOf(t);
 
-        // Renderiza fallback "No Image" caso a foto esteja vazia
         const imageMarkup = t.foto 
           ? `<img src="${t.foto}" alt="${t.nome}" class="trilha-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\\'no-image-placeholder\\'>No Image</div>';">`
           : `<div class="no-image-placeholder">No Image</div>`;
@@ -779,7 +1001,7 @@
       }).join('');
     }
 
-    // Modal
+    // Modal Pop-up
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
