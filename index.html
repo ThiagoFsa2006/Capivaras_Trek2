@@ -3,11 +3,128 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Capivaras Trek | Expedições e Montanhismo</title>
+  <title>Capivaras Trek - Home</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Estilos do Carrossel Hero */
+    .hero-carousel {
+      position: relative;
+      width: 100%;
+      height: 85vh;
+      min-height: 500px;
+      overflow: hidden;
+      background-color: #1b3320;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide.active {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .slide-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.65) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: #ffffff;
+      padding: 0 20px;
+    }
+
+    .hero-content h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin: 0;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Controles do Carrossel */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.4);
+      color: #ffffff;
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .carousel-btn:hover {
+      background: rgba(45, 122, 62, 0.8);
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    .carousel-btn.prev { left: 20px; }
+    .carousel-btn.next { right: 20px; }
+
+    .dots-container {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .dot.active {
+      background: #ffffff;
+      transform: scale(1.25);
+    }
+
+    @media (max-width: 768px) {
+      .hero-content h1 { font-size: 2rem; }
+      .carousel-btn { width: 38px; height: 38px; font-size: 1.1rem; }
+      .carousel-btn.prev { left: 10px; }
+      .carousel-btn.next { right: 10px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -18,18 +135,14 @@
         <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
         <span class="brand-name">Capivaras Trek</span>
       </a>
-      
-      <!-- Botão Hambúrguer Mobile -->
+
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
 
-      <!-- Links de Navegação -->
       <nav class="nav-links" id="nav-links">
-        <a href="#home" onclick="closeMenu()">Home</a>
-        <a href="#sobre" onclick="closeMenu()">Sobre</a>
+        <a href="index.html#home" class="active" onclick="closeMenu()">Home</a>
+        <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
         <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
         <a href="galeria.html" onclick="closeMenu()">Galeria</a>
         <a href="tracklogs.html" onclick="closeMenu()">Tracklogs</a>
@@ -39,109 +152,31 @@
     </div>
   </header>
 
-  <!-- Hero Section (Carrossel 6s) -->
-  <section id="home" class="hero">
-    <div class="carousel">
-      
-      <!-- Slide 1 -->
-      <div class="slide active">
-        <img src="banner_home.jpg" alt="Cume do Taipabuçu" class="slide-bg slide-1">
-        <div class="hero-overlay"></div>
-        <div class="container hero-content">
-          <h1>Cume do Taipabuçu</h1>
-        </div>
-      </div>
-
-      <!-- Slide 2 -->
-      <div class="slide">
-        <img src="banner_home1.jpg" alt="Cachoeira da Lapinha" class="slide-bg slide-2">
-        <div class="hero-overlay"></div>
-        <div class="container hero-content">
-          <h1>Cachoeira da Lapinha</h1>
-        </div>
-      </div>
-
-      <!-- Slide 3 -->
-      <div class="slide">
-        <img src="banner_home2.jpg" alt="Cume do Anhangava" class="slide-bg slide-3">
-        <div class="hero-overlay"></div>
-        <div class="container hero-content">
-          <h1>Cume do Anhangava</h1>
-        </div>
-      </div>
-
-      <!-- Controles de Navegação -->
-      <button class="carousel-btn prev" onclick="moveSlide(-1)" aria-label="Anterior">&#10094;</button>
-      <button class="carousel-btn next" onclick="moveSlide(1)" aria-label="Próximo">&#10095;</button>
-
-      <!-- Indicadores -->
-      <div class="dots-container">
-        <span class="dot active" onclick="setSlide(0)"></span>
-        <span class="dot" onclick="setSlide(1)"></span>
-        <span class="dot" onclick="setSlide(2)"></span>
-      </div>
-
+  <!-- Carrossel Hero (Conectado à Página3 da Planilha) -->
+  <section class="hero-carousel" id="home">
+    <div id="slidesContainer">
+      <div style="padding-top: 200px; text-align: center; color: #ffffff; font-size: 1.1rem;">Carregando fotos...</div>
     </div>
+
+    <button class="carousel-btn prev" onclick="moveSlide(-1)" aria-label="Anterior">&#10094;</button>
+    <button class="carousel-btn next" onclick="moveSlide(1)" aria-label="Próximo">&#10095;</button>
+
+    <div class="dots-container" id="dotsContainer"></div>
   </section>
 
-  <!-- Seção Sobre o Grupo -->
-  <section id="sobre" class="section">
+  <!-- Conteúdo de Exemplo da Página Home -->
+  <main class="section" id="sobre" style="padding: 60px 0; text-align: center;">
     <div class="container">
-      
-      <!-- Cabeçalho Principal -->
-      <div class="section-header">
-        <h2>Sobre o Grupo</h2>
-        <p class="section-desc">
-          Somos um pequeno grupo de amigos e apaixonados pela natureza reunidos por um único propósito: explorar as montanhas e trilhas do Paraná (e ir além!), sempre em boa companhia, com respeito ao meio ambiente e verdadeiro espírito de aventura.
-        </p>
-      </div>
-
-      <!-- Banner Destaque de Transparência -->
-      <div class="transparency-card">
-        <div class="transparency-icon">🤝</div>
-        <div>
-          <h3>Transparência & Parceria</h3>
-          <p>Não somos guias profissionais nem agência de turismo. O grupo existe puramente como um espaço colaborativo para trocarmos experiências, nos mantermos atualizados sobre as trilhas e organizarmos nossas próximas saídas juntos.</p>
-        </div>
-      </div>
-
-      <!-- Grade O Que Você Encontra por Aqui -->
-      <div class="section-subheader">
-        <h3>O Que Você Encontra por Aqui</h3>
-      </div>
-
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🏔️</div>
-          <h4>Registro de Conquistas</h4>
-          <p>Montanhas que já subimos e os cumes onde colamos nosso adesivo oficial.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">⛺</div>
-          <h4>Acampamentos & Aventuras</h4>
-          <p>Memórias e galeria de fotos de cada acampamento e expedição.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">📍</div>
-          <h4>Tracklogs & Dicas</h4>
-          <p>Links de trajetos (GPX/Wikiloc), informações úteis, equipamentos recomendados e dicas de segurança.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">📅</div>
-          <h4>Calendário de Trilhas</h4>
-          <p>Nossas próximas saídas planejadas.</p>
-        </div>
-      </div>
-
+      <h2 style="font-size: 2.2rem; color: #1b3320; margin-bottom: 16px;">Sobre o Grupo</h2>
+      <p style="max-width: 800px; margin: 0 auto; color: #556357; line-height: 1.7; font-size: 1.05rem;">
+        O Capivaras Trek é um grupo dedicado a explorar cumes, travessias e cachoeiras, conectando pessoas à natureza de forma autêntica e segura.
+      </p>
     </div>
-  </section>
+  </main>
 
-  <!-- Rodapé -->
-  <footer id="contato" class="footer">
-    <div class="container footer-content">
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
       <div class="footer-brand">
         <img src="logo.png" alt="Capivaras Trek Logo" class="footer-logo">
         <h3>Capivaras Trek</h3>
@@ -153,51 +188,148 @@
     </div>
   </footer>
 
-  <!-- Scripts: Carrossel & Menu Mobile -->
   <script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-    let autoSlideTimer = setInterval(() => moveSlide(1), 6000);
+    // Link CSV da Página3 da planilha
+    const GOOGLE_SHEET_PAGINA3_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=9544756&single=true&output=csv';
 
-    function showSlide(index) {
-      slides.forEach(s => s.classList.remove('active'));
-      dots.forEach(d => d.classList.remove('active'));
-      
-      currentSlide = (index + slides.length) % slides.length;
-      
-      slides[currentSlide].classList.add('active');
-      if (dots.length) dots[currentSlide].classList.add('active');
+    let currentSlideIndex = 0;
+    let carouselTimer = null;
+
+    // Parser manual de CSV
+    function parseCSV(text) {
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 2) return [];
+
+      const splitLine = (line) => {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        result.push(current.trim().replace(/^"|"$/g, ''));
+        return result;
+      };
+
+      const headers = splitLine(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, ''));
+
+      return lines.slice(1).map(line => {
+        const values = splitLine(line);
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header] = values[index] || '';
+        });
+        return {
+          link: obj['link'] || '',
+          texto: obj['texto'] || ''
+        };
+      });
     }
 
-    function moveSlide(step) {
+    // Carregar imagens da planilha
+    async function loadHomeCarousel() {
+      const slidesContainer = document.getElementById('slidesContainer');
+      try {
+        const response = await fetch(GOOGLE_SHEET_PAGINA3_URL);
+        if (!response.ok) throw new Error('Erro ao buscar dados do carrossel');
+        
+        const csvText = await response.text();
+        const slidesData = parseCSV(csvText).filter(item => item.link !== '');
+
+        if (slidesData.length > 0) {
+          renderCarousel(slidesData);
+        } else {
+          slidesContainer.innerHTML = '<div style="padding-top: 200px; text-align: center; color: #fff;">Nenhuma imagem cadastrada na Página 3.</div>';
+        }
+      } catch (err) {
+        console.error("Erro ao carregar imagens do carrossel:", err);
+        slidesContainer.innerHTML = '<div style="padding-top: 200px; text-align: center; color: #fff;">Erro ao carregar o carrossel.</div>';
+      }
+    }
+
+    // Renderizar HTML dos slides
+    function renderCarousel(slides) {
+      const slidesContainer = document.getElementById('slidesContainer');
+      const dotsContainer = document.getElementById('dotsContainer');
+
+      slidesContainer.innerHTML = slides.map((slide, index) => `
+        <div class="slide ${index === 0 ? 'active' : ''}">
+          <img src="${slide.link}" alt="${slide.texto}" class="slide-bg" onerror="this.onerror=null; this.src='banner_home.jpg';">
+          <div class="hero-overlay"></div>
+          <div class="container hero-content">
+            <h1>${slide.texto}</h1>
+          </div>
+        </div>
+      `).join('');
+
+      dotsContainer.innerHTML = slides.map((_, index) => `
+        <span class="dot ${index === 0 ? 'active' : ''}" onclick="setSlide(${index})"></span>
+      `).join('');
+
       resetTimer();
-      showSlide(currentSlide + step);
+    }
+
+    // Navegação
+    function showSlide(index) {
+      const slides = document.querySelectorAll('.slide');
+      const dots = document.querySelectorAll('.dot');
+
+      if (slides.length === 0) return;
+
+      if (index >= slides.length) currentSlideIndex = 0;
+      else if (index < 0) currentSlideIndex = slides.length - 1;
+      else currentSlideIndex = index;
+
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === currentSlideIndex);
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlideIndex);
+      });
+    }
+
+    function moveSlide(direction) {
+      showSlide(currentSlideIndex + direction);
+      resetTimer();
     }
 
     function setSlide(index) {
-      resetTimer();
       showSlide(index);
+      resetTimer();
     }
 
     function resetTimer() {
-      clearInterval(autoSlideTimer);
-      autoSlideTimer = setInterval(() => moveSlide(1), 6000);
+      if (carouselTimer) clearInterval(carouselTimer);
+      carouselTimer = setInterval(() => {
+        moveSlide(1);
+      }, 5000);
     }
 
-    const menuBtn = document.getElementById('mobile-menu-btn');
+    // Inicialização
+    loadHomeCarousel();
+
+    // Menu Mobile
+    const mobileBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
-    menuBtn.addEventListener('click', () => {
-      menuBtn.classList.toggle('active');
+    mobileBtn.addEventListener('click', () => {
+      mobileBtn.classList.toggle('active');
       navLinks.classList.toggle('active');
     });
 
     function closeMenu() {
-      menuBtn.classList.remove('active');
+      mobileBtn.classList.remove('active');
       navLinks.classList.remove('active');
     }
   </script>
-
 </body>
 </html>
