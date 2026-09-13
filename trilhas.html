@@ -964,14 +964,14 @@
 
       let htmlMarkup = '';
 
-      // Marcação inicial do Ano Selecionado
+      // Marcação inicial do Ano Selecionado (Ex: 2024 para a aba de 2024)
       htmlMarkup += `
         <div class="timeline-year-marker" style="left: 0%;">${selectedTimelineYear}</div>
         <div class="timeline-year-line" style="left: 0%;"></div>
       `;
 
       const totalEvents = filteredEvents.length;
-      const actualCurrentYear = new Date().getFullYear();
+      const actualCurrentYear = new Date().getFullYear(); // 2026
 
       // Distribuição uniformemente dividida ao longo de 100% da largura
       filteredEvents.forEach((evt, idx) => {
@@ -998,8 +998,9 @@
         }
       });
 
-      // Marcação final: 'hoje' se for o ano atual, caso contrário o número do ano (ex: 2025)
-      const endLabel = (selectedTimelineYear === actualCurrentYear) ? 'hoje' : selectedTimelineYear;
+      // Lógica do rótulo final: "hoje" apenas para o ano atual, ou selectedTimelineYear + 1 (ex: 2025 para 2024, 2026 para 2025)
+      const endLabel = (selectedTimelineYear === actualCurrentYear) ? 'hoje' : (selectedTimelineYear + 1);
+      
       htmlMarkup += `
         <div class="timeline-year-marker" style="left: 100%; color: #4ade80;">${endLabel}</div>
         <div class="timeline-year-line" style="left: 100%; background-color: #4ade80;"></div>
