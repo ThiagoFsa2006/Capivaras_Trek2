@@ -367,6 +367,7 @@
   </footer>
 
   <script>
+  // Links de publicação CSV das duas abas
   const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
   const GOOGLE_SHEET_PAGINA2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=795321596&single=true&output=csv';
 
@@ -421,7 +422,7 @@
   async function loadData() {
     const listContainer = document.getElementById('trilhasList');
     try {
-      // 1. Carrega Página 1 (Cards)
+      // 1. Carrega Página 1 (Cards principais)
       const response1 = await fetch(GOOGLE_SHEET_PAGINA1_URL);
       if (response1.ok) {
         const csvText1 = await response1.text();
@@ -439,7 +440,7 @@
         })).filter(t => t.nome !== '');
       }
 
-      // 2. Carrega Página 2 (Conquistas)
+      // 2. Carrega Página 2 (Tabela de Conquistas)
       try {
         const response2 = await fetch(GOOGLE_SHEET_PAGINA2_URL);
         if (response2.ok) {
@@ -452,17 +453,18 @@
           })).filter(c => c.nome !== '');
         }
       } catch (e) {
-        console.warn("Erro ao buscar dados da Página 2:", e);
+        console.warn("Erro ao carregar a Página 2:", e);
       }
 
       renderSummaryBoard();
       renderTrilhas();
     } catch (err) {
-      console.error("Erro ao carregar o CSV:", err);
+      console.error("Erro ao carregar os dados:", err);
       listContainer.innerHTML = '<p style="color: red; text-align: center; width: 100%;">Erro ao carregar as trilhas da planilha.</p>';
     }
   }
 
+  // Preenche o painel verde Conquistas a partir da Página 2
   function renderSummaryBoard() {
     const cumesList = document.getElementById('list-cumes');
     const travessiaList = document.getElementById('list-travessia');
@@ -504,6 +506,7 @@
 
   const listContainer = document.getElementById('trilhasList');
 
+  // Renderiza os cards verticais sem a tag de adesivo
   function renderTrilhas() {
     if (trilhasData.length === 0) {
       listContainer.innerHTML = '<p style="text-align: center; width: 100%;">Nenhuma trilha encontrada na planilha.</p>';
@@ -538,7 +541,7 @@
     }).join('');
   }
 
-  // Modal
+  // Modal Pop-up
   const modal = document.getElementById('trilhaModal');
   const modalClose = document.getElementById('modalClose');
 
