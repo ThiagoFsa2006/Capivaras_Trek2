@@ -998,8 +998,8 @@
         }
       });
 
-      // Marcação final: 'hoje' apenas se for o ano atual (2026), caso contrário final da linha
-      const endLabel = (selectedTimelineYear === actualCurrentYear) ? 'hoje' : 'fim';
+      // Marcação final: 'hoje' se for o ano atual, caso contrário o número do ano (ex: 2025)
+      const endLabel = (selectedTimelineYear === actualCurrentYear) ? 'hoje' : selectedTimelineYear;
       htmlMarkup += `
         <div class="timeline-year-marker" style="left: 100%; color: #4ade80;">${endLabel}</div>
         <div class="timeline-year-line" style="left: 100%; background-color: #4ade80;"></div>
