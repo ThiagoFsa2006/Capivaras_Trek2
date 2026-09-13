@@ -237,6 +237,21 @@
       .transparency-card { flex-direction: column; text-align: center; }
       .features-grid { grid-template-columns: 1fr; }
     }
+    @media (max-width: 768px) {
+      /* Reduz a altura da Hero/Carrossel somente no celular */
+      .hero, 
+      .hero-slider, 
+      .hero-slide {
+        height: 45vh !important;    /* Reduz a altura para não dar zoom excessivo */
+        min-height: 280px !important; /* Altura mínima de segurança */
+      }
+    
+      /* Garante que o enquadramento foque no centro da imagem 1:1 */
+      .hero-slide img {
+        object-fit: cover;
+        object-position: center center;
+      }
+    }
   </style>
 </head>
 <body>
