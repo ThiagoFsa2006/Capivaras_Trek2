@@ -126,7 +126,7 @@
     }
 
     .sticker-logo.translucent {
-      opacity: 0.3; /* 30% de transparência apenas na etiqueta */
+      opacity: 0.3;
       filter: grayscale(40%);
     }
 
@@ -667,6 +667,9 @@
       });
 
       const buildListHTML = (items) => {
+        // Ordena a categoria de A a Z pelo nome do cume/trilha
+        items.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+
         return items.map(t => {
           const stickerVal = (t.adesivo || '').toLowerCase().trim();
           const isSim = stickerVal === 'sim';
@@ -707,9 +710,9 @@
         } else if (sortValue === 'data-asc') {
           return parseDateToTimestamp(a.data) - parseDateToTimestamp(b.data);
         } else if (sortValue === 'nome-asc') {
-          return a.nome.localeCompare(b.nome);
+          return a.nome.localeCompare(b.nome, 'pt-BR');
         } else if (sortValue === 'nome-desc') {
-          return b.nome.localeCompare(a.nome);
+          return b.nome.localeCompare(a.nome, 'pt-BR');
         }
         return 0;
       });
