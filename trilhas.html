@@ -125,13 +125,8 @@
     }
 
     .sticker-logo.translucent {
-      opacity: 0.3; /* 30% de transparência pedida */
+      opacity: 0.4; /* 30% de transparência pedida */
       filter: grayscale(40%);
-    }
-
-    .item-na {
-      opacity: 0.6;
-      font-style: italic;
     }
 
     /* Controles de Filtro e Ordenação */
@@ -636,22 +631,21 @@
         else if (d.includes('travessia')) categories.travessia.push(item);
         else if (d.includes('cachoeira')) categories.cachoeiras.push(item);
       });
-
       const buildListHTML = (items) => {
         return items.map(t => {
           const stickerVal = (t.adesivo || '').toLowerCase().trim();
           const isSim = stickerVal === 'sim';
           const isNa = stickerVal === 'na';
-
+      
           let stickerMarkup = '';
           if (isSim) {
             stickerMarkup = '<img src="logo.png" alt="Adesivo" class="sticker-logo" title="Conquistado & Adesivado!">';
           } else if (isNa) {
-            stickerMarkup = '<img src="logo.png" alt="Adesivo" class="sticker-logo translucent" title="Opção Na (30% opacidade)">';
+            stickerMarkup = '<img src="logo.png" alt="Adesivo" class="sticker-logo translucent" title="Opção Na (Etiqueta com 30% de transparência)">';
           }
-
+      
           return `
-            <li class="${isNa ? 'item-na' : ''}">
+            <li>
               ${t.nome}
               ${stickerMarkup}
             </li>
