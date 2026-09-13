@@ -156,15 +156,15 @@
       gap: 6px;
     }
 
-    /* LINHA DO TEMPO COM ALTURA 500PX */
+    /* LINHA DO TEMPO COM ALTURA DE 500PX E DISTRIBUIÇÃO EQUIDISTANTE */
     .timeline-scroll-wrapper {
       width: 100%;
-      height: 500px; /* Altura ajustada para 500px */
+      height: 500px;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 45px;
+      padding: 0 50px;
       box-sizing: border-box;
     }
 
@@ -216,7 +216,7 @@
       transform: scaleY(1.4);
     }
 
-    /* Nó Superior com Altura Expandida */
+    /* Nó Superior */
     .timeline-node.top-node {
       top: -250px;
       height: 250px;
@@ -243,7 +243,7 @@
       transition: color 0.2s;
     }
 
-    /* Nó Inferior com Altura Expandida */
+    /* Nó Inferior */
     .timeline-node.bottom-node {
       top: 0px;
       height: 250px;
@@ -623,7 +623,7 @@
             </button>
           </div>
 
-          <!-- Área de Visualização de 500px -->
+          <!-- Área de Visualização com Espaçamento Igualitário -->
           <div class="timeline-scroll-wrapper">
             <div class="timeline-track" id="timelineTrack">
               <p style="color: #d0e0d2; text-align: center; width: 100%;">Carregando linha do tempo...</p>
@@ -861,7 +861,7 @@
       cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
     }
 
-    // Renderiza Seção 2: TIMELINE DOS CAPIVARAS (Apenas Ano Atual)
+    // Renderiza Seção 2: TIMELINE DOS CAPIVARAS (Distribuição Sequencial / Espaçamento Igualitário)
     function renderTimeline() {
       const track = document.getElementById('timelineTrack');
       if (!trilhasData || trilhasData.length === 0) {
@@ -871,7 +871,7 @@
 
       const currentYear = new Date().getFullYear(); // Ano Atual (2026)
 
-      // Filtragem estrita somente para eventos do ANO ATUAL
+      // Filtragem de eventos do ano atual ordenados cronologicamente
       const filteredEvents = trilhasData
         .map((item, originalIndex) => {
           const ts = parseDateToTimestamp(item.data);
@@ -894,25 +894,21 @@
         return;
       }
 
-      const startTs = new Date(currentYear, 0, 1).getTime();
-      const endTs = new Date().getTime(); // Finaliza hoje
-      const totalDuration = Math.max(endTs - startTs, 1);
-
       let htmlMarkup = '';
 
-      const posCurrYear = 0;
-      const posNow = 100;
-
+      // Marcação inicial do Ano
       htmlMarkup += `
-        <div class="timeline-year-marker" style="left: ${posCurrYear}%;">${currentYear}</div>
-        <div class="timeline-year-line" style="left: ${posCurrYear}%;"></div>
-
-        <div class="timeline-year-marker" style="left: ${posNow}%; color: #4ade80;">hoje</div>
-        <div class="timeline-year-line" style="left: ${posNow}%; background-color: #4ade80;"></div>
+        <div class="timeline-year-marker" style="left: 0%;">${currentYear}</div>
+        <div class="timeline-year-line" style="left: 0%;"></div>
       `;
 
+      const totalEvents = filteredEvents.length;
+
+      // Distribuição uniformemente dividida ao longo de 100% da largura
       filteredEvents.forEach((evt, idx) => {
-        const leftPercent = ((evt.timestamp - startTs) / totalDuration) * 100;
+        // Calcula a porcentagem igualitária (de 5% até 95% para não colar nas bordas extremo)
+        const step = 90 / (totalEvents > 1 ? totalEvents - 1 : 1);
+        const leftPercent = 5 + (idx * step);
         const isEven = idx % 2 === 0;
 
         if (isEven) {
@@ -933,6 +929,12 @@
           `;
         }
       });
+
+      // Marcação final do 'Hoje' encostada em 100%
+      htmlMarkup += `
+        <div class="timeline-year-marker" style="left: 100%; color: #4ade80;">hoje</div>
+        <div class="timeline-year-line" style="left: 100%; background-color: #4ade80;"></div>
+      `;
 
       track.innerHTML = htmlMarkup;
     }
