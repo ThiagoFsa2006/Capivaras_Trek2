@@ -156,10 +156,10 @@
       gap: 6px;
     }
 
-    /* LINHA DO TEMPO COM ALTURA AUMENTADA E FONTE REDUZIDA */
+    /* LINHA DO TEMPO COM ALTURA 500PX */
     .timeline-scroll-wrapper {
       width: 100%;
-      height: 420px; /* Altura aumentada para dar espaço aos nomes */
+      height: 500px; /* Altura ajustada para 500px */
       position: relative;
       display: flex;
       align-items: center;
@@ -216,16 +216,16 @@
       transform: scaleY(1.4);
     }
 
-    /* Nó Superior */
+    /* Nó Superior com Altura Expandida */
     .timeline-node.top-node {
-      top: -210px;
-      height: 210px;
+      top: -250px;
+      height: 250px;
       justify-content: flex-end;
     }
 
     .timeline-node.top-node .timeline-date {
       margin-bottom: 4px;
-      font-size: 0.75rem; /* Letra reduzida em 1pt */
+      font-size: 0.75rem;
       font-weight: 800;
       color: #ffffff;
       white-space: nowrap;
@@ -234,37 +234,37 @@
     .timeline-node.top-node .timeline-name {
       writing-mode: vertical-rl;
       transform: rotate(180deg);
-      font-size: 0.75rem; /* Letra reduzida em 1pt */
+      font-size: 0.75rem;
       font-weight: 600;
       color: #d0e0d2;
       white-space: nowrap;
       margin-bottom: 6px;
-      max-height: 160px;
+      max-height: 200px;
       transition: color 0.2s;
     }
 
-    /* Nó Inferior */
+    /* Nó Inferior com Altura Expandida */
     .timeline-node.bottom-node {
       top: 0px;
-      height: 210px;
+      height: 250px;
       justify-content: flex-start;
     }
 
     .timeline-node.bottom-node .timeline-name {
       writing-mode: vertical-rl;
       transform: rotate(180deg);
-      font-size: 0.75rem; /* Letra reduzida em 1pt */
+      font-size: 0.75rem;
       font-weight: 600;
       color: #d0e0d2;
       white-space: nowrap;
       margin-top: 6px;
-      max-height: 160px;
+      max-height: 200px;
       transition: color 0.2s;
     }
 
     .timeline-node.bottom-node .timeline-date {
       margin-top: 4px;
-      font-size: 0.75rem; /* Letra reduzida em 1pt */
+      font-size: 0.75rem;
       font-weight: 800;
       color: #ffffff;
       white-space: nowrap;
@@ -565,15 +565,15 @@
   <main class="section" style="padding-top: 30px;">
     <div class="container">
       
-      <!-- Container das Seções Expandíveis (Conquistas + Linha do Tempo) -->
+      <!-- Container das Seções Expandíveis (Conquistas + Timeline) -->
       <div class="expandable-sections-container">
 
-        <!-- 1. Painel Conquistas (Retrátil) -->
-        <section class="summary-board" id="summaryBoard">
+        <!-- 1. Painel Conquistas (Recolhido por padrão) -->
+        <section class="summary-board collapsed" id="summaryBoard">
           <div class="summary-board-header" onclick="toggleBoard('summaryBoard', 'toggleTextConquistas')">
             <h2>CONQUISTAS</h2>
             <button class="toggle-btn" aria-label="Recolher ou Expandir Painel">
-              <span id="toggleTextConquistas">Recolher</span>
+              <span id="toggleTextConquistas">Expandir</span>
               <span class="toggle-icon">▲</span>
             </button>
           </div>
@@ -613,17 +613,17 @@
           </div>
         </section>
 
-        <!-- 2. Painel Linha do Tempo (Retrátil) -->
+        <!-- 2. Painel Timeline (Recolhido por padrão) -->
         <section class="summary-board collapsed" id="timelineBoard">
           <div class="summary-board-header" onclick="toggleBoard('timelineBoard', 'toggleTextTimeline')">
-            <h2>LINHA DO TEMPO DOS CAPIVARAS</h2>
+            <h2>TIMELINE DOS CAPIVARAS</h2>
             <button class="toggle-btn" aria-label="Expandir ou Recolher Linha do Tempo">
               <span id="toggleTextTimeline">Expandir</span>
               <span class="toggle-icon">▲</span>
             </button>
           </div>
 
-          <!-- Área Ajustada de Visualização Total -->
+          <!-- Área de Visualização de 500px -->
           <div class="timeline-scroll-wrapper">
             <div class="timeline-track" id="timelineTrack">
               <p style="color: #d0e0d2; text-align: center; width: 100%;">Carregando linha do tempo...</p>
@@ -861,7 +861,7 @@
       cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
     }
 
-    // Renderiza Seção 2: LINHA DO TEMPO (Com 'Hoje' encostado na direita e mais espaço vertical)
+    // Renderiza Seção 2: TIMELINE DOS CAPIVARAS (Apenas Ano Atual)
     function renderTimeline() {
       const track = document.getElementById('timelineTrack');
       if (!trilhasData || trilhasData.length === 0) {
@@ -869,9 +869,9 @@
         return;
       }
 
-      const currentYear = new Date().getFullYear(); // 2026
-      const previousYear = currentYear - 1;         // 2025
+      const currentYear = new Date().getFullYear(); // Ano Atual (2026)
 
+      // Filtragem estrita somente para eventos do ANO ATUAL
       const filteredEvents = trilhasData
         .map((item, originalIndex) => {
           const ts = parseDateToTimestamp(item.data);
@@ -886,28 +886,24 @@
             originalIndex: originalIndex
           };
         })
-        .filter(item => item && (item.year === previousYear || item.year === currentYear))
+        .filter(item => item && item.year === currentYear)
         .sort((a, b) => a.timestamp - b.timestamp);
 
       if (filteredEvents.length === 0) {
-        track.innerHTML = `<p style="color: #d0e0d2; text-align: center; width: 100%;">Nenhuma atividade registrada em ${previousYear} e ${currentYear}.</p>`;
+        track.innerHTML = `<p style="color: #d0e0d2; text-align: center; width: 100%;">Nenhuma atividade registrada em ${currentYear}.</p>`;
         return;
       }
 
-      const startTs = new Date(previousYear, 0, 1).getTime();
-      const endTs = new Date().getTime(); // Finaliza exatamente na data de HOJE para expandir o espaço visual
-      const totalDuration = endTs - startTs;
+      const startTs = new Date(currentYear, 0, 1).getTime();
+      const endTs = new Date().getTime(); // Finaliza hoje
+      const totalDuration = Math.max(endTs - startTs, 1);
 
       let htmlMarkup = '';
 
-      const posPrevYear = 0;
-      const posCurrYear = ((new Date(currentYear, 0, 1).getTime() - startTs) / totalDuration) * 100;
-      const posNow = 100; // 'Hoje' encostado no final da linha do tempo
+      const posCurrYear = 0;
+      const posNow = 100;
 
       htmlMarkup += `
-        <div class="timeline-year-marker" style="left: ${posPrevYear}%;">${previousYear}</div>
-        <div class="timeline-year-line" style="left: ${posPrevYear}%;"></div>
-
         <div class="timeline-year-marker" style="left: ${posCurrYear}%;">${currentYear}</div>
         <div class="timeline-year-line" style="left: ${posCurrYear}%;"></div>
 
@@ -920,7 +916,6 @@
         const isEven = idx % 2 === 0;
 
         if (isEven) {
-          // Exibe acima da linha
           htmlMarkup += `
             <div class="timeline-node top-node" style="left: ${leftPercent}%;" onclick="openModal(${evt.originalIndex})" title="${evt.nome} (${evt.data})">
               <span class="timeline-date">${evt.dayMonth}</span>
@@ -929,7 +924,6 @@
             </div>
           `;
         } else {
-          // Exibe abaixo da linha
           htmlMarkup += `
             <div class="timeline-node bottom-node" style="left: ${leftPercent}%;" onclick="openModal(${evt.originalIndex})" title="${evt.nome} (${evt.data})">
               <div class="timeline-tick"></div>
