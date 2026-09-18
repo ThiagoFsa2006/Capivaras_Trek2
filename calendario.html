@@ -14,7 +14,7 @@
     .page-layout {
       display: flex;
       gap: 20px;
-      align-items: stretch; /* Garante altura idêntica para ambas as colunas */
+      align-items: stretch;
     }
 
     /* -----------------------------------------------------------
@@ -52,7 +52,7 @@
       margin: 35px 0;
     }
 
-    /* Linha central vertical */
+    /* Linha central vertical (Desktop) */
     .timeline-vertical-line {
       position: absolute;
       top: 0;
@@ -139,7 +139,7 @@
       transition: all 0.25s ease;
     }
 
-    /* Highlight do Mês Atual no Calendário */
+    /* Highlight do Mês Selecionado no Calendário */
     .timeline-v-node.highlight-month .timeline-v-content {
       background: rgba(74, 222, 128, 0.18);
       border-color: #4ade80;
@@ -367,7 +367,7 @@
     }
 
     /* -----------------------------------------------------------
-       3. RESPONSIVIDADE E CORREÇÃO DA TIMELINE NO CELULAR
+       3. REGRAS EXCLUSIVAS PARA DISPOSITIVOS MÓVEIS / CELULAR
     ----------------------------------------------------------- */
     @media (max-width: 992px) {
       .page-layout { 
@@ -375,8 +375,8 @@
       }
 
       .sidebar-timeline { 
-        width: 100%;
-        min-width: 100%;
+        width: 100% !important;
+        min-width: 100% !important;
         min-height: 520px; 
         box-sizing: border-box;
       }
@@ -386,18 +386,19 @@
         min-height: 420px;
       }
 
-      /* Alinha a linha no canto esquerdo no celular */
+      /* Move a linha guia vertical para a esquerda */
       .timeline-vertical-line {
         left: 20px !important;
         transform: none !important;
       }
 
+      /* Alinha os marcadores "hoje" e "2026" sobre a linha da esquerda */
       .timeline-v-marker {
         left: 20px !important;
         transform: translateX(-50%) !important;
       }
 
-      /* Todos os nós ficam do lado direito da linha */
+      /* Força todos os nós/cards a ficarem no lado direito da linha */
       .timeline-v-node,
       .timeline-v-node.left,
       .timeline-v-node.right {
@@ -406,16 +407,18 @@
         width: 100% !important;
       }
 
+      /* Centraliza a bolinha sobre a linha da esquerda */
       .timeline-v-dot {
         left: 20px !important;
         transform: translateX(-50%) !important;
       }
 
+      /* Expande o conteúdo do card na largura total à direita da linha */
       .timeline-v-content,
       .timeline-v-node.left .timeline-v-content,
       .timeline-v-node.right .timeline-v-content {
-        width: calc(100% - 40px) !important;
-        margin-left: 35px !important;
+        width: calc(100% - 45px) !important;
+        margin-left: 38px !important;
         margin-right: 0 !important;
         text-align: left !important;
         box-sizing: border-box;
