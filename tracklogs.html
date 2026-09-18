@@ -57,17 +57,19 @@
     }
 
     .card-header-map {
-      height: 200px;
+      height: 220px;
       width: 100%;
       background-color: #e5ebe6;
       border-bottom: 1px solid #dcdfdc;
       position: relative;
+      overflow: hidden;
     }
 
     .card-header-map iframe {
       width: 100%;
       height: 100%;
       border: none;
+      display: block;
     }
 
     .tracklog-info {
@@ -387,10 +389,10 @@
     let modalMapInstance = null;
     let chartInstance = null;
 
-    // Extrai o ID da trilha do Wikiloc e converte para a URL do Embed de satélite
+    // Converte qualquer formato de URL do Wikiloc para o widget Embed2 de satélite
     function extractWikilocEmbedUrl(url) {
       if (!url) return '';
-      // Captura o código numérico no final da URL ou no parâmetro id
+      // Captura o ID numérico independentemente da linguagem da rota (ex: /hiking-trails/, /trilhas-outdoor/)
       const match = url.match(/-(\d+)(?:\/?|\?.*)$/) || url.match(/id=(\d+)/) || url.match(/(\d{6,10})/);
       if (match && match[1]) {
         return `https://pt.wikiloc.com/wikiloc/embedv2.do?id=${match[1]}&maptype=s`;
@@ -398,7 +400,7 @@
       return '';
     }
 
-    // Extrai a URL do Wikiloc para o botão de ação externa
+    // Extrai a URL do Wikiloc para o botão de acesso externo
     function extractWikilocUrl(cellValue, trackTitle) {
       if (!cellValue) return '';
       const str = cellValue.trim();
@@ -462,7 +464,6 @@
         const csvText = await res.text();
         const rows = parseCSV(csvText);
 
-        // Filtra itens onde gpxfile OU linkwic/linkwikiloc estão preenchidos
         const validItems = rows.filter(r => {
           const gpx = r.gpxfile ? r.gpxfile.trim() : '';
           const wic = (r.linkwic || r.linkwikiloc || '').trim();
@@ -506,7 +507,6 @@
       tempDiv.style.display = 'none';
 
       const promises = items.map(async (item) => {
-        // Se não houver arquivo GPX, retorna valores informativos sem buscar requisição GPX
         if (!item.downloadUrl) {
           return {
             ...item,
@@ -656,7 +656,7 @@
         const mapElem = document.getElementById(`cardMap_${idx}`);
         if (!mapElem) return;
 
-        // Caso 1: GPX local presente
+        // Caso 1: GPX local presente (Leaflet)
         if (item.gpxText) {
           const miniMap = L.map(`cardMap_${idx}`, {
             zoomControl: false,
@@ -684,7 +684,7 @@
             miniMap.fitBounds(e.target.getBounds(), { padding: [10, 10] });
           }).addTo(miniMap);
 
-        // Caso 2: Sem GPX local, mas com link do Wikiloc
+        // Caso 2: Sem GPX local, insere o iframe do player do Wikiloc
         } else if (item.wikilocEmbedUrl) {
           mapElem.innerHTML = `
             <iframe 
@@ -693,7 +693,7 @@
               height="100%" 
               frameborder="0" 
               scrolling="no"
-              style="border:0; width:100%; height:100%;"
+              style="border:none; width:100%; height:100%; display:block;"
               allowfullscreen>
             </iframe>`;
 
