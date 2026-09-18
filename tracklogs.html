@@ -113,7 +113,7 @@
       gap: 6px;
     }
 
-    /* Botão Wikiloc Verde e Laranja */
+    /* Botão Wikiloc */
     .btn-wikiloc {
       background-color: #2e7d32;
       color: #ffffff;
@@ -133,6 +133,7 @@
       cursor: not-allowed;
     }
 
+    /* Botão GPX */
     .btn-gpx {
       background-color: #1b3320;
       color: #ffffff;
@@ -140,6 +141,13 @@
 
     .btn-gpx:hover {
       background-color: #2d7a3e;
+    }
+
+    .btn-gpx.disabled {
+      opacity: 0.35;
+      pointer-events: none;
+      background-color: #9e9e9e;
+      cursor: not-allowed;
     }
 
     /* Modal GPX Viewer */
@@ -377,7 +385,6 @@
       if (!cellValue) return '';
       const str = cellValue.trim();
       
-      // Se já for uma URL direta
       if (str.startsWith('http://') || str.startsWith('https://')) {
         return str;
       }
@@ -385,7 +392,6 @@
       const match = str.match(/https?:\/\/[^\s"'>]+/i);
       if (match) return match[0];
 
-      // Se for apenas texto (ex: "Wikiloc | Circular dos Capivaris Trail")
       if (str.length > 0) {
         const query = encodeURIComponent(str.replace(/^Wikiloc\s*\|\s*/i, ''));
         return `https://pt.wikiloc.com/wikiloc/spatialArtifacts.do?event=search&term=${query}`;
@@ -438,27 +444,31 @@
         const csvText = await res.text();
         const rows = parseCSV(csvText);
 
-        // Filtra apenas itens com gpxfile preenchido na planilha
-        const validItems = rows.filter(r => r.gpxfile && r.gpxfile.trim() !== '').map(r => {
-          let fileName = r.gpxfile.trim();
-          if (!fileName.toLowerCase().endsWith('.gpx')) {
+        // Filtra itens onde gpxfile OU linkwic/linkwikiloc estão preenchidos
+        const validItems = rows.filter(r => {
+          const gpx = r.gpxfile ? r.gpxfile.trim() : '';
+          const wic = (r.linkwic || r.linkwikiloc || '').trim();
+          return gpx !== '' || wic !== '';
+        }).map(r => {
+          let fileName = r.gpxfile ? r.gpxfile.trim() : '';
+          if (fileName && !fileName.toLowerCase().endsWith('.gpx')) {
             fileName += '.gpx';
           }
           
           const rawWic = r.linkwic || r.linkwikiloc || '';
-          const titleName = r.nome || fileName.replace(/\.gpx$/i, '');
+          const titleName = r.nome || (fileName ? fileName.replace(/\.gpx$/i, '') : 'Trilha sem nome');
           const wikilocUrl = extractWikilocUrl(rawWic, titleName);
 
           return {
             title: titleName,
             filename: fileName,
             linkwic: wikilocUrl,
-            downloadUrl: `tracklogs/${encodeURIComponent(fileName)}`
+            downloadUrl: fileName ? `tracklogs/${encodeURIComponent(fileName)}` : null
           };
         });
 
         if (validItems.length === 0) {
-          container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhuma trilha com arquivo GPX cadastrado na planilha.</p>';
+          container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhuma trilha encontrada na planilha.</p>';
           return;
         }
 
@@ -476,6 +486,19 @@
       tempDiv.style.display = 'none';
 
       const promises = items.map(async (item) => {
+        // Se não tiver arquivo GPX associado, retorna os dados padrões sem fazer requisição
+        if (!item.downloadUrl) {
+          return {
+            ...item,
+            gpxText: null,
+            distKm: 'N/A',
+            gainM: 'N/A',
+            durationStr: 'N/A',
+            dateStr: 'Data N/A',
+            timestamp: 0
+          };
+        }
+
         try {
           const res = await fetch(item.downloadUrl);
           if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -571,6 +594,7 @@
       const container = document.getElementById('tracklogsContainer');
       container.innerHTML = loadedTracklogs.map((item, idx) => {
         const hasWikiloc = item.linkwic && item.linkwic.length > 0;
+        const hasGpx = item.gpxText !== null;
         
         return `
           <article class="tracklog-card">
@@ -594,7 +618,8 @@
                    🟢 Wikiloc ↗
                 </a>
 
-                <button class="btn-action btn-gpx" onclick="openGarminModal(${idx})">
+                <button class="btn-action btn-gpx ${hasGpx ? '' : 'disabled'}" 
+                        onclick="${hasGpx ? `openGarminModal(${idx})` : ''}">
                   🗺️ Ver GPX
                 </button>
               </div>
