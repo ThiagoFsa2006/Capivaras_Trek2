@@ -256,7 +256,7 @@
   <main class="section" style="padding-top: 20px;">
     <div class="container">
       <div class="tracklog-grid" id="tracklogsContainer">
-        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Carregando arquivos GPX...</p>
+        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Carregando dados da planilha e arquivos GPX...</p>
       </div>
     </div>
   </main>
@@ -332,59 +332,80 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    const GITHUB_REPO_USER = 'ThiagoFsa2006';
-    const GITHUB_REPO_NAME = 'Capivaras_Trek2';
-    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO_USER}/${GITHUB_REPO_NAME}/contents/tracklogs`;
-
-    // Mapeamento exato conforme a coluna gpxfile da sua planilha
-    const GPX_MAPPING = {
-      'activity_20088683613': 'Circular Serra da Melança',
-      'activity_22606900845': 'Acampamento Capivari Mirim',
-      'activity_23238539443': 'Travessia dos Capivaris',
-      'activity_23646572391': 'Circular dos Capivaris',
-      'activity_24003191065': 'Araçatuba + Baleia + Moréia',
-      'activity_24077933316': 'Taipabuçu + Ferraria',
-      'activity_24165165476': 'Jacutinga'
-    };
+    // URL CSV da Página 1 do Google Sheets
+    const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
 
     let loadedTracklogs = [];
     let modalMapInstance = null;
     let chartInstance = null;
 
-    async function fetchTracklogsDirectory() {
+    function parseCSV(text) {
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 2) return [];
+
+      const splitLine = (line) => {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        result.push(current.trim().replace(/^"|"$/g, ''));
+        return result;
+      };
+
+      const headers = splitLine(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, ''));
+
+      return lines.slice(1).map(line => {
+        const values = splitLine(line);
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header] = values[index] || '';
+        });
+        return obj;
+      });
+    }
+
+    async function loadDataFromSheet() {
       const container = document.getElementById('tracklogsContainer');
       try {
-        const response = await fetch(GITHUB_API_URL);
-        if (!response.ok) throw new Error('Falha ao acessar o repositório');
+        const res = await fetch(GOOGLE_SHEET_PAGINA1_URL);
+        if (!res.ok) throw new Error('Falha ao carregar CSV da planilha');
 
-        const files = await response.json();
-        
-        // Filtra apenas arquivos .gpx que possuem mapeamento cadastrado na planilha
-        const mappedFiles = files.filter(f => {
-          if (!f.name.toLowerCase().endsWith('.gpx')) return false;
-          const baseName = f.name.replace(/\.gpx$/i, '').trim();
-          return GPX_MAPPING.hasOwnProperty(baseName);
-        });
+        const csvText = await res.text();
+        const rows = parseCSV(csvText);
 
-        if (mappedFiles.length === 0) {
-          container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhum tracklog mapeado foi encontrado.</p>';
-          return;
-        }
-
-        const items = mappedFiles.map(file => {
-          const baseName = file.name.replace(/\.gpx$/i, '').trim();
+        // Filtra apenas itens que possuem o campo gpxfile preenchido na planilha
+        const validItems = rows.filter(r => r.gpxfile && r.gpxfile.trim() !== '').map(r => {
+          let fileName = r.gpxfile.trim();
+          if (!fileName.toLowerCase().endsWith('.gpx')) {
+            fileName += '.gpx';
+          }
           return {
-            filename: file.name,
-            title: GPX_MAPPING[baseName],
-            downloadUrl: file.download_url || `tracklogs/${encodeURIComponent(file.name)}`
+            title: r.nome || fileName.replace(/\.gpx$/i, ''),
+            filename: fileName,
+            downloadUrl: `tracklogs/${encodeURIComponent(fileName)}`
           };
         });
 
-        await processAndSortTracks(items);
+        if (validItems.length === 0) {
+          container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhuma trilha com arquivo GPX cadastrado na planilha.</p>';
+          return;
+        }
+
+        await processAndSortTracks(validItems);
 
       } catch (err) {
-        console.error('Erro ao buscar diretório:', err);
-        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: red;">Erro ao carregar a lista de tracklogs.</p>';
+        console.error('Erro ao ler a planilha:', err);
+        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: red;">Erro ao carregar os dados da planilha.</p>';
       }
     }
 
@@ -545,7 +566,6 @@
       const track = loadedTracklogs[idx];
       if (!track || !track.gpxText) return;
 
-      // Exibe o Nome Mapeado no Modal
       document.getElementById('modalTrilhaTitle').textContent = track.title;
 
       const modal = document.getElementById('gpxModal');
@@ -683,7 +703,7 @@
       navLinks.classList.remove('active');
     }
 
-    fetchTracklogsDirectory();
+    loadDataFromSheet();
   </script>
 </body>
 </html>
