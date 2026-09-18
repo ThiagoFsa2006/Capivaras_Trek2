@@ -13,12 +13,31 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
+    /* Reset & Base */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: #f4f7f4; color: #1b3320; }
+    .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 40px 0; }
+
+    /* Navbar */
+    .navbar { background-color: #1b3320; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+    .nav-container { display: flex; justify-content: space-between; align-items: center; height: 70px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
+    .logo-img { height: 42px; width: auto; }
+    .brand-name { font-weight: 800; font-size: 1.25rem; }
+    .nav-links { display: flex; gap: 20px; }
+    .nav-links a { color: #d0e0d2; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: #ffffff; }
+
+    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; }
+    .mobile-menu-btn span { display: block; width: 25px; height: 3px; background-color: #ffffff; border-radius: 2px; }
+
     /* Grid de Cards */
     .tracklog-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 24px;
-      margin-top: 30px;
+      margin-top: 20px;
     }
 
     .tracklog-card {
@@ -28,9 +47,9 @@
       overflow: hidden;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      cursor: pointer;
       display: flex;
       flex-direction: column;
+      cursor: pointer;
     }
 
     .tracklog-card:hover {
@@ -39,7 +58,7 @@
     }
 
     .card-header-map {
-      height: 160px;
+      height: 170px;
       width: 100%;
       background-color: #e5ebe6;
       border-bottom: 1px solid #dcdfdc;
@@ -89,7 +108,7 @@
       background-color: #1b3320;
     }
 
-    /* Modal Estilo GPXViewer/Garmin */
+    /* Modal Estilo GPX Viewer / Garmin Connect */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -101,9 +120,7 @@
       padding: 20px;
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
 
     .modal-content-garmin {
       background: #ffffff;
@@ -114,7 +131,6 @@
       overflow-y: auto;
       position: relative;
       padding: 20px 24px;
-      font-family: 'Inter', sans-serif;
     }
 
     .modal-close {
@@ -128,16 +144,12 @@
       color: #666;
     }
 
-    .garmin-source {
-      font-size: 0.8rem;
-      color: #777;
-      margin-bottom: 10px;
-    }
+    .garmin-source { font-size: 0.8rem; color: #777; margin-bottom: 10px; }
 
     .garmin-links-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 15px;
       font-size: 0.82rem;
     }
@@ -158,7 +170,7 @@
       border: 1px solid #ccc;
     }
 
-    /* Painel de Estatísticas idêntico ao Print 2 */
+    /* Painel de Estatísticas GPX */
     .garmin-stats-row {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -175,9 +187,7 @@
       border-right: 1px solid #e8ece9;
     }
 
-    .garmin-stat-col:last-child {
-      border-right: none;
-    }
+    .garmin-stat-col:last-child { border-right: none; }
 
     .garmin-label {
       font-size: 0.68rem;
@@ -189,28 +199,10 @@
       margin-bottom: 4px;
     }
 
-    .garmin-val {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #111;
-      line-height: 1.1;
-    }
+    .garmin-val { font-size: 1.35rem; font-weight: 800; color: #111; line-height: 1.1; }
+    .garmin-unit { font-size: 0.85rem; font-weight: 700; color: #333; margin-left: 2px; }
+    .garmin-sub { font-size: 0.72rem; color: #888; margin-top: 3px; display: block; }
 
-    .garmin-unit {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #333;
-      margin-left: 2px;
-    }
-
-    .garmin-sub {
-      font-size: 0.72rem;
-      color: #888;
-      margin-top: 3px;
-      display: block;
-    }
-
-    /* Gráfico de Elevação */
     .elevation-chart-wrapper {
       margin-top: 15px;
       height: 180px;
@@ -221,16 +213,18 @@
       padding: 10px;
     }
 
+    .footer { background-color: #1b3320; color: #ffffff; padding: 30px 0; margin-top: 40px; text-align: center; }
+    .footer-brand h3 { font-size: 1.2rem; margin-top: 8px; }
+    .footer-brand p { color: #a3baa6; font-size: 0.85rem; margin-top: 4px; }
+    .footer-logo { height: 40px; width: auto; }
+    .footer-copy { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; color: #819984; font-size: 0.8rem; }
+
     @media (max-width: 820px) {
-      .garmin-stats-row {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-      }
-      .garmin-stat-col {
-        border-right: none;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 8px;
-      }
+      .garmin-stats-row { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .garmin-stat-col { border-right: none; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+      .nav-links { display: none; position: absolute; top: 70px; left: 0; right: 0; background-color: #1b3320; flex-direction: column; padding: 20px; gap: 15px; }
+      .nav-links.active { display: flex; }
+      .mobile-menu-btn { display: flex; }
     }
   </style>
 </head>
@@ -265,41 +259,41 @@
     <div class="container">
       <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Tracklogs & GPX</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
-        Explore os trajetos lidos automaticamente da pasta tracklogs.
+        Trajetos e métricas calculados diretamente dos arquivos GPX originais.
       </p>
     </div>
   </section>
 
   <!-- Conteúdo Principal -->
-  <main class="section" style="padding-top: 30px;">
+  <main class="section" style="padding-top: 20px;">
     <div class="container">
       <div class="tracklog-grid" id="tracklogsContainer">
-        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Lendo arquivos da pasta tracklogs...</p>
+        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Buscando e lendo arquivos GPX da pasta tracklogs...</p>
       </div>
     </div>
   </main>
 
-  <!-- Modal Estilo Garmin -->
+  <!-- Modal GPX Viewer -->
   <div class="modal-overlay" id="gpxModal">
     <div class="modal-content-garmin">
       <button class="modal-close" id="modalClose">&times;</button>
       
-      <div class="garmin-source">Source: Garmin Connect</div>
+      <div class="garmin-source">Source: Garmin Connect / Original GPX File</div>
 
       <div class="garmin-links-bar">
         <span>OPEN IN</span>
-        <a href="#" target="_blank">Google My Maps ↗</a>
-        <a href="#" target="_blank">Google Earth ↗</a>
-        <a href="#" target="_blank">Strava ↗</a>
-        <a href="#" target="_blank">Komoot ↗</a>
-        <a href="#" target="_blank">Garmin Connect ↗</a>
-        <a href="#" target="_blank">AllTrails ↗</a>
+        <a href="https://mymaps.google.com" target="_blank">Google My Maps ↗</a>
+        <a href="https://earth.google.com" target="_blank">Google Earth ↗</a>
+        <a href="https://www.strava.com" target="_blank">Strava ↗</a>
+        <a href="https://www.komoot.com" target="_blank">Komoot ↗</a>
+        <a href="https://connect.garmin.com" target="_blank">Garmin Connect ↗</a>
+        <a href="https://www.alltrails.com" target="_blank">AllTrails ↗</a>
       </div>
 
       <!-- Mapa -->
       <div id="modalMapContainer"></div>
 
-      <!-- Barra de Estatísticas -->
+      <!-- Estatísticas GPX -->
       <div class="garmin-stats-row">
         <div class="garmin-stat-col">
           <span class="garmin-label">DISTANCE</span>
@@ -336,7 +330,7 @@
         </div>
       </div>
 
-      <!-- Perfil de Elevação -->
+      <!-- Gráfico de Altimetria -->
       <div class="elevation-chart-wrapper">
         <canvas id="elevationChart"></canvas>
       </div>
@@ -357,7 +351,7 @@
     </div>
   </footer>
 
-  <!-- Bibliotecas: Leaflet, Leaflet-GPX, Chart.js -->
+  <!-- Bibliotecas JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -371,12 +365,11 @@
     let modalMapInstance = null;
     let chartInstance = null;
 
-    function formatFileNameToTitle(filename) {
-      let nameWithoutExt = filename.replace(/\.gpx$/i, '');
-      return nameWithoutExt.replace(/[-+]/g, ' ').replace(/\s+/g, ' ').trim();
+    function formatTitleFromFileName(filename) {
+      let name = filename.replace(/\.gpx$/i, '');
+      return name.replace(/[-+]/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
-    // Codifica corretamente caminhos com caracteres especiais e espaços
     function formatGpxPath(filename) {
       return 'tracklogs/' + encodeURIComponent(filename);
     }
@@ -385,30 +378,30 @@
       const container = document.getElementById('tracklogsContainer');
       try {
         const response = await fetch(GITHUB_API_URL);
-        if (!response.ok) throw new Error('Erro ao acessar pasta tracklogs');
+        if (!response.ok) throw new Error('Falha ao acessar repositório no GitHub');
 
         const files = await response.json();
         const gpxFiles = files.filter(f => f.name.toLowerCase().endsWith('.gpx'));
 
         if (gpxFiles.length === 0) {
-          container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhum arquivo .gpx encontrado no diretório tracklogs.</p>';
+          container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhum arquivo .gpx encontrado na pasta tracklogs.</p>';
           return;
         }
 
         loadedTracklogs = gpxFiles.map(file => ({
           filename: file.name,
-          title: formatFileNameToTitle(file.name),
+          title: formatTitleFromFileName(file.name),
           path: formatGpxPath(file.name)
         }));
 
         renderCards();
       } catch (err) {
-        console.warn('Fallback local ativado:', err);
+        console.warn('Usando fallback local:', err);
         loadedTracklogs = [
           {
             filename: 'Araçatuba + Baleia + Moréia.gpx',
-            path: formatGpxPath('Araçatuba + Baleia + Moréia.gpx'),
-            title: 'Araçatuba + Baleia + Moréia'
+            title: 'Araçatuba + Baleia + Moréia',
+            path: formatGpxPath('Araçatuba + Baleia + Moréia.gpx')
           }
         ];
         renderCards();
@@ -424,8 +417,9 @@
             <div>
               <h3 class="tracklog-title">${item.title}</h3>
               <ul class="tracklog-meta">
-                <li>📍 <strong>Local:</strong> ${item.title}</li>
-                <li>📏 <strong>Distância:</strong> <span id="cardDist_${idx}">Carregando...</span></li>
+                <li>📏 <strong>Distância:</strong> <span id="cardDist_${idx}">Lendo GPX...</span></li>
+                <li>📈 <strong>Ganho de Elevação:</strong> <span id="cardGain_${idx}">Lendo GPX...</span></li>
+                <li>⏱️ <strong>Duração Total:</strong> <span id="cardDur_${idx}">Lendo GPX...</span></li>
               </ul>
             </div>
             <button class="btn-view-details">Ver Detalhes do Percurso ↗</button>
@@ -455,10 +449,26 @@
 
         const gpx = new L.GPX(item.path, { async: true });
         gpx.on('loaded', function(e) {
-          miniMap.fitBounds(e.target.getBounds(), { padding: [10, 10] });
-          const distKm = (e.target.get_distance() / 1000).toFixed(1);
-          const elem = document.getElementById(`cardDist_${idx}`);
-          if (elem) elem.textContent = `${distKm} km`;
+          const gpxObj = e.target;
+          miniMap.fitBounds(gpxObj.getBounds(), { padding: [10, 10] });
+
+          // Lê e preenche as métricas reais do próprio arquivo GPX no Card
+          const distKm = (gpxObj.get_distance() / 1000).toFixed(1);
+          const gainM = Math.round(gpxObj.get_elevation_gain());
+          const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
+          
+          const hours = Math.floor(durMs / 3600000);
+          const mins = Math.floor((durMs % 3600000) / 60000);
+          const durationStr = `${hours}h ${mins}m`;
+
+          const elemDist = document.getElementById(`cardDist_${idx}`);
+          const elemGain = document.getElementById(`cardGain_${idx}`);
+          const elemDur = document.getElementById(`cardDur_${idx}`);
+
+          if (elemDist) elemDist.textContent = `${distKm} km`;
+          if (elemGain) elemGain.textContent = `${gainM.toLocaleString()} m`;
+          if (elemDur) elemDur.textContent = durationStr;
+
         }).addTo(miniMap);
       });
     }
@@ -489,29 +499,29 @@
           const gpxObj = e.target;
           modalMapInstance.fitBounds(gpxObj.getBounds());
 
-          // Distância e Conversões
+          // Distância Real do Arquivo GPX
           const distKm = (gpxObj.get_distance() / 1000).toFixed(1);
           const distMi = (distKm * 0.621371).toFixed(2);
 
-          // Elevação e Conversões
+          // Elevação Acumulada Real
           const gainM = Math.round(gpxObj.get_elevation_gain());
           const gainFt = Math.round(gainM * 3.28084);
           const lossM = Math.round(gpxObj.get_elevation_loss());
           const lossFt = Math.round(lossM * 3.28084);
 
-          // Duração
-          const durMs = gpxObj.get_moving_time() || gpxObj.get_total_time();
+          // Duração Total do GPX
+          const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
           const hours = Math.floor(durMs / 3600000);
           const mins = Math.floor((durMs % 3600000) / 60000);
           const durationStr = `${hours}h ${mins}m`;
 
-          // Velocidades
+          // Velocidade
           const avgSpeed = (gpxObj.get_moving_speed() || (distKm / (durMs / 3600000))).toFixed(1);
           const avgMph = (avgSpeed * 0.621371).toFixed(1);
           const maxSpeed = (gpxObj.get_speed_max() || (avgSpeed * 1.5)).toFixed(1);
           const maxMph = (maxSpeed * 0.621371).toFixed(1);
 
-          // Pontos
+          // Pontos gravados no GPX
           let totalPts = '--';
           if (gpxObj._info && gpxObj._info.elevation && gpxObj._info.elevation.points) {
             totalPts = gpxObj._info.elevation.points.length.toLocaleString();
@@ -577,9 +587,7 @@
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
-            tooltip: {
-              callbacks: { label: (ctx) => `${ctx.raw} m` }
-            }
+            tooltip: { callbacks: { label: (ctx) => `${ctx.raw} m` } }
           },
           scales: {
             x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
