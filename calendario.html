@@ -10,10 +10,155 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* Container Principal do Calendário */
+    /* Layout de Duas Colunas (Timeline Lateral + Calendário) */
+    .page-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* -----------------------------------------------------------
+       1. LINHA DO TEMPO LATERAL (VERDE ESCURO)
+    ----------------------------------------------------------- */
+    .sidebar-timeline {
+      background-color: #1b3320;
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 24px 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      min-height: 680px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .sidebar-timeline-header {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      color: #a3c9a8;
+    }
+
+    .timeline-vertical-wrapper {
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      padding: 30px 0;
+    }
+
+    /* Linha central vertical */
+    .timeline-vertical-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateX(-50%);
+    }
+
+    /* Marcadores do Topo ("hoje" ou Ano) */
+    .timeline-v-marker {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #4ade80;
+      background-color: #1b3320;
+      padding: 2px 8px;
+      border-radius: 4px;
+      z-index: 2;
+      white-space: nowrap;
+    }
+
+    .timeline-v-marker.top { top: -20px; }
+    .timeline-v-marker.bottom { bottom: -20px; color: #a3c9a8; }
+
+    /* Nós das Trilhas no Eixo Vertical */
+    .timeline-v-node {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    /* Alternância Esquerda / Direita */
+    .timeline-v-node.left { flex-direction: row; }
+    .timeline-v-node.right { flex-direction: row-reverse; }
+
+    .timeline-v-content {
+      width: calc(50% - 12px);
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .timeline-v-node.left .timeline-v-content { text-align: right; margin-right: auto; }
+    .timeline-v-node.right .timeline-v-content { text-align: left; margin-left: auto; }
+
+    .timeline-v-date {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #a3c9a8;
+    }
+
+    .timeline-v-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    /* Ponto/Tick na linha */
+    .timeline-v-dot {
+      width: 10px;
+      height: 10px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      transition: all 0.25s ease;
+    }
+
+    /* HOVER VERDE NAS TRILHAS DO MÊS ATUAL */
+    .timeline-v-node.highlight-month .timeline-v-content {
+      background: rgba(74, 222, 128, 0.18);
+      border-color: #4ade80;
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.25);
+    }
+
+    .timeline-v-node.highlight-month .timeline-v-dot {
+      background-color: #4ade80;
+      box-shadow: 0 0 8px #4ade80;
+      transform: translateX(-50%) scale(1.3);
+    }
+
+    .timeline-v-node:hover .timeline-v-content {
+      background: rgba(74, 222, 128, 0.3);
+      border-color: #4ade80;
+    }
+
+    /* -----------------------------------------------------------
+       2. GRADE DO CALENDÁRIO
+    ----------------------------------------------------------- */
     .calendar-container {
-      max-width: 1000px;
-      margin: 0 auto;
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -21,11 +166,10 @@
       overflow: hidden;
     }
 
-    /* Cabeçalho do Calendário */
     .calendar-header {
       background-color: #1b3320;
       color: #ffffff;
-      padding: 20px;
+      padding: 18px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -40,7 +184,7 @@
     }
 
     .calendar-title-group h2 {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 800;
       margin: 0;
       color: #ffffff;
@@ -52,24 +196,21 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
       color: #ffffff;
       border-radius: 6px;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: background 0.2s ease;
     }
 
-    .calendar-nav-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
+    .calendar-nav-btn:hover { background: rgba(255, 255, 255, 0.3); }
 
-    /* Seletores Rápidos de Mês e Ano */
     .calendar-selects {
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
 
     .calendar-select {
@@ -77,44 +218,39 @@
       color: #1b3320;
       border: 1px solid #cbd2cc;
       border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 0.9rem;
+      padding: 6px 10px;
+      font-size: 0.88rem;
       font-weight: 700;
       font-family: inherit;
       outline: none;
       cursor: pointer;
     }
 
-    /* Grade do Calendário */
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       width: 100%;
     }
 
-    /* Cabeçalho dos Dias da Semana */
     .calendar-day-header {
       background: #eef2ef;
       color: #1b3320;
-      padding: 12px 6px;
+      padding: 10px 4px;
       text-align: center;
       font-weight: 800;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
       border-bottom: 1px solid #dcdfdc;
       border-right: 1px solid #e2e8e3;
     }
 
-    .calendar-day-header:last-child {
-      border-right: none;
-    }
+    .calendar-day-header:last-child { border-right: none; }
 
-    /* Células dos Dias */
     .calendar-day-cell {
-      min-height: 120px;
+      min-height: 110px;
       border-bottom: 1px solid #e2e8e3;
       border-right: 1px solid #e2e8e3;
-      padding: 8px;
+      padding: 6px;
       background: #ffffff;
       display: flex;
       flex-direction: column;
@@ -122,47 +258,42 @@
       transition: background 0.2s ease;
     }
 
-    .calendar-day-cell:nth-child(7n) {
-      border-right: none;
-    }
+    .calendar-day-cell:nth-child(7n) { border-right: none; }
 
     .calendar-day-cell.other-month {
       background: #f8faf8;
-      opacity: 0.5;
+      opacity: 0.4;
     }
 
-    .calendar-day-cell.today {
-      background: #f0f7f1;
-    }
+    .calendar-day-cell.today { background: #f0f7f1; }
 
     .day-number {
       font-weight: 800;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #1b3320;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .calendar-day-cell.today .day-number {
       background: #2d7a3e;
       color: #ffffff;
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    /* Item de Trilha no Dia */
     .event-item {
       background: #f2f6f3;
       border: 1px solid #cbd2cc;
       border-radius: 6px;
-      padding: 6px 8px;
+      padding: 5px 6px;
       margin-bottom: 4px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
       gap: 3px;
@@ -170,7 +301,7 @@
 
     .event-item:hover {
       transform: translateY(-1px);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
       border-color: #2d7a3e;
     }
 
@@ -180,27 +311,21 @@
       line-height: 1.2;
     }
 
-    /* Tags Status */
+    /* Tags Status (Realizada/Planejada) */
     .status-tag {
       align-self: flex-start;
-      padding: 1px 6px;
+      padding: 2px 6px;
       border-radius: 4px;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.3px;
       color: #ffffff;
     }
 
-    .status-tag.realizada {
-      background-color: #059669; /* Verde */
-    }
+    .status-tag.realizada { background-color: #059669; }
+    .status-tag.planejada { background-color: #d97706; }
 
-    .status-tag.planejada {
-      background-color: #d97706; /* Laranja */
-    }
-
-    /* Modal Pop-up */
+    /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -236,28 +361,9 @@
       color: #556357;
     }
 
-    /* Responsividade */
-    @media (max-width: 768px) {
-      .calendar-header {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .calendar-title-group {
-        justify-content: space-between;
-      }
-      .calendar-selects {
-        justify-content: space-between;
-      }
-      .calendar-day-cell {
-        min-height: 80px;
-        padding: 4px;
-      }
-      .event-title {
-        font-size: 0.7rem;
-      }
-      .status-tag {
-        font-size: 0.6rem;
-      }
+    @media (max-width: 992px) {
+      .page-layout { grid-template-columns: 1fr; }
+      .sidebar-timeline { min-height: 400px; }
     }
   </style>
 </head>
@@ -275,7 +381,6 @@
         <span></span><span></span><span></span>
       </button>
 
-      <!-- Links de Navegação -->
       <nav class="nav-links" id="nav-links">
         <a href="index.html#home" onclick="closeMenu()">Home</a>
         <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
@@ -291,46 +396,61 @@
   <!-- Banner do Topo -->
   <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
-      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Calendário de Trilhas</h1>
+      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Calendário & Linha do Tempo</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
-        Acompanhe nosso cronograma de expedições. Mude de mês e ano para visualizar saídas planejadas e realizadas.
+        Confira o planejamento e histórico completo das nossas expedições na montanha.
       </p>
     </div>
   </section>
 
-  <!-- Conteúdo Principal -->
+  <!-- Conteúdo Principal em Duas Colunas -->
   <main class="section" style="padding-top: 30px; padding-bottom: 50px;">
     <div class="container">
       
-      <div class="calendar-container">
-        <!-- Header do Calendário -->
-        <div class="calendar-header">
-          <div class="calendar-title-group">
-            <button class="calendar-nav-btn" onclick="changeMonth(-1)" title="Mês Anterior">◄</button>
-            <h2 id="calendarTitle">Carregando...</h2>
-            <button class="calendar-nav-btn" onclick="changeMonth(1)" title="Próximo Mês">►</button>
+      <div class="page-layout">
+
+        <!-- 1. PAINEL LATERAL LINHA DO TEMPO -->
+        <aside class="sidebar-timeline">
+          <div class="sidebar-timeline-header" id="sidebarTitle">
+            TIMELINE 2026
           </div>
 
-          <!-- Seletores rápidos de Mês e Ano -->
-          <div class="calendar-selects">
-            <select id="monthSelect" class="calendar-select" onchange="onSelectChange()"></select>
-            <select id="yearSelect" class="calendar-select" onchange="onSelectChange()"></select>
+          <div class="timeline-vertical-wrapper">
+            <div class="timeline-v-marker top" id="markerTop">hoje</div>
+            <div class="timeline-vertical-line"></div>
+            <div id="timelineNodesContainer" style="width: 100%; position: relative;"></div>
+            <div class="timeline-v-marker bottom" id="markerBottom">2026</div>
           </div>
+        </aside>
+
+        <!-- 2. GRADE DO CALENDÁRIO -->
+        <div class="calendar-container">
+          <div class="calendar-header">
+            <div class="calendar-title-group">
+              <button class="calendar-nav-btn" onclick="changeMonth(-1)" title="Mês Anterior">◄</button>
+              <h2 id="calendarTitle">Carregando...</h2>
+              <button class="calendar-nav-btn" onclick="changeMonth(1)" title="Próximo Mês">►</button>
+            </div>
+
+            <div class="calendar-selects">
+              <select id="monthSelect" class="calendar-select" onchange="onSelectChange()"></select>
+              <select id="yearSelect" class="calendar-select" onchange="onSelectChange()"></select>
+            </div>
+          </div>
+
+          <div class="calendar-grid">
+            <div class="calendar-day-header">Dom</div>
+            <div class="calendar-day-header">Seg</div>
+            <div class="calendar-day-header">Ter</div>
+            <div class="calendar-day-header">Qua</div>
+            <div class="calendar-day-header">Qui</div>
+            <div class="calendar-day-header">Sex</div>
+            <div class="calendar-day-header">Sáb</div>
+          </div>
+
+          <div class="calendar-grid" id="calendarDaysGrid"></div>
         </div>
 
-        <!-- Grade de Dias da Semana -->
-        <div class="calendar-grid">
-          <div class="calendar-day-header">Dom</div>
-          <div class="calendar-day-header">Seg</div>
-          <div class="calendar-day-header">Ter</div>
-          <div class="calendar-day-header">Qua</div>
-          <div class="calendar-day-header">Qui</div>
-          <div class="calendar-day-header">Sex</div>
-          <div class="calendar-day-header">Sáb</div>
-        </div>
-
-        <!-- Grade com Células dos Dias -->
-        <div class="calendar-grid" id="calendarDaysGrid"></div>
       </div>
 
     </div>
@@ -437,9 +557,9 @@
         }
 
         setupSelects();
-        renderCalendar();
+        renderAll();
       } catch (err) {
-        console.error("Erro ao carregar os dados:", err);
+        console.error("Erro ao carregar dados:", err);
       }
     }
 
@@ -451,33 +571,110 @@
       
       const currentYear = new Date().getFullYear();
       let years = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
-      
       yearSelect.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
-    }
-
-    function updateSelectValues() {
-      document.getElementById('monthSelect').value = currentDate.getMonth();
-      document.getElementById('yearSelect').value = currentDate.getFullYear();
     }
 
     function changeMonth(delta) {
       currentDate.setMonth(currentDate.getMonth() + delta);
-      renderCalendar();
+      renderAll();
     }
 
     function onSelectChange() {
       const month = parseInt(document.getElementById('monthSelect').value, 10);
       const year = parseInt(document.getElementById('yearSelect').value, 10);
       currentDate = new Date(year, month, 1);
-      renderCalendar();
+      renderAll();
     }
 
+    function renderAll() {
+      document.getElementById('monthSelect').value = currentDate.getMonth();
+      document.getElementById('yearSelect').value = currentDate.getFullYear();
+      
+      renderCalendar();
+      renderSidebarTimeline();
+    }
+
+    /* -----------------------------------------------------------
+       RENDERIZAÇÃO DA LINHA DO TEMPO VERTICAL LATERAL
+    ----------------------------------------------------------- */
+    function renderSidebarTimeline() {
+      const selectedYear = currentDate.getFullYear();
+      const selectedMonth = currentDate.getMonth();
+      const actualCurrentYear = new Date().getFullYear();
+
+      document.getElementById('sidebarTitle').textContent = `TIMELINE ${selectedYear}`;
+
+      const markerTop = document.getElementById('markerTop');
+      const markerBottom = document.getElementById('markerBottom');
+
+      // "hoje" no topo se for o ano atual, senão exibe o topo do ano
+      if (selectedYear === actualCurrentYear) {
+        markerTop.textContent = 'hoje';
+        markerBottom.textContent = selectedYear;
+      } else {
+        markerTop.textContent = selectedYear;
+        markerBottom.textContent = selectedYear - 1;
+      }
+
+      const container = document.getElementById('timelineNodesContainer');
+      container.innerHTML = '';
+
+      // Filtragem dos eventos do ano selecionado
+      const events = trilhasData.map((item, idx) => {
+        const parts = item.data.split('/');
+        if (parts.length === 3) {
+          const day = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10) - 1;
+          const year = parseInt(parts[2], 10);
+          return {
+            ...item,
+            day,
+            month,
+            year,
+            originalIndex: idx,
+            timestamp: new Date(year, month, day).getTime()
+          };
+        }
+        return null;
+      })
+      .filter(e => e && e.year === selectedYear)
+      .sort((a, b) => a.timestamp - b.timestamp);
+
+      if (events.length === 0) {
+        container.innerHTML = `<p style="color: #a3c9a8; text-align: center; font-size: 0.8rem; padding-top: 40px;">Sem trilhas em ${selectedYear}</p>`;
+        return;
+      }
+
+      const totalEvents = events.length;
+      
+      events.forEach((evt, idx) => {
+        const isLeft = idx % 2 === 0;
+        const topPercent = (idx / (totalEvents > 1 ? totalEvents - 1 : 1)) * 90 + 5;
+        const isSelectedMonth = (evt.month === selectedMonth);
+
+        container.innerHTML += `
+          <div class="timeline-v-node ${isLeft ? 'left' : 'right'} ${isSelectedMonth ? 'highlight-month' : ''}" 
+               style="top: ${topPercent}%;" 
+               onclick="openModal(${evt.originalIndex})"
+               title="${evt.nome} (${evt.data})">
+            <div class="timeline-v-content">
+              <span class="timeline-v-date">${evt.data.substring(0, 5)}</span>
+              <span class="timeline-v-name">${evt.nome}</span>
+            </div>
+            <div class="timeline-v-dot"></div>
+          </div>
+        `;
+      });
+    }
+
+    /* -----------------------------------------------------------
+       RENDERIZAÇÃO DO CALENDÁRIO
+    ----------------------------------------------------------- */
     function renderCalendar() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
 
       document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
-      updateSelectValues();
 
       const daysGrid = document.getElementById('calendarDaysGrid');
       daysGrid.innerHTML = '';
@@ -485,10 +682,8 @@
       const firstDayIndex = new Date(year, month, 1).getDay();
       const lastDay = new Date(year, month + 1, 0).getDate();
       const prevLastDay = new Date(year, month, 0).getDate();
-
       const today = new Date();
 
-      // Mapeamento de Trilhas por Data (Dia)
       const eventsByDay = {};
       trilhasData.forEach((item, index) => {
         const parts = item.data.split('/');
@@ -521,13 +716,12 @@
 
         let eventsMarkup = events.map(evt => {
           const isRealizada = (evt.status || '').toLowerCase().trim() === 'realizada';
-          const tagClass = isRealizada ? 'realizada' : 'planejada';
-          const tagText = isRealizada ? 'Realizada' : 'Planejada';
-
           return `
             <div class="event-item" onclick="openModal(${evt.originalIndex})">
               <span class="event-title">${evt.nome}</span>
-              <span class="status-tag ${tagClass}">${tagText}</span>
+              <span class="status-tag ${isRealizada ? 'realizada' : 'planejada'}">
+                ${isRealizada ? 'Realizada' : 'Planejada'}
+              </span>
             </div>
           `;
         }).join('');
@@ -540,7 +734,7 @@
         `;
       }
 
-      // Completa com dias do Próximo Mês
+      // Completa com os dias do Próximo Mês
       const totalCells = firstDayIndex + lastDay;
       const nextDays = (totalCells % 7 === 0) ? 0 : 7 - (totalCells % 7);
 
@@ -553,7 +747,9 @@
       }
     }
 
-    // Modal
+    /* -----------------------------------------------------------
+       MODAL DE DETALHES
+    ----------------------------------------------------------- */
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
@@ -592,7 +788,6 @@
       if (e.target === modal) modal.classList.remove('active');
     });
 
-    // Inicialização
     loadData();
 
     // Menu Mobile
