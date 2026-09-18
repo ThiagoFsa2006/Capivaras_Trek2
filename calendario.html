@@ -363,7 +363,7 @@
     }
 
     /* -----------------------------------------------------------
-       3. REGRAS RESPONSIVAS PARA CELULAR (SOLUÇÃO DE ENCAVALAMENTO)
+       3. CORREÇÃO REFINADA DO ANO NO RODAPÉ DO MÓVEL
     ----------------------------------------------------------- */
     @media (max-width: 992px) {
       .page-layout { 
@@ -377,28 +377,37 @@
       }
 
       .timeline-vertical-wrapper {
-        margin: 30px 0 20px 0 !important;
-        padding-bottom: 20px !important;
+        margin: 30px 0 35px 0 !important;
+        padding-bottom: 25px !important;
         display: block !important;
         height: auto !important;
+        position: relative !important;
       }
 
-      /* Move a linha guia totalmente para a esquerda */
+      /* Linha vertical estendida até o rodapé no celular */
       .timeline-vertical-line {
         left: 18px !important;
         transform: none !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        height: 100% !important;
       }
 
+      /* Marcadores "hoje" (topo) e "2026" (rodapé) perfeitamente alinhados na linha */
       .timeline-v-marker {
         left: 18px !important;
         transform: translateX(-50%) !important;
       }
 
-      .timeline-v-marker.top { top: -22px !important; }
+      .timeline-v-marker.top { 
+        top: -24px !important; 
+      }
+
       .timeline-v-marker.bottom { 
-        position: relative !important;
-        bottom: auto !important;
-        margin-top: 25px !important;
+        position: absolute !important;
+        bottom: -28px !important;
+        top: auto !important;
+        margin: 0 !important;
         display: inline-block !important;
       }
 
@@ -408,11 +417,11 @@
         min-height: 120px !important;
         display: flex !important;
         flex-direction: column !important;
-        gap: 18px !important; /* Distância garantida entre cada evento no celular */
+        gap: 18px !important;
         padding-top: 10px !important;
       }
 
-      /* Converte posicionamento absoluto em fluxo relativo no celular */
+      /* Fluxo vertical sequencial para os cards no celular */
       .timeline-v-node,
       .timeline-v-node.left,
       .timeline-v-node.right {
@@ -494,9 +503,7 @@
             <div class="timeline-v-marker top" id="markerTop">hoje</div>
             <div class="timeline-vertical-line"></div>
             <div id="timelineNodesContainer"></div>
-            <div style="text-align: center;">
-              <div class="timeline-v-marker bottom" id="markerBottom">2026</div>
-            </div>
+            <div class="timeline-v-marker bottom" id="markerBottom">2026</div>
           </div>
         </aside>
 
@@ -728,7 +735,6 @@
         const topPercent = (idx / (totalEvents > 1 ? totalEvents - 1 : 1)) * 80 + 8;
         const isSelectedMonth = (evt.month === selectedMonth);
 
-        // No Desktop aplica topPercent absoluto; no Celular deixa o fluxo sequencial CSS tomar conta
         const styleTop = isMobile ? '' : `style="top: ${topPercent}%;"`;
 
         container.innerHTML += `
@@ -867,7 +873,6 @@
       if (e.target === modal) modal.classList.remove('active');
     });
 
-    // Re-renderiza dinamicamente se a janela for redimensionada
     window.addEventListener('resize', () => {
       renderSidebarTimeline();
     });
