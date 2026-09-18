@@ -363,7 +363,6 @@
       });
     }
 
-    // Auxiliar para converter datas (ex: DD/MM/YYYY) em timestamp para ordenação precisa
     function parseDateToTimestamp(dateStr) {
       if (!dateStr || typeof dateStr !== 'string') return 0;
       const parts = dateStr.trim().split('/');
@@ -389,6 +388,7 @@
           nome: obj['nome'] || '',
           foto: obj['foto'] || '',
           data: obj['data'] || '',
+          status: obj['status'] || '',
           linkGoogleFotos: obj['linkgooglefotos'] || obj['googlefotos'] || obj['linkfotos'] || ''
         })).filter(item => item.nome !== '');
 
@@ -404,9 +404,11 @@
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
       const sortValue = document.getElementById('sortSelect').value;
 
-      // 1. Filtrar pelo nome da trilha
+      // 1. Filtrar apenas status 'Realizada' e pelo termo buscado
       let filtered = galeriaData.filter(item => {
-        return item.nome.toLowerCase().includes(searchTerm);
+        const matchesStatus = (item.status || '').toLowerCase().trim() === 'realizada';
+        const matchesSearch = item.nome.toLowerCase().includes(searchTerm);
+        return matchesStatus && matchesSearch;
       });
 
       // 2. Ordenar
@@ -425,7 +427,7 @@
 
       // 3. Renderizar resultados
       if (filtered.length === 0) {
-        gridContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #556357; grid-column: 1 / -1; padding: 30px 0;">Nenhuma trilha encontrada para o termo pesquisado.</p>';
+        gridContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #556357; grid-column: 1 / -1; padding: 30px 0;">Nenhuma trilha realizada encontrada para o termo pesquisado.</p>';
         return;
       }
 
@@ -483,10 +485,8 @@
       }).join('');
     }
 
-    // Inicialização
     loadGaleria();
 
-    // Menu Mobile
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
