@@ -49,7 +49,6 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       display: flex;
       flex-direction: column;
-      cursor: pointer;
     }
 
     .tracklog-card:hover {
@@ -90,22 +89,57 @@
       gap: 6px;
     }
 
-    .btn-view-details {
-      background-color: #2d7a3e;
-      color: #ffffff;
-      padding: 10px 14px;
+    /* Grid de Ações dos Cards */
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-action {
+      padding: 10px 12px;
       border-radius: 6px;
       font-weight: 700;
       font-size: 0.85rem;
       text-align: center;
-      border: none;
+      text-decoration: none;
       cursor: pointer;
-      width: 100%;
-      transition: background 0.2s ease;
+      border: none;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .btn-view-details:hover {
+    /* Estilo do Botão Laranja e Verde do Wikiloc */
+    .btn-wikiloc {
+      background-color: #2e7d32; /* Verde Wikiloc */
+      color: #ffffff;
+      border-bottom: 3px solid #f57c00; /* Laranja Wikiloc */
+    }
+
+    .btn-wikiloc:hover {
+      background-color: #1b5e20;
+      border-bottom-color: #e65100;
+    }
+
+    .btn-wikiloc.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      background-color: #9e9e9e;
+      border-bottom-color: #757575;
+      cursor: not-allowed;
+    }
+
+    .btn-gpx {
       background-color: #1b3320;
+      color: #ffffff;
+    }
+
+    .btn-gpx:hover {
+      background-color: #2d7a3e;
     }
 
     /* Modal GPX Viewer */
@@ -332,7 +366,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    // URL CSV da Página 1 do Google Sheets
     const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
 
     let loadedTracklogs = [];
@@ -383,7 +416,6 @@
         const csvText = await res.text();
         const rows = parseCSV(csvText);
 
-        // Filtra apenas itens que possuem o campo gpxfile preenchido na planilha
         const validItems = rows.filter(r => r.gpxfile && r.gpxfile.trim() !== '').map(r => {
           let fileName = r.gpxfile.trim();
           if (!fileName.toLowerCase().endsWith('.gpx')) {
@@ -392,6 +424,7 @@
           return {
             title: r.nome || fileName.replace(/\.gpx$/i, ''),
             filename: fileName,
+            linkwic: r.linkwic ? r.linkwic.trim() : '',
             downloadUrl: `tracklogs/${encodeURIComponent(fileName)}`
           };
         });
@@ -508,23 +541,38 @@
 
     function renderCards() {
       const container = document.getElementById('tracklogsContainer');
-      container.innerHTML = loadedTracklogs.map((item, idx) => `
-        <article class="tracklog-card" onclick="openGarminModal(${idx})">
-          <div class="card-header-map" id="cardMap_${idx}"></div>
-          <div class="tracklog-info">
-            <div>
-              <h3 class="tracklog-title">${item.title}</h3>
-              <ul class="tracklog-meta">
-                <li>📅 <strong>Data:</strong> ${item.dateStr}</li>
-                <li>📏 <strong>Distância:</strong> ${item.distKm}</li>
-                <li>📈 <strong>Ganho de Elevação:</strong> ${item.gainM}</li>
-                <li>⏱️ <strong>Duração Total:</strong> ${item.durationStr}</li>
-              </ul>
+      container.innerHTML = loadedTracklogs.map((item, idx) => {
+        const hasWikiloc = item.linkwic && item.linkwic.length > 0;
+        return `
+          <article class="tracklog-card">
+            <div class="card-header-map" id="cardMap_${idx}"></div>
+            <div class="tracklog-info">
+              <div>
+                <h3 class="tracklog-title">${item.title}</h3>
+                <ul class="tracklog-meta">
+                  <li>📅 <strong>Data:</strong> ${item.dateStr}</li>
+                  <li>📏 <strong>Distância:</strong> ${item.distKm}</li>
+                  <li>📈 <strong>Ganho de Elevação:</strong> ${item.gainM}</li>
+                  <li>⏱️ <strong>Duração Total:</strong> ${item.durationStr}</li>
+                </ul>
+              </div>
+
+              <div class="card-actions">
+                <a href="${hasWikiloc ? item.linkwic : '#'}" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="btn-action btn-wikiloc ${hasWikiloc ? '' : 'disabled'}">
+                   🟢 Wikiloc ↗
+                </a>
+
+                <button class="btn-action btn-gpx" onclick="openGarminModal(${idx})">
+                  🗺️ Ver GPX
+                </button>
+              </div>
             </div>
-            <button class="btn-view-details">Ver Detalhes do Percurso ↗</button>
-          </div>
-        </article>
-      `).join('');
+          </article>
+        `;
+      }).join('');
 
       initCardMiniMaps();
     }
