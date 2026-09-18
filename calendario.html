@@ -12,25 +12,25 @@
   <style>
     /* Layout de Duas Colunas (Timeline Lateral + Calendário) */
     .page-layout {
-      display: grid;
-      grid-template-columns: 280px 1fr;
+      display: flex;
       gap: 20px;
-      align-items: start;
+      align-items: stretch; /* Garante altura idêntica para ambas as colunas */
     }
 
     /* -----------------------------------------------------------
        1. LINHA DO TEMPO LATERAL (VERDE ESCURO)
     ----------------------------------------------------------- */
     .sidebar-timeline {
+      width: 280px;
+      min-width: 280px;
       background-color: #1b3320;
       color: #ffffff;
       border-radius: 12px;
       padding: 24px 16px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-      min-height: 680px;
       display: flex;
       flex-direction: column;
-      position: relative;
+      box-sizing: border-box;
     }
 
     .sidebar-timeline-header {
@@ -49,7 +49,7 @@
       flex-grow: 1;
       display: flex;
       justify-content: center;
-      padding: 30px 0;
+      margin: 20px 0;
     }
 
     /* Linha central vertical */
@@ -63,7 +63,7 @@
       transform: translateX(-50%);
     }
 
-    /* Marcadores do Topo ("hoje" ou Ano) */
+    /* Marcadores do Topo ("hoje" ou Ano) e Rodapé */
     .timeline-v-marker {
       position: absolute;
       left: 50%;
@@ -78,8 +78,8 @@
       white-space: nowrap;
     }
 
-    .timeline-v-marker.top { top: -20px; }
-    .timeline-v-marker.bottom { bottom: -20px; color: #a3c9a8; }
+    .timeline-v-marker.top { top: -16px; }
+    .timeline-v-marker.bottom { bottom: -16px; color: #a3c9a8; }
 
     /* Nós das Trilhas no Eixo Vertical */
     .timeline-v-node {
@@ -106,6 +106,7 @@
       display: flex;
       flex-direction: column;
       gap: 2px;
+      box-sizing: border-box;
     }
 
     .timeline-v-node.left .timeline-v-content { text-align: right; margin-right: auto; }
@@ -159,11 +160,14 @@
        2. GRADE DO CALENDÁRIO
     ----------------------------------------------------------- */
     .calendar-container {
+      flex: 1;
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       border: 1px solid #dcdfdc;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .calendar-header {
@@ -362,8 +366,14 @@
     }
 
     @media (max-width: 992px) {
-      .page-layout { grid-template-columns: 1fr; }
-      .sidebar-timeline { min-height: 400px; }
+      .page-layout { 
+        flex-direction: column; 
+      }
+      .sidebar-timeline { 
+        width: 100%;
+        min-width: 100%;
+        min-height: 450px; 
+      }
     }
   </style>
 </head>
@@ -418,7 +428,7 @@
           <div class="timeline-vertical-wrapper">
             <div class="timeline-v-marker top" id="markerTop">hoje</div>
             <div class="timeline-vertical-line"></div>
-            <div id="timelineNodesContainer" style="width: 100%; position: relative;"></div>
+            <div id="timelineNodesContainer" style="width: 100%; height: 100%; position: relative;"></div>
             <div class="timeline-v-marker bottom" id="markerBottom">2026</div>
           </div>
         </aside>
@@ -649,6 +659,7 @@
       
       events.forEach((evt, idx) => {
         const isLeft = idx % 2 === 0;
+        // Posição percentual de 5% a 95% ao longo de toda a altura disponível
         const topPercent = (idx / (totalEvents > 1 ? totalEvents - 1 : 1)) * 90 + 5;
         const isSelectedMonth = (evt.month === selectedMonth);
 
