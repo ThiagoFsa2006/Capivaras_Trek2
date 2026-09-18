@@ -815,6 +815,63 @@
       mobileBtn.classList.remove('active');
       navLinks.classList.remove('active');
     }
+
+    /* -----------------------------------------------------------
+       Ajuste Responsivo da Linha do Tempo no Celular
+    ----------------------------------------------------------- */
+    @media (max-width: 992px) {
+      /* Permite que o container cresça em altura no mobile */
+      .sidebar-timeline {
+        width: 100%;
+        min-width: 100%;
+        min-height: 520px;
+        box-sizing: border-box;
+      }
+    
+      /* Ajusta o wrapper para dar espaçamento vertical adequado */
+      .timeline-vertical-wrapper {
+        margin: 40px 0;
+        min-height: 420px;
+      }
+    
+      /* Desloca a linha vertical para o canto esquerdo no celular */
+      .timeline-vertical-line {
+        left: 20px !important;
+        transform: none !important;
+      }
+    
+      /* Ajusta os marcadores "hoje" e o ano no topo/rodapé */
+      .timeline-v-marker {
+        left: 20px !important;
+        transform: translateX(-50%) !important;
+      }
+    
+      /* Todos os nós passam a ficar do lado direito da linha */
+      .timeline-v-node,
+      .timeline-v-node.left,
+      .timeline-v-node.right {
+        flex-direction: row !important;
+        left: 0 !important;
+        width: 100% !important;
+      }
+    
+      /* Alinha o ponto/tick exatamente sobre a linha na esquerda */
+      .timeline-v-dot {
+        left: 20px !important;
+        transform: translateX(-50%) !important;
+      }
+    
+      /* Conteúdo do card ocupa a largura total restante à direita */
+      .timeline-v-content,
+      .timeline-v-node.left .timeline-v-content,
+      .timeline-v-node.right .timeline-v-content {
+        width: calc(100% - 40px) !important;
+        margin-left: 35px !important;
+        margin-right: 0 !important;
+        text-align: left !important;
+        box-sizing: border-box;
+      }
+    }
   </script>
 </body>
 </html>
