@@ -372,15 +372,26 @@
     let modalMapInstance = null;
     let chartInstance = null;
 
-    // Extrai a URL do Wikiloc mesmo que venha como texto ou hiperlink
-    function extractWikilocUrl(cellValue) {
+    // Extrai a URL do Wikiloc ou gera uma busca caso o valor seja apenas texto
+    function extractWikilocUrl(cellValue, trackTitle) {
       if (!cellValue) return '';
       const str = cellValue.trim();
+      
+      // Se já for uma URL direta
       if (str.startsWith('http://') || str.startsWith('https://')) {
         return str;
       }
+      
       const match = str.match(/https?:\/\/[^\s"'>]+/i);
-      return match ? match[0] : '';
+      if (match) return match[0];
+
+      // Se for apenas texto (ex: "Wikiloc | Circular dos Capivaris Trail")
+      if (str.length > 0) {
+        const query = encodeURIComponent(str.replace(/^Wikiloc\s*\|\s*/i, ''));
+        return `https://pt.wikiloc.com/wikiloc/spatialArtifacts.do?event=search&term=${query}`;
+      }
+
+      return '';
     }
 
     function parseCSV(text) {
@@ -435,10 +446,11 @@
           }
           
           const rawWic = r.linkwic || r.linkwikiloc || '';
-          const wikilocUrl = extractWikilocUrl(rawWic);
+          const titleName = r.nome || fileName.replace(/\.gpx$/i, '');
+          const wikilocUrl = extractWikilocUrl(rawWic, titleName);
 
           return {
-            title: r.nome || fileName.replace(/\.gpx$/i, ''),
+            title: titleName,
             filename: fileName,
             linkwic: wikilocUrl,
             downloadUrl: `tracklogs/${encodeURIComponent(fileName)}`
