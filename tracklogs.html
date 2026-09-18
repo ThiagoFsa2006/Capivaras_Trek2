@@ -113,11 +113,11 @@
       gap: 6px;
     }
 
-    /* Estilo do Botão Laranja e Verde do Wikiloc */
+    /* Botão Wikiloc Verde e Laranja */
     .btn-wikiloc {
-      background-color: #2e7d32; /* Verde Wikiloc */
+      background-color: #2e7d32;
       color: #ffffff;
-      border-bottom: 3px solid #f57c00; /* Laranja Wikiloc */
+      border-bottom: 3px solid #f57c00;
     }
 
     .btn-wikiloc:hover {
@@ -126,7 +126,7 @@
     }
 
     .btn-wikiloc.disabled {
-      opacity: 0.4;
+      opacity: 0.35;
       pointer-events: none;
       background-color: #9e9e9e;
       border-bottom-color: #757575;
@@ -372,6 +372,17 @@
     let modalMapInstance = null;
     let chartInstance = null;
 
+    // Extrai a URL do Wikiloc mesmo que venha como texto ou hiperlink
+    function extractWikilocUrl(cellValue) {
+      if (!cellValue) return '';
+      const str = cellValue.trim();
+      if (str.startsWith('http://') || str.startsWith('https://')) {
+        return str;
+      }
+      const match = str.match(/https?:\/\/[^\s"'>]+/i);
+      return match ? match[0] : '';
+    }
+
     function parseCSV(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       if (lines.length < 2) return [];
@@ -416,15 +427,20 @@
         const csvText = await res.text();
         const rows = parseCSV(csvText);
 
+        // Filtra apenas itens com gpxfile preenchido na planilha
         const validItems = rows.filter(r => r.gpxfile && r.gpxfile.trim() !== '').map(r => {
           let fileName = r.gpxfile.trim();
           if (!fileName.toLowerCase().endsWith('.gpx')) {
             fileName += '.gpx';
           }
+          
+          const rawWic = r.linkwic || r.linkwikiloc || '';
+          const wikilocUrl = extractWikilocUrl(rawWic);
+
           return {
             title: r.nome || fileName.replace(/\.gpx$/i, ''),
             filename: fileName,
-            linkwic: r.linkwic ? r.linkwic.trim() : '',
+            linkwic: wikilocUrl,
             downloadUrl: `tracklogs/${encodeURIComponent(fileName)}`
           };
         });
@@ -543,6 +559,7 @@
       const container = document.getElementById('tracklogsContainer');
       container.innerHTML = loadedTracklogs.map((item, idx) => {
         const hasWikiloc = item.linkwic && item.linkwic.length > 0;
+        
         return `
           <article class="tracklog-card">
             <div class="card-header-map" id="cardMap_${idx}"></div>
