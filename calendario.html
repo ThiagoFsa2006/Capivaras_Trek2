@@ -3,334 +3,484 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calendário - Capivaras Trek</title>
+  <title>Trilhas - Capivaras Trek</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
-    /* Layout de Duas Colunas (Timeline Lateral + Calendário) */
-    .page-layout {
-      display: flex;
-      gap: 20px;
-      align-items: stretch; /* Garante altura idêntica para ambas as colunas */
-    }
-
-    /* -----------------------------------------------------------
-       1. LINHA DO TEMPO LATERAL (VERDE ESCURO)
-    ----------------------------------------------------------- */
-    .sidebar-timeline {
-      width: 280px;
-      min-width: 280px;
-      background-color: #1b3320;
-      color: #ffffff;
-      border-radius: 12px;
-      padding: 24px 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    /* Container dos Quadros Superiores */
+    .expandable-sections-container {
       display: flex;
       flex-direction: column;
-      box-sizing: border-box;
+      gap: 15px;
+      margin-bottom: 25px;
     }
 
-    .sidebar-timeline-header {
-      text-align: center;
-      font-size: 1.1rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      color: #a3c9a8;
-    }
-
-    .timeline-vertical-wrapper {
-      position: relative;
-      flex-grow: 1;
-      display: flex;
-      justify-content: center;
-      margin: 35px 0; /* Aumentado a margem para evitar choque no topo e rodapé */
-    }
-
-    /* Linha central vertical */
-    .timeline-vertical-line {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      width: 2px;
-      background-color: rgba(255, 255, 255, 0.3);
-      transform: translateX(-50%);
-    }
-
-    /* Marcadores do Topo ("hoje" ou Ano) e Rodapé */
-    .timeline-v-marker {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: #4ade80;
-      background-color: #1b3320;
-      padding: 2px 8px;
-      border-radius: 4px;
-      z-index: 5;
-      white-space: nowrap;
-    }
-
-    .timeline-v-marker.top { top: -25px; }
-    .timeline-v-marker.bottom { bottom: -25px; color: #a3c9a8; }
-
-    /* Nós das Trilhas no Eixo Vertical */
-    .timeline-v-node {
-      position: absolute;
-      left: 0;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      z-index: 2;
-    }
-
-    /* Alternância Esquerda / Direita */
-    .timeline-v-node.left { flex-direction: row; }
-    .timeline-v-node.right { flex-direction: row-reverse; }
-
-    .timeline-v-content {
-      width: calc(50% - 12px);
-      padding: 6px 8px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      box-sizing: border-box;
-    }
-
-    .timeline-v-node.left .timeline-v-content { text-align: right; margin-right: auto; }
-    .timeline-v-node.right .timeline-v-content { text-align: left; margin-left: auto; }
-
-    .timeline-v-date {
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: #a3c9a8;
-    }
-
-    .timeline-v-name {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #ffffff;
-      line-height: 1.2;
-    }
-
-    /* Ponto/Tick na linha */
-    .timeline-v-dot {
-      width: 10px;
-      height: 10px;
-      background-color: #ffffff;
-      border-radius: 50%;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 3;
-      transition: all 0.25s ease;
-    }
-
-    /* HOVER VERDE NAS TRILHAS DO MÊS ATUAL */
-    .timeline-v-node.highlight-month .timeline-v-content {
-      background: rgba(74, 222, 128, 0.18);
-      border-color: #4ade80;
-      box-shadow: 0 0 12px rgba(74, 222, 128, 0.25);
-    }
-
-    .timeline-v-node.highlight-month .timeline-v-dot {
-      background-color: #4ade80;
-      box-shadow: 0 0 8px #4ade80;
-      transform: translateX(-50%) scale(1.3);
-    }
-
-    .timeline-v-node:hover .timeline-v-content {
-      background: rgba(74, 222, 128, 0.3);
-      border-color: #4ade80;
-    }
-
-    /* -----------------------------------------------------------
-       2. GRADE DO CALENDÁRIO
-    ----------------------------------------------------------- */
-    .calendar-container {
-      flex: 1;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      border: 1px solid #dcdfdc;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .calendar-header {
+    /* Painel Base (Verde) para Conquistas e Linha do Tempo */
+    .summary-board {
       background-color: #1b3320;
       color: #ffffff;
-      padding: 18px 20px;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .summary-board-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      user-select: none;
     }
 
-    .calendar-title-group {
+    .summary-board-header h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    /* Controles de Navegação de Ano na Timeline */
+    .timeline-title-group {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .calendar-title-group h2 {
-      font-size: 1.4rem;
-      font-weight: 800;
-      margin: 0;
-      color: #ffffff;
-      min-width: 180px;
+    .year-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .calendar-nav-btn {
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+    .year-nav-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       color: #ffffff;
-      border-radius: 6px;
-      width: 34px;
+      border-radius: 4px;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .year-nav-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .year-nav-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      border-radius: 4px;
+      padding: 4px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .toggle-icon {
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    /* Estados Recolhidos */
+    .summary-board.collapsed .summary-grid,
+    .summary-board.collapsed .summary-legend,
+    .summary-board.collapsed .timeline-scroll-wrapper {
+      display: none;
+    }
+
+    .summary-board.collapsed .summary-board-header {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .summary-board.collapsed .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Estilos do Painel Conquistas */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-top: 14px;
+    }
+
+    .summary-column {
+      padding: 0 10px;
+      border-right: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .summary-column:last-child {
+      border-right: none;
+    }
+
+    .summary-column h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .summary-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .summary-list li {
+      font-size: 0.9rem;
+      color: #d0e0d2;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sticker-logo {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      vertical-align: middle;
+    }
+
+    .sticker-logo.translucent {
+      opacity: 0.3;
+      filter: grayscale(40%);
+    }
+
+    .summary-legend {
+      margin-top: 18px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      font-size: 0.8rem;
+      color: #d0e0d2;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* LINHA DO TEMPO COM ALTURA DE 500PX E DISTRIBUIÇÃO EQUIDISTANTE */
+    .timeline-scroll-wrapper {
+      width: 100%;
+      height: 500px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 50px;
+      box-sizing: border-box;
+    }
+
+    .timeline-track {
+      position: relative;
+      width: 100%;
+      height: 2px;
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .timeline-year-marker {
+      position: absolute;
+      top: -38px;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #a3c9a8;
+      letter-spacing: 0.5px;
+    }
+
+    .timeline-year-line {
+      position: absolute;
+      top: -16px;
+      width: 2px;
       height: 34px;
+      background-color: #a3c9a8;
+      transform: translateX(-50%);
+    }
+
+    .timeline-node {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
+
+    .timeline-tick {
+      width: 3px;
+      height: 18px;
+      background-color: #ffffff;
+      border-radius: 2px;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .timeline-node:hover .timeline-tick {
+      background-color: #4ade80;
+      transform: scaleY(1.4);
+    }
+
+    /* Nó Superior */
+    .timeline-node.top-node {
+      top: -250px;
+      height: 250px;
+      justify-content: flex-end;
+    }
+
+    .timeline-node.top-node .timeline-date {
+      margin-bottom: 4px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .timeline-node.top-node .timeline-name {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #d0e0d2;
+      white-space: nowrap;
+      margin-bottom: 6px;
+      max-height: 200px;
+      transition: color 0.2s;
+    }
+
+    /* Nó Inferior */
+    .timeline-node.bottom-node {
+      top: 0px;
+      height: 250px;
+      justify-content: flex-start;
+    }
+
+    .timeline-node.bottom-node .timeline-name {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #d0e0d2;
+      white-space: nowrap;
+      margin-top: 6px;
+      max-height: 200px;
+      transition: color 0.2s;
+    }
+
+    .timeline-node.bottom-node .timeline-date {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .timeline-node:hover .timeline-name {
+      color: #ffffff;
+    }
+
+    /* Controles de Filtro e Ordenação */
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: #ffffff;
+      padding: 14px 20px;
+      border: 1px solid #dcdfdc;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-grow: 1;
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 320px;
+      padding: 8px 14px;
+      border: 1px solid #cbd2cc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: #2d7a3e;
+    }
+
+    .sort-select {
+      padding: 8px 12px;
+      border: 1px solid #cbd2cc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background-color: #ffffff;
+      color: #1b3320;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Cards Empilhados */
+    .trilhas-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    .trilha-card {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #dcdfdc;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      max-height: 160px;
+    }
+
+    .trilha-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      border-color: #2d7a3e;
+    }
+
+    .trilha-img-box {
+      width: 240px;
+      min-width: 240px;
+      height: 100%;
+      background: #eef2ef;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .trilha-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+    }
+
+    .no-image-placeholder {
+      width: 100%;
+      height: 100%;
+      background-color: #e2e8e3;
+      color: #7a8a7c;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 0.9rem;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .calendar-nav-btn:hover { background: rgba(255, 255, 255, 0.3); }
-
-    .calendar-selects {
-      display: flex;
-      gap: 8px;
-    }
-
-    .calendar-select {
-      background: #ffffff;
-      color: #1b3320;
-      border: 1px solid #cbd2cc;
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 0.88rem;
       font-weight: 700;
-      font-family: inherit;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      width: 100%;
-    }
-
-    .calendar-day-header {
-      background: #eef2ef;
-      color: #1b3320;
-      padding: 10px 4px;
-      text-align: center;
-      font-weight: 800;
-      font-size: 0.8rem;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
-      border-bottom: 1px solid #dcdfdc;
-      border-right: 1px solid #e2e8e3;
     }
 
-    .calendar-day-header:last-child { border-right: none; }
-
-    .calendar-day-cell {
-      min-height: 110px;
-      border-bottom: 1px solid #e2e8e3;
-      border-right: 1px solid #e2e8e3;
-      padding: 6px;
-      background: #ffffff;
+    .trilha-info {
+      padding: 10px 18px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      transition: background 0.2s ease;
+      flex-grow: 1;
+      justify-content: space-between;
     }
 
-    .calendar-day-cell:nth-child(7n) { border-right: none; }
-
-    .calendar-day-cell.other-month {
-      background: #f8faf8;
-      opacity: 0.4;
-    }
-
-    .calendar-day-cell.today { background: #f0f7f1; }
-
-    .day-number {
-      font-weight: 800;
-      font-size: 0.85rem;
-      color: #1b3320;
-      margin-bottom: 4px;
-    }
-
-    .calendar-day-cell.today .day-number {
-      background: #2d7a3e;
-      color: #ffffff;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
+    .card-header-badge {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-    }
-
-    .event-item {
-      background: #f2f6f3;
-      border: 1px solid #cbd2cc;
-      border-radius: 6px;
-      padding: 5px 6px;
       margin-bottom: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
     }
 
-    .event-item:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-      border-color: #2d7a3e;
+    .badge-nivel {
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #ffffff;
+      letter-spacing: 0.5px;
     }
 
-    .event-title {
-      font-weight: 700;
+    .trilha-titulo {
       color: #1b3320;
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin: 2px 0 4px 0;
+      letter-spacing: -0.3px;
       line-height: 1.2;
     }
 
-    /* Tags Status (Realizada/Planejada) */
-    .status-tag {
-      align-self: flex-start;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.62rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: #ffffff;
+    .trilha-resumo {
+      color: #556357;
+      font-size: 0.88rem;
+      margin-bottom: 6px;
+      line-height: 1.35;
     }
 
-    .status-tag.realizada { background-color: #059669; }
-    .status-tag.planejada { background-color: #d97706; }
+    .trilha-meta {
+      list-style: none;
+      padding: 6px 0 0 0;
+      margin: 0;
+      border-top: 1px dashed #e1e8e2;
+      font-size: 0.82rem;
+      color: #3d4a3f;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+    }
 
-    /* Modal */
+    .trilha-meta li {
+      margin-bottom: 0;
+    }
+
+    /* Modal Pop-up */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -347,7 +497,7 @@
     .modal-content {
       background: #ffffff;
       border-radius: 12px;
-      max-width: 600px;
+      max-width: 700px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
@@ -366,14 +516,46 @@
       color: #556357;
     }
 
+    /* Responsividade */
     @media (max-width: 992px) {
-      .page-layout { 
-        flex-direction: column; 
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
       }
-      .sidebar-timeline { 
+      .summary-column {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        padding-bottom: 10px;
+      }
+      .summary-column:last-child {
+        border-bottom: none;
+      }
+    }
+    @media (max-width: 768px) {
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-input {
+        max-width: 100%;
+      }
+      .trilha-card {
+        flex-direction: column;
+        max-height: none;
+      }
+      .trilha-img-box {
         width: 100%;
         min-width: 100%;
-        min-height: 450px; 
+        height: 160px;
+      }
+      .trilha-meta {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+    @media (max-width: 600px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -392,13 +574,14 @@
         <span></span><span></span><span></span>
       </button>
 
+      <!-- Links de Navegação -->
       <nav class="nav-links" id="nav-links">
         <a href="index.html#home" onclick="closeMenu()">Home</a>
         <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
-        <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
+        <a href="trilhas.html" class="active" onclick="closeMenu()">Trilhas</a>
         <a href="galeria.html" onclick="closeMenu()">Galeria</a>
         <a href="tracklogs.html" onclick="closeMenu()">Tracklogs</a>
-        <a href="calendario.html" class="active" onclick="closeMenu()">Calendário</a>
+        <a href="calendario.html" onclick="closeMenu()">Calendário</a>
         <a href="contato.html" onclick="closeMenu()">Contato</a>
       </nav>
     </div>
@@ -407,81 +590,132 @@
   <!-- Banner do Topo -->
   <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
-      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Calendário & Linha do Tempo</h1>
+      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Histórico de Aventuras</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
-        Confira o planejamento e histórico completo das nossas expedições na montanha.
+        Acompanhe nosso histórico de aventuras, percepções além de registros de tempo e distância.
+        Esperamos que este conteúdo possa ajudar a planejar suas trilhas.
       </p>
     </div>
   </section>
 
-  <!-- Conteúdo Principal em Duas Colunas -->
-  <main class="section" style="padding-top: 30px; padding-bottom: 50px;">
+  <!-- Conteúdo Principal -->
+  <main class="section" style="padding-top: 30px;">
     <div class="container">
       
-      <div class="page-layout">
+      <!-- Container das Seções Expandíveis (Conquistas + Timeline) -->
+      <div class="expandable-sections-container">
 
-        <!-- 1. PAINEL LATERAL LINHA DO TEMPO -->
-        <aside class="sidebar-timeline">
-          <div class="sidebar-timeline-header" id="sidebarTitle">
-            TIMELINE 2026
+        <!-- 1. Painel Conquistas (Recolhido por padrão) -->
+        <section class="summary-board collapsed" id="summaryBoard">
+          <div class="summary-board-header" onclick="toggleBoard('summaryBoard', 'toggleTextConquistas')">
+            <h2>Conquistas</h2>
+            <button class="toggle-btn" aria-label="Recolher ou Expandir Painel">
+              <span id="toggleTextConquistas">Expandir</span>
+              <span class="toggle-icon">▲</span>
+            </button>
           </div>
 
-          <div class="timeline-vertical-wrapper">
-            <div class="timeline-v-marker top" id="markerTop">hoje</div>
-            <div class="timeline-vertical-line"></div>
-            <div id="timelineNodesContainer" style="width: 100%; height: 100%; position: relative;"></div>
-            <div class="timeline-v-marker bottom" id="markerBottom">2026</div>
-          </div>
-        </aside>
-
-        <!-- 2. GRADE DO CALENDÁRIO -->
-        <div class="calendar-container">
-          <div class="calendar-header">
-            <div class="calendar-title-group">
-              <button class="calendar-nav-btn" onclick="changeMonth(-1)" title="Mês Anterior">◄</button>
-              <h2 id="calendarTitle">Carregando...</h2>
-              <button class="calendar-nav-btn" onclick="changeMonth(1)" title="Próximo Mês">►</button>
+          <div class="summary-grid">
+            <div class="summary-column">
+              <h3>Cumes</h3>
+              <ul class="summary-list" id="list-cumes"></ul>
             </div>
 
-            <div class="calendar-selects">
-              <select id="monthSelect" class="calendar-select" onchange="onSelectChange()"></select>
-              <select id="yearSelect" class="calendar-select" onchange="onSelectChange()"></select>
+            <div class="summary-column">
+              <h3>Travessias</h3>
+              <ul class="summary-list" id="list-travessia"></ul>
+            </div>
+
+            <div class="summary-column">
+              <h3>Travessia Circular</h3>
+              <ul class="summary-list" id="list-circular"></ul>
+            </div>
+
+            <div class="summary-column">
+              <h3>Cachoeiras</h3>
+              <ul class="summary-list" id="list-cachoeiras"></ul>
             </div>
           </div>
 
-          <div class="calendar-grid">
-            <div class="calendar-day-header">Dom</div>
-            <div class="calendar-day-header">Seg</div>
-            <div class="calendar-day-header">Ter</div>
-            <div class="calendar-day-header">Qua</div>
-            <div class="calendar-day-header">Qui</div>
-            <div class="calendar-day-header">Sex</div>
-            <div class="calendar-day-header">Sáb</div>
+          <!-- Legenda dos Adesivos -->
+          <div class="summary-legend">
+            <div class="legend-item">
+              <img src="logo.png" alt="Adesivado" class="sticker-logo">
+              <span>Adesivado</span>
+            </div>
+            <div class="legend-item">
+              <img src="logo.png" alt="Não tem caixinha" class="sticker-logo translucent">
+              <span>Não tem caixinha</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Painel Timeline (Recolhido por padrão com botões de navegação de ano) -->
+        <section class="summary-board collapsed" id="timelineBoard">
+          <div class="summary-board-header">
+            <div class="timeline-title-group" onclick="toggleBoard('timelineBoard', 'toggleTextTimeline')">
+              <h2>Timeline</h2>
+              <div class="year-nav-controls" onclick="event.stopPropagation()">
+                <button class="year-nav-btn" id="btnPrevYear" onclick="changeTimelineYear(-1)" title="Ano Anterior">◄</button>
+                <button class="year-nav-btn" id="btnNextYear" onclick="changeTimelineYear(1)" title="Próximo Ano">►</button>
+              </div>
+            </div>
+            <button class="toggle-btn" onclick="toggleBoard('timelineBoard', 'toggleTextTimeline')" aria-label="Expandir ou Recolher Linha do Tempo">
+              <span id="toggleTextTimeline">Expandir</span>
+              <span class="toggle-icon">▲</span>
+            </button>
           </div>
 
-          <div class="calendar-grid" id="calendarDaysGrid"></div>
+          <!-- Área de Visualização com Espaçamento Igualitário -->
+          <div class="timeline-scroll-wrapper">
+            <div class="timeline-track" id="timelineTrack">
+              <p style="color: #d0e0d2; text-align: center; width: 100%;">Carregando linha do tempo...</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Barra de Filtros e Ordenação -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span>🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nome da trilha..." oninput="filterAndRenderTrilhas()">
         </div>
+        <div class="filter-group" style="flex-grow: 0;">
+          <label for="sortSelect" style="font-size: 0.88rem; font-weight: 600; color: #1b3320; white-space: nowrap;">Ordenar por:</label>
+          <select id="sortSelect" class="sort-select" onchange="filterAndRenderTrilhas()">
+            <option value="data-desc">Data (Mais recente)</option>
+            <option value="data-asc">Data (Mais antiga)</option>
+            <option value="nome-asc">Nome (A-Z)</option>
+            <option value="nome-desc">Nome (Z-A)</option>
+          </select>
+        </div>
+      </div>
 
+      <!-- Lista Empilhada de Cards Compactos -->
+      <div class="trilhas-list-container" id="trilhasList">
+        <p style="padding: 20px; text-align: center; width: 100%;">Carregando dados da planilha...</p>
       </div>
 
     </div>
   </main>
 
-  <!-- Modal com Detalhes da Trilha -->
+  <!-- Modal Detalhado -->
   <div class="modal-overlay" id="trilhaModal">
     <div class="modal-content">
       <button class="modal-close" id="modalClose">&times;</button>
       <div id="modalImgContainer"></div>
       
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; margin-top: 10px;">
-        <span id="modalStatusTag" class="status-tag"></span>
+        <span id="modalNivel" class="badge-nivel"></span>
       </div>
 
-      <h2 id="modalTitulo" style="color: #1b3320; font-size: 1.6rem; margin: 8px 0;"></h2>
-      <ul class="trilha-meta" id="modalMeta" style="margin-bottom: 16px; font-size: 0.9rem; list-style: none; padding: 0;"></ul>
+      <h2 id="modalTitulo" style="color: #1b3320; font-size: 1.8rem; margin: 8px 0;"></h2>
+      <ul class="trilha-meta" id="modalMeta" style="margin-bottom: 16px; font-size: 0.95rem; display: block;"></ul>
       <hr style="border: 0; border-top: 1px solid #e1e8e2; margin: 16px 0;">
-      <h4 style="color: #1b3320; margin-bottom: 8px;">Descrição</h4>
-      <p id="modalDescricao" style="color: #435245; line-height: 1.6; font-size: 0.95rem;"></p>
+      <h4 style="color: #1b3320; margin-bottom: 8px;">Descrição Detalhada</h4>
+      <p id="modalDescricaoCompleta" style="color: #435245; line-height: 1.7; font-size: 0.95rem;"></p>
     </div>
   </div>
 
@@ -500,15 +734,35 @@
   </footer>
 
   <script>
-    const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+    const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+    const GOOGLE_SHEET_PAGINA2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=795321596&single=true&output=csv';
 
-    const monthNames = [
-      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-    ];
-
-    let currentDate = new Date(); // Padrão: Mês e Ano Atual
     let trilhasData = [];
+    let conquistasData = [];
+    let selectedTimelineYear = new Date().getFullYear(); // Padrão: 2026
+
+    // Alternar Painéis Retráteis
+    function toggleBoard(boardId, textId) {
+      const board = document.getElementById(boardId);
+      const text = document.getElementById(textId);
+      
+      board.classList.toggle('collapsed');
+      if (board.classList.contains('collapsed')) {
+        text.textContent = 'Expandir';
+      } else {
+        text.textContent = 'Recolher';
+      }
+    }
+
+    function getBadgeColor(nivel) {
+      const n = (nivel || '').toLowerCase().trim();
+      if (n.includes('muito fácil') || n.includes('muito facil')) return '#059669';
+      if (n.includes('fácil') || n.includes('facil')) return '#2d7a3e';
+      if (n.includes('moderado')) return '#d97706';
+      if (n.includes('muito difícil') || n.includes('muito dificil')) return '#7c3aed';
+      if (n.includes('difícil') || n.includes('dificil')) return '#dc2626';
+      return '#1b3320';
+    }
 
     function parseCSV(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -545,14 +799,23 @@
       });
     }
 
+    function parseDateToTimestamp(dateStr) {
+      if (!dateStr) return 0;
+      const parts = dateStr.trim().split('/');
+      if (parts.length === 3) {
+        return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+      }
+      return 0;
+    }
+
     async function loadData() {
+      const listContainer = document.getElementById('trilhasList');
       try {
-        const response = await fetch(GOOGLE_SHEET_URL);
-        if (response.ok) {
-          const csvText = await response.text();
-          const parsed = parseCSV(csvText);
-          
-          trilhasData = parsed.map(obj => ({
+        const response1 = await fetch(GOOGLE_SHEET_PAGINA1_URL);
+        if (response1.ok) {
+          const csvText1 = await response1.text();
+          const parsed1 = parseCSV(csvText1);
+          trilhasData = parsed1.map(obj => ({
             nome: obj['nome'] || '',
             nivel: obj['nivel'] || '',
             foto: obj['foto'] || '',
@@ -560,208 +823,265 @@
             distancia: obj['distancia'] || '',
             tempoMedio: obj['tempomedio'] || obj['tempo'] || '',
             resumo: obj['resumo'] || '',
-            descricao: obj['descricaocompleta'] || obj['descricao'] || '',
+            descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || '',
             data: obj['data'] || '',
-            status: obj['status'] || 'Planejada',
-            qtdPessoas: obj['qtdpessoas'] || obj['pessoas'] || ''
-          })).filter(t => t.nome !== '' && t.data !== '');
+            status: obj['status'] || '',
+            qtdPessoas: obj['qtdpessoas'] || obj['pessoas'] || obj['numero de pessoas'] || ''
+          })).filter(t => t.nome !== '');
         }
 
-        setupSelects();
-        renderAll();
+        try {
+          const response2 = await fetch(GOOGLE_SHEET_PAGINA2_URL);
+          if (response2.ok) {
+            const csvText2 = await response2.text();
+            const parsed2 = parseCSV(csvText2);
+            conquistasData = parsed2.map(obj => ({
+              nome: obj['nome'] || '',
+              detalhe: obj['detalhe'] || '',
+              adesivo: obj['adesivo'] || ''
+            })).filter(c => c.nome !== '');
+          }
+        } catch (e) {
+          console.warn("Erro ao buscar dados da Página 2:", e);
+        }
+
+        renderSummaryBoard();
+        renderTimeline();
+        filterAndRenderTrilhas();
       } catch (err) {
-        console.error("Erro ao carregar dados:", err);
+        console.error("Erro ao carregar o CSV:", err);
+        listContainer.innerHTML = '<p style="color: red; text-align: center; width: 100%;">Erro ao carregar as trilhas da planilha.</p>';
       }
     }
 
-    function setupSelects() {
-      const monthSelect = document.getElementById('monthSelect');
-      const yearSelect = document.getElementById('yearSelect');
+    // Renderiza Seção 1: Conquistas (Ordenado A-Z)
+    function renderSummaryBoard() {
+      const cumesList = document.getElementById('list-cumes');
+      const travessiaList = document.getElementById('list-travessia');
+      const circularList = document.getElementById('list-circular');
+      const cachoeirasList = document.getElementById('list-cachoeiras');
 
-      monthSelect.innerHTML = monthNames.map((m, idx) => `<option value="${idx}">${m}</option>`).join('');
-      
-      const currentYear = new Date().getFullYear();
-      let years = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
-      yearSelect.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+      const categories = {
+        cumes: [],
+        travessia: [],
+        circular: [],
+        cachoeiras: []
+      };
+
+      conquistasData.forEach(item => {
+        const d = (item.detalhe || '').toLowerCase().trim();
+        if (d.includes('cume')) categories.cumes.push(item);
+        else if (d.includes('circular')) categories.circular.push(item);
+        else if (d.includes('travessia')) categories.travessia.push(item);
+        else if (d.includes('cachoeira')) categories.cachoeiras.push(item);
+      });
+
+      const buildListHTML = (items) => {
+        items.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+
+        return items.map(t => {
+          const stickerVal = (t.adesivo || '').toLowerCase().trim();
+          const isSim = stickerVal === 'sim';
+          const isNa = stickerVal === 'na';
+
+          let stickerMarkup = '';
+          if (isSim) {
+            stickerMarkup = '<img src="logo.png" alt="Adesivo" class="sticker-logo" title="Adesivado">';
+          } else if (isNa) {
+            stickerMarkup = '<img src="logo.png" alt="Adesivo" class="sticker-logo translucent" title="Não tem caixinha">';
+          }
+
+          return `
+            <li>
+              ${t.nome}
+              ${stickerMarkup}
+            </li>
+          `;
+        }).join('');
+      };
+
+      cumesList.innerHTML = buildListHTML(categories.cumes);
+      travessiaList.innerHTML = buildListHTML(categories.travessia);
+      circularList.innerHTML = buildListHTML(categories.circular);
+      cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
     }
 
-    function changeMonth(delta) {
-      currentDate.setMonth(currentDate.getMonth() + delta);
-      renderAll();
+    // Alterar o Ano Selecionado na Timeline
+    function changeTimelineYear(delta) {
+      selectedTimelineYear += delta;
+      renderTimeline();
     }
 
-    function onSelectChange() {
-      const month = parseInt(document.getElementById('monthSelect').value, 10);
-      const year = parseInt(document.getElementById('yearSelect').value, 10);
-      currentDate = new Date(year, month, 1);
-      renderAll();
-    }
+    // Renderiza Seção 2: TIMELINE DOS CAPIVARAS (Apenas Trilhas Realizadas)
+    function renderTimeline() {
+      const track = document.getElementById('timelineTrack');
+      const btnPrev = document.getElementById('btnPrevYear');
+      const btnNext = document.getElementById('btnNextYear');
 
-    function renderAll() {
-      document.getElementById('monthSelect').value = currentDate.getMonth();
-      document.getElementById('yearSelect').value = currentDate.getFullYear();
-      
-      renderCalendar();
-      renderSidebarTimeline();
-    }
-
-    /* -----------------------------------------------------------
-       RENDERIZAÇÃO DA LINHA DO TEMPO VERTICAL LATERAL
-    ----------------------------------------------------------- */
-    function renderSidebarTimeline() {
-      const selectedYear = currentDate.getFullYear();
-      const selectedMonth = currentDate.getMonth();
-      const actualCurrentYear = new Date().getFullYear();
-
-      document.getElementById('sidebarTitle').textContent = `TIMELINE ${selectedYear}`;
-
-      const markerTop = document.getElementById('markerTop');
-      const markerBottom = document.getElementById('markerBottom');
-
-      // "hoje" no topo se for o ano atual, senão exibe o topo do ano
-      if (selectedYear === actualCurrentYear) {
-        markerTop.textContent = 'hoje';
-        markerBottom.textContent = selectedYear;
-      } else {
-        markerTop.textContent = selectedYear;
-        markerBottom.textContent = selectedYear - 1;
-      }
-
-      const container = document.getElementById('timelineNodesContainer');
-      container.innerHTML = '';
-
-      // Filtragem dos eventos do ano selecionado
-      const events = trilhasData.map((item, idx) => {
-        const parts = item.data.split('/');
-        if (parts.length === 3) {
-          const day = parseInt(parts[0], 10);
-          const month = parseInt(parts[1], 10) - 1;
-          const year = parseInt(parts[2], 10);
-          return {
-            ...item,
-            day,
-            month,
-            year,
-            originalIndex: idx,
-            timestamp: new Date(year, month, day).getTime()
-          };
-        }
-        return null;
-      })
-      .filter(e => e && e.year === selectedYear)
-      .sort((a, b) => a.timestamp - b.timestamp);
-
-      if (events.length === 0) {
-        container.innerHTML = `<p style="color: #a3c9a8; text-align: center; font-size: 0.8rem; padding-top: 40px;">Sem trilhas em ${selectedYear}</p>`;
+      if (!trilhasData || trilhasData.length === 0) {
+        track.innerHTML = '<p style="color: #d0e0d2;">Nenhuma trilha encontrada para a linha do tempo.</p>';
         return;
       }
 
-      const totalEvents = events.length;
-      
-      events.forEach((evt, idx) => {
-        const isLeft = idx % 2 === 0;
-        // Posição percentual de 8% a 88% para garantir folga na etiqueta do topo e do rodapé
-        const topPercent = (idx / (totalEvents > 1 ? totalEvents - 1 : 1)) * 80 + 8;
-        const isSelectedMonth = (evt.month === selectedMonth);
+      // Mapeamento de todos os eventos VÁLIDOS e REALIZADOS
+      const allEvents = trilhasData
+        .map((item, originalIndex) => {
+          const isRealizada = (item.status || '').toLowerCase().trim() === 'realizada';
+          const ts = parseDateToTimestamp(item.data);
+          if (!ts || !isRealizada) return null;
 
-        container.innerHTML += `
-          <div class="timeline-v-node ${isLeft ? 'left' : 'right'} ${isSelectedMonth ? 'highlight-month' : ''}" 
-               style="top: ${topPercent}%;" 
-               onclick="openModal(${evt.originalIndex})"
-               title="${evt.nome} (${evt.data})">
-            <div class="timeline-v-content">
-              <span class="timeline-v-date">${evt.data.substring(0, 5)}</span>
-              <span class="timeline-v-name">${evt.nome}</span>
+          const dateObj = new Date(ts);
+          return {
+            ...item,
+            timestamp: ts,
+            year: dateObj.getFullYear(),
+            dayMonth: item.data.substring(0, 5),
+            originalIndex: originalIndex
+          };
+        })
+        .filter(item => item !== null);
+
+      if (allEvents.length === 0) {
+        track.innerHTML = '<p style="color: #d0e0d2;">Nenhuma atividade realizada registrada.</p>';
+        return;
+      }
+
+      // Descobre os anos limites dos dados disponíveis
+      const availableYears = [...new Set(allEvents.map(e => e.year))].sort((a, b) => a - b);
+      const minYear = Math.min(...availableYears);
+      const maxYear = Math.max(...availableYears);
+
+      // Atualiza o estado dos botões discretos
+      btnPrev.disabled = selectedTimelineYear <= minYear;
+      btnNext.disabled = selectedTimelineYear >= maxYear;
+
+      // Filtragem de eventos do ano selecionado ordenados cronologicamente
+      const filteredEvents = allEvents
+        .filter(item => item.year === selectedTimelineYear)
+        .sort((a, b) => a.timestamp - b.timestamp);
+
+      if (filteredEvents.length === 0) {
+        track.innerHTML = `<p style="color: #d0e0d2; text-align: center; width: 100%;">Nenhuma atividade realizada registrada em ${selectedTimelineYear}.</p>`;
+        return;
+      }
+
+      let htmlMarkup = '';
+
+      // Marcação inicial do Ano Selecionado
+      htmlMarkup += `
+        <div class="timeline-year-marker" style="left: 0%;">${selectedTimelineYear}</div>
+        <div class="timeline-year-line" style="left: 0%;"></div>
+      `;
+
+      const totalEvents = filteredEvents.length;
+      const actualCurrentYear = new Date().getFullYear();
+
+      // Distribuição uniformemente dividida ao longo de 100% da largura
+      filteredEvents.forEach((evt, idx) => {
+        const step = 90 / (totalEvents > 1 ? totalEvents - 1 : 1);
+        const leftPercent = 5 + (idx * step);
+        const isEven = idx % 2 === 0;
+
+        if (isEven) {
+          htmlMarkup += `
+            <div class="timeline-node top-node" style="left: ${leftPercent}%;" onclick="openModal(${evt.originalIndex})" title="${evt.nome} (${evt.data})">
+              <span class="timeline-date">${evt.dayMonth}</span>
+              <span class="timeline-name">${evt.nome}</span>
+              <div class="timeline-tick"></div>
             </div>
-            <div class="timeline-v-dot"></div>
-          </div>
-        `;
-      });
-    }
-
-    /* -----------------------------------------------------------
-       RENDERIZAÇÃO DO CALENDÁRIO
-    ----------------------------------------------------------- */
-    function renderCalendar() {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
-
-      document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
-
-      const daysGrid = document.getElementById('calendarDaysGrid');
-      daysGrid.innerHTML = '';
-
-      const firstDayIndex = new Date(year, month, 1).getDay();
-      const lastDay = new Date(year, month + 1, 0).getDate();
-      const prevLastDay = new Date(year, month, 0).getDate();
-      const today = new Date();
-
-      const eventsByDay = {};
-      trilhasData.forEach((item, index) => {
-        const parts = item.data.split('/');
-        if (parts.length === 3) {
-          const d = parseInt(parts[0], 10);
-          const m = parseInt(parts[1], 10) - 1;
-          const y = parseInt(parts[2], 10);
-
-          if (m === month && y === year) {
-            if (!eventsByDay[d]) eventsByDay[d] = [];
-            eventsByDay[d].push({ ...item, originalIndex: index });
-          }
+          `;
+        } else {
+          htmlMarkup += `
+            <div class="timeline-node bottom-node" style="left: ${leftPercent}%;" onclick="openModal(${evt.originalIndex})" title="${evt.nome} (${evt.data})">
+              <div class="timeline-tick"></div>
+              <span class="timeline-name">${evt.nome}</span>
+              <span class="timeline-date">${evt.dayMonth}</span>
+            </div>
+          `;
         }
       });
 
-      // Dias do Mês Anterior
-      for (let x = firstDayIndex; x > 0; x--) {
-        const dayNum = prevLastDay - x + 1;
-        daysGrid.innerHTML += `
-          <div class="calendar-day-cell other-month">
-            <span class="day-number">${dayNum}</span>
-          </div>
-        `;
-      }
+      // Lógica do rótulo final: "hoje" apenas para o ano atual, ou selectedTimelineYear + 1
+      const endLabel = (selectedTimelineYear === actualCurrentYear) ? 'hoje' : (selectedTimelineYear + 1);
+      
+      htmlMarkup += `
+        <div class="timeline-year-marker" style="left: 100%; color: #4ade80;">${endLabel}</div>
+        <div class="timeline-year-line" style="left: 100%; background-color: #4ade80;"></div>
+      `;
 
-      // Dias do Mês Atual
-      for (let day = 1; day <= lastDay; day++) {
-        const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-        const events = eventsByDay[day] || [];
-
-        let eventsMarkup = events.map(evt => {
-          const isRealizada = (evt.status || '').toLowerCase().trim() === 'realizada';
-          return `
-            <div class="event-item" onclick="openModal(${evt.originalIndex})">
-              <span class="event-title">${evt.nome}</span>
-              <span class="status-tag ${isRealizada ? 'realizada' : 'planejada'}">
-                ${isRealizada ? 'Realizada' : 'Planejada'}
-              </span>
-            </div>
-          `;
-        }).join('');
-
-        daysGrid.innerHTML += `
-          <div class="calendar-day-cell ${isToday ? 'today' : ''}">
-            <span class="day-number">${day}</span>
-            ${eventsMarkup}
-          </div>
-        `;
-      }
-
-      // Completa com os dias do Próximo Mês
-      const totalCells = firstDayIndex + lastDay;
-      const nextDays = (totalCells % 7 === 0) ? 0 : 7 - (totalCells % 7);
-
-      for (let j = 1; j <= nextDays; j++) {
-        daysGrid.innerHTML += `
-          <div class="calendar-day-cell other-month">
-            <span class="day-number">${j}</span>
-          </div>
-        `;
-      }
+      track.innerHTML = htmlMarkup;
     }
 
-    /* -----------------------------------------------------------
-       MODAL DE DETALHES
-    ----------------------------------------------------------- */
+    // Renderiza Lista de Cards (Filtrando por Status "Realizada")
+    function filterAndRenderTrilhas() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      const sortValue = document.getElementById('sortSelect').value;
+      const listContainer = document.getElementById('trilhasList');
+
+      // Filtra por nome e por status 'realizada'
+      let filtered = trilhasData.filter(t => {
+        const matchesName = t.nome.toLowerCase().includes(searchTerm);
+        const isRealizada = (t.status || '').toLowerCase().trim() === 'realizada';
+        return matchesName && isRealizada;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortValue === 'data-desc') {
+          return parseDateToTimestamp(b.data) - parseDateToTimestamp(a.data);
+        } else if (sortValue === 'data-asc') {
+          return parseDateToTimestamp(a.data) - parseDateToTimestamp(b.data);
+        } else if (sortValue === 'nome-asc') {
+          return a.nome.localeCompare(b.nome, 'pt-BR');
+        } else if (sortValue === 'nome-desc') {
+          return b.nome.localeCompare(a.nome, 'pt-BR');
+        }
+        return 0;
+      });
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #556357;">Nenhuma trilha realizada encontrada com o termo buscado.</p>';
+        return;
+      }
+
+      listContainer.innerHTML = filtered.map((t) => {
+        const badgeColor = getBadgeColor(t.nivel);
+        const originalIndex = trilhasData.indexOf(t);
+
+        const imageMarkup = t.foto 
+          ? `<img src="${t.foto}" alt="${t.nome}" class="trilha-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\\'no-image-placeholder\\'>No Image</div>';">`
+          : `<div class="no-image-placeholder">No Image</div>`;
+
+        return `
+          <article class="trilha-card" onclick="openModal(${originalIndex})">
+            
+            <div class="trilha-img-box">
+              ${imageMarkup}
+            </div>
+
+            <div class="trilha-info">
+              <div>
+                <div class="card-header-badge">
+                  <span class="badge-nivel" style="background-color: ${badgeColor};">${t.nivel || 'Moderado'}</span>
+                </div>
+                <h3 class="trilha-titulo">${t.nome}</h3>
+                <p class="trilha-resumo">${t.resumo}</p>
+              </div>
+              
+              <ul class="trilha-meta">
+                <li>📍 <strong>Região:</strong> ${t.regiao}</li>
+                <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
+                <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio}</li>
+                <li>📅 <strong>Data:</strong> ${t.data}</li>
+                <li>👥 <strong>Número de Pessoas:</strong> ${t.qtdPessoas}</li>
+              </ul>
+            </div>
+
+          </article>
+        `;
+      }).join('');
+    }
+
+    // Modal Pop-up
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
@@ -769,28 +1089,27 @@
       const trilha = trilhasData[index];
       if (!trilha) return;
 
-      const isRealizada = (trilha.status || '').toLowerCase().trim() === 'realizada';
-      const statusTag = document.getElementById('modalStatusTag');
-      
-      statusTag.textContent = isRealizada ? 'Realizada' : 'Planejada';
-      statusTag.className = `status-tag ${isRealizada ? 'realizada' : 'planejada'}`;
+      const badgeColor = getBadgeColor(trilha.nivel);
 
       const modalImgBox = document.getElementById('modalImgContainer');
       if (trilha.foto) {
-        modalImgBox.innerHTML = `<img src="${trilha.foto}" alt="${trilha.nome}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" onerror="this.parentNode.innerHTML='';">`;
+        modalImgBox.innerHTML = `<img src="${trilha.foto}" alt="${trilha.nome}" style="width: 100%; height: 240px; object-fit: cover; border-radius: 8px; margin-bottom: 16px;" onerror="this.parentNode.innerHTML='<div class=\\'no-image-placeholder\\' style=\\'height:240px; border-radius:8px; margin-bottom:16px;\\'>No Image</div>';">`;
       } else {
-        modalImgBox.innerHTML = '';
+        modalImgBox.innerHTML = `<div class="no-image-placeholder" style="height: 240px; border-radius: 8px; margin-bottom: 16px;">No Image</div>`;
       }
+
+      document.getElementById('modalNivel').textContent = trilha.nivel || 'Moderado';
+      document.getElementById('modalNivel').style.backgroundColor = badgeColor;
 
       document.getElementById('modalTitulo').textContent = trilha.nome;
       document.getElementById('modalMeta').innerHTML = `
-        <li>📅 <strong>Data:</strong> ${trilha.data}</li>
         <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
         <li>📏 <strong>Distância:</strong> ${trilha.distancia}</li>
         <li>⏱️ <strong>Tempo Médio:</strong> ${trilha.tempoMedio}</li>
-        ${trilha.qtdPessoas ? `<li>👥 <strong>Pessoas:</strong> ${trilha.qtdPessoas}</li>` : ''}
+        <li>📅 <strong>Data:</strong> ${trilha.data}</li>
+        <li>👥 <strong>Número de Pessoas:</strong> ${trilha.qtdPessoas}</li>
       `;
-      document.getElementById('modalDescricao').textContent = trilha.descricao || trilha.resumo;
+      document.getElementById('modalDescricaoCompleta').textContent = trilha.descricaoCompleta;
 
       modal.classList.add('active');
     }
@@ -800,6 +1119,7 @@
       if (e.target === modal) modal.classList.remove('active');
     });
 
+    // Inicialização
     loadData();
 
     // Menu Mobile
@@ -814,63 +1134,6 @@
     function closeMenu() {
       mobileBtn.classList.remove('active');
       navLinks.classList.remove('active');
-    }
-
-    /* -----------------------------------------------------------
-       Ajuste Responsivo da Linha do Tempo no Celular
-    ----------------------------------------------------------- */
-    @media (max-width: 992px) {
-      /* Permite que o container cresça em altura no mobile */
-      .sidebar-timeline {
-        width: 100%;
-        min-width: 100%;
-        min-height: 520px;
-        box-sizing: border-box;
-      }
-    
-      /* Ajusta o wrapper para dar espaçamento vertical adequado */
-      .timeline-vertical-wrapper {
-        margin: 40px 0;
-        min-height: 420px;
-      }
-    
-      /* Desloca a linha vertical para o canto esquerdo no celular */
-      .timeline-vertical-line {
-        left: 20px !important;
-        transform: none !important;
-      }
-    
-      /* Ajusta os marcadores "hoje" e o ano no topo/rodapé */
-      .timeline-v-marker {
-        left: 20px !important;
-        transform: translateX(-50%) !important;
-      }
-    
-      /* Todos os nós passam a ficar do lado direito da linha */
-      .timeline-v-node,
-      .timeline-v-node.left,
-      .timeline-v-node.right {
-        flex-direction: row !important;
-        left: 0 !important;
-        width: 100% !important;
-      }
-    
-      /* Alinha o ponto/tick exatamente sobre a linha na esquerda */
-      .timeline-v-dot {
-        left: 20px !important;
-        transform: translateX(-50%) !important;
-      }
-    
-      /* Conteúdo do card ocupa a largura total restante à direita */
-      .timeline-v-content,
-      .timeline-v-node.left .timeline-v-content,
-      .timeline-v-node.right .timeline-v-content {
-        width: calc(100% - 40px) !important;
-        margin-left: 35px !important;
-        margin-right: 0 !important;
-        text-align: left !important;
-        box-sizing: border-box;
-      }
     }
   </script>
 </body>
