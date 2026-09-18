@@ -144,7 +144,12 @@
       color: #666;
     }
 
-    .garmin-source { font-size: 0.82rem; color: #555; font-weight: 600; margin-bottom: 12px; }
+    .modal-header-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1b3320;
+      margin-bottom: 12px;
+    }
 
     #modalMapContainer {
       height: 380px;
@@ -261,7 +266,8 @@
     <div class="modal-content-garmin">
       <button class="modal-close" id="modalClose">&times;</button>
       
-      <div class="garmin-source">Original GPX File</div>
+      <!-- Título da Trilha no Modal -->
+      <h2 class="modal-header-title" id="modalTrilhaTitle">Detalhes da Trilha</h2>
 
       <!-- Mapa -->
       <div id="modalMapContainer"></div>
@@ -330,14 +336,20 @@
     const GITHUB_REPO_NAME = 'Capivaras_Trek2';
     const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO_USER}/${GITHUB_REPO_NAME}/contents/tracklogs`;
 
+    // Mapeamento exato conforme a coluna gpxfile da sua planilha
+    const GPX_MAPPING = {
+      'activity_20088683613': 'Circular Serra da Melança',
+      'activity_22606900845': 'Acampamento Capivari Mirim',
+      'activity_23238539443': 'Travessia dos Capivaris',
+      'activity_23646572391': 'Circular dos Capivaris',
+      'activity_24003191065': 'Araçatuba + Baleia + Moréia',
+      'activity_24077933316': 'Taipabuçu + Ferraria',
+      'activity_24165165476': 'Jacutinga'
+    };
+
     let loadedTracklogs = [];
     let modalMapInstance = null;
     let chartInstance = null;
-
-    function formatTitleFromFileName(filename) {
-      let name = filename.replace(/\.gpx$/i, '');
-      return name.replace(/[-+]/g, ' ').replace(/\s+/g, ' ').trim();
-    }
 
     async function fetchTracklogsDirectory() {
       const container = document.getElementById('tracklogsContainer');
@@ -346,24 +358,33 @@
         if (!response.ok) throw new Error('Falha ao acessar o repositório');
 
         const files = await response.json();
-        const gpxFiles = files.filter(f => f.name.toLowerCase().endsWith('.gpx'));
+        
+        // Filtra apenas arquivos .gpx que possuem mapeamento cadastrado na planilha
+        const mappedFiles = files.filter(f => {
+          if (!f.name.toLowerCase().endsWith('.gpx')) return false;
+          const baseName = f.name.replace(/\.gpx$/i, '').trim();
+          return GPX_MAPPING.hasOwnProperty(baseName);
+        });
 
-        if (gpxFiles.length === 0) {
-          container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhum arquivo .gpx encontrado na pasta tracklogs.</p>';
+        if (mappedFiles.length === 0) {
+          container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhum tracklog mapeado foi encontrado.</p>';
           return;
         }
 
-        const items = gpxFiles.map(file => ({
-          filename: file.name,
-          title: formatTitleFromFileName(file.name),
-          downloadUrl: file.download_url || `tracklogs/${encodeURIComponent(file.name)}`
-        }));
+        const items = mappedFiles.map(file => {
+          const baseName = file.name.replace(/\.gpx$/i, '').trim();
+          return {
+            filename: file.name,
+            title: GPX_MAPPING[baseName],
+            downloadUrl: file.download_url || `tracklogs/${encodeURIComponent(file.name)}`
+          };
+        });
 
         await processAndSortTracks(items);
 
       } catch (err) {
-        console.warn('Erro na busca pelo GitHub, buscando arquivos da pasta local:', err);
-        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Não foi possível carregar a lista de tracklogs.</p>';
+        console.error('Erro ao buscar diretório:', err);
+        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: red;">Erro ao carregar a lista de tracklogs.</p>';
       }
     }
 
@@ -460,9 +481,7 @@
       const results = await Promise.all(promises);
       tempDiv.remove();
 
-      // Ordena chronologicamente
       loadedTracklogs = results.sort((a, b) => a.timestamp - b.timestamp);
-
       renderCards();
     }
 
@@ -525,6 +544,9 @@
     function openGarminModal(idx) {
       const track = loadedTracklogs[idx];
       if (!track || !track.gpxText) return;
+
+      // Exibe o Nome Mapeado no Modal
+      document.getElementById('modalTrilhaTitle').textContent = track.title;
 
       const modal = document.getElementById('gpxModal');
       modal.classList.add('active');
