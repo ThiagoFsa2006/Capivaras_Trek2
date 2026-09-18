@@ -144,24 +144,7 @@
       color: #666;
     }
 
-    .garmin-source { font-size: 0.82rem; color: #555; font-weight: 600; margin-bottom: 10px; }
-
-    .garmin-links-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 15px;
-      font-size: 0.82rem;
-    }
-
-    .garmin-links-bar a {
-      color: #333;
-      text-decoration: none;
-      background: #f1f3f1;
-      padding: 4px 10px;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-    }
+    .garmin-source { font-size: 0.82rem; color: #555; font-weight: 600; margin-bottom: 12px; }
 
     #modalMapContainer {
       height: 380px;
@@ -170,10 +153,10 @@
       border: 1px solid #ccc;
     }
 
-    /* Painel de Estatísticas GPX */
+    /* Painel de Estatísticas GPX Ajustado para 6 Colunas */
     .garmin-stats-row {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       border: 1px solid #e2e8e3;
       border-radius: 6px;
       margin-top: 15px;
@@ -278,23 +261,12 @@
     <div class="modal-content-garmin">
       <button class="modal-close" id="modalClose">&times;</button>
       
-      <!-- APENAS "Original GPX File" SEM O "Source:" -->
       <div class="garmin-source">Original GPX File</div>
-
-      <div class="garmin-links-bar">
-        <span>OPEN IN</span>
-        <a href="https://mymaps.google.com" target="_blank">Google My Maps ↗</a>
-        <a href="https://earth.google.com" target="_blank">Google Earth ↗</a>
-        <a href="https://www.strava.com" target="_blank">Strava ↗</a>
-        <a href="https://www.komoot.com" target="_blank">Komoot ↗</a>
-        <a href="https://connect.garmin.com" target="_blank">Garmin Connect ↗</a>
-        <a href="https://www.alltrails.com" target="_blank">AllTrails ↗</a>
-      </div>
 
       <!-- Mapa -->
       <div id="modalMapContainer"></div>
 
-      <!-- Estatísticas GPX -->
+      <!-- Estatísticas GPX (6 Colunas sem "POINTS") -->
       <div class="garmin-stats-row">
         <div class="garmin-stat-col">
           <span class="garmin-label">DISTANCE</span>
@@ -324,10 +296,6 @@
           <span class="garmin-label">MAX SPEED</span>
           <span class="garmin-val" id="statMax">--</span><span class="garmin-unit">km/h</span>
           <span class="garmin-sub" id="statMaxMph">-- mph</span>
-        </div>
-        <div class="garmin-stat-col">
-          <span class="garmin-label">POINTS</span>
-          <span class="garmin-val" id="statPts">--</span>
         </div>
       </div>
 
@@ -448,7 +416,6 @@
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
 
-        // Desativa marcadores/ícones na miniatura do mapa para evitar erros visuais
         const gpx = new L.GPX(item.path, {
           async: true,
           marker_options: {
@@ -499,7 +466,6 @@
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(modalMapInstance);
 
-        // Remove os ícones e pontos indesejados para manter a rota limpa
         const gpx = new L.GPX(track.path, {
           async: true,
           marker_options: {
@@ -533,11 +499,6 @@
           const maxSpeed = (gpxObj.get_speed_max() || (avgSpeed * 1.5)).toFixed(1);
           const maxMph = (maxSpeed * 0.621371).toFixed(1);
 
-          let totalPts = '--';
-          if (gpxObj._info && gpxObj._info.elevation && gpxObj._info.elevation.points) {
-            totalPts = gpxObj._info.elevation.points.length.toLocaleString();
-          }
-
           document.getElementById('statDist').textContent = distKm;
           document.getElementById('statDistMi').textContent = `${distMi} mi`;
 
@@ -554,8 +515,6 @@
 
           document.getElementById('statMax').textContent = maxSpeed;
           document.getElementById('statMaxMph').textContent = `${maxMph} mph`;
-
-          document.getElementById('statPts').textContent = totalPts;
 
           const elevationData = gpxObj.get_elevation_data();
           const labels = [];
