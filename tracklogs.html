@@ -9,11 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Leaflet CSS (Biblioteca do Mapa Interativo) -->
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
-    /* Grade de Cards da Tracklog */
+    /* Grade de Cards */
     .tracklog-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -37,7 +37,6 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
-    /* Área de Capa do Card (Mapa Rendilhado ou Fallback) */
     .card-map-cover {
       height: 180px;
       width: 100%;
@@ -53,7 +52,6 @@
       z-index: 1;
     }
 
-    /* Fallback quando o arquivo GPX não é encontrado */
     .no-tracklog-placeholder {
       width: 100%;
       height: 100%;
@@ -68,7 +66,6 @@
       text-transform: uppercase;
     }
 
-    /* Informações e Metadados do Card */
     .tracklog-info {
       padding: 18px;
       flex-grow: 1;
@@ -88,7 +85,6 @@
       gap: 6px;
     }
 
-    /* Botões de Ação na Parte Inferior do Card */
     .card-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -112,7 +108,6 @@
       gap: 6px;
     }
 
-    /* Botão Wikiloc (Com ou Sem Link) */
     .btn-wikiloc {
       background-color: #2d7a3e;
       color: #ffffff;
@@ -130,7 +125,6 @@
       cursor: not-allowed;
     }
 
-    /* Botão GPX Viewer */
     .btn-gpx {
       background-color: #eaf2eb;
       color: #1b3320;
@@ -143,7 +137,7 @@
       border-color: #2d7a3e;
     }
 
-    /* Pop-up / Modal GPX Viewer */
+    /* Modal GPX Viewer Ampliado */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -162,9 +156,9 @@
     .modal-content {
       background: #ffffff;
       border-radius: 12px;
-      max-width: 900px;
+      max-width: 950px;
       width: 100%;
-      max-height: 90vh;
+      max-height: 92vh;
       overflow-y: auto;
       position: relative;
       padding: 24px;
@@ -182,23 +176,88 @@
     }
 
     #modalMapContainer {
-      height: 480px;
+      height: 380px;
       width: 100%;
       border-radius: 8px;
       margin-top: 15px;
       background: #e5e5e5;
     }
 
+    /* Painel de Estatísticas GPX (Estilo GPXStudio/Wikiloc) */
+    .gpx-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+      background: #f8faf8;
+      border: 1px solid #e1e8e2;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-right: 1px solid #e1e8e2;
+    }
+
+    .stat-card:last-child {
+      border-right: none;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #718274;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #1b3320;
+      margin-top: 2px;
+    }
+
+    .stat-unit {
+      font-size: 0.75rem;
+      color: #556357;
+      font-weight: 600;
+    }
+
+    /* Gráfico de Elevação / Altimetria */
+    .elevation-chart-container {
+      margin-top: 15px;
+      height: 180px;
+      width: 100%;
+      background: #fafcfb;
+      border: 1px solid #e1e8e2;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
     @media (max-width: 768px) {
       .card-actions {
         grid-template-columns: 1fr;
+      }
+      .gpx-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .stat-card {
+        border-right: none;
+        border-bottom: 1px solid #e1e8e2;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header Fixo -->
+  <!-- Header -->
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand">
@@ -222,12 +281,12 @@
     </div>
   </header>
 
-  <!-- Banner do Topo -->
+  <!-- Banner Topo -->
   <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
       <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Tracklogs & GPX</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
-        Explore os trajetos percorridos pelo grupo em mapas interativos e navegue através do Wikiloc.
+        Explore os trajetos com altimetria, distância e métricas em tempo real.
       </p>
     </div>
   </section>
@@ -235,24 +294,65 @@
   <!-- Conteúdo Principal -->
   <main class="section" style="padding-top: 30px;">
     <div class="container">
-      
-      <!-- Grade de Cards das Trilhas -->
       <div class="tracklog-grid" id="tracklogsContainer">
         <p style="text-align: center; grid-column: 1/-1; color: #556357;">Carregando tracklogs...</p>
       </div>
-
     </div>
   </main>
 
-  <!-- Modal Pop-up com Mapa GPX Ampliado -->
+  <!-- Modal GPX Viewer Completo -->
   <div class="modal-overlay" id="gpxModal">
     <div class="modal-content">
       <button class="modal-close" id="modalClose">&times;</button>
       <h2 id="modalTitle" style="color: #1b3320; font-size: 1.6rem; font-weight: 800;">Visualizador de Tracklog</h2>
       <p id="modalSub" style="color: #556357; font-size: 0.9rem; margin-top: 4px;"></p>
       
-      <!-- Contêiner do Mapa Interativo Leaflet -->
+      <!-- Mapa Interativo -->
       <div id="modalMapContainer"></div>
+
+      <!-- Painel de Métricas (Distance, Gain, Loss, Duration, etc.) -->
+      <div class="gpx-stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">DISTANCE</span>
+          <span class="stat-value" id="statDistance">--</span>
+          <span class="stat-unit">km</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">GAIN</span>
+          <span class="stat-value" id="statGain">--</span>
+          <span class="stat-unit">m</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">LOSS</span>
+          <span class="stat-value" id="statLoss">--</span>
+          <span class="stat-unit">m</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">DURATION</span>
+          <span class="stat-value" id="statDuration">--</span>
+          <span class="stat-unit">h/m</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">AVG SPEED</span>
+          <span class="stat-value" id="statAvgSpeed">--</span>
+          <span class="stat-unit">km/h</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">MAX SPEED</span>
+          <span class="stat-value" id="statMaxSpeed">--</span>
+          <span class="stat-unit">km/h</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">POINTS</span>
+          <span class="stat-value" id="statPoints">--</span>
+          <span class="stat-unit">pts</span>
+        </div>
+      </div>
+
+      <!-- Gráfico de Altimetria / Elevação -->
+      <div class="elevation-chart-container">
+        <canvas id="elevationChart"></canvas>
+      </div>
     </div>
   </div>
 
@@ -270,8 +370,10 @@
     </div>
   </footer>
 
-  <!-- Scripts para Leaflet Map & Omnivore GPX Parser -->
+  <!-- Bibliotecas: Leaflet, Leaflet-GPX, Chart.js, Omnivore -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
 
   <script>
@@ -279,6 +381,7 @@
 
     let tracklogsData = [];
     let modalMapInstance = null;
+    let chartInstance = null;
 
     function parseCSV(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -316,7 +419,6 @@
         const text = await res.text();
         const parsed = parseCSV(text);
 
-        // Mapeia todas as trilhas com nome cadastrado na planilha
         tracklogsData = parsed.map(obj => ({
           nome: obj['nome'] || '',
           regiao: obj['regiao'] || '',
@@ -345,7 +447,6 @@
 
         return `
           <article class="tracklog-card">
-            <!-- Capa com Miniatura do Mapa ou Mensagem de Fallback -->
             <div class="card-map-cover">
               <div id="cardMap_${idx}" class="card-map-render"></div>
             </div>
@@ -361,7 +462,6 @@
                 </ul>
               </div>
 
-              <!-- Botões de Ação -->
               <div class="card-actions">
                 <a href="${hasWikiloc ? t.linkwic : '#'}" 
                    target="_blank" 
@@ -379,7 +479,6 @@
         `;
       }).join('');
 
-      // Renderiza os mini mapas Leaflet dentro de cada card
       initCardMaps();
     }
 
@@ -389,10 +488,8 @@
         const mapContainer = document.getElementById(mapElementId);
         if (!mapContainer) return;
 
-        // Nome de arquivo padronizado para a pasta tracklogs/
         const gpxFilename = `tracklogs/${t.nome.toLowerCase().trim().replace(/\s+/g, '-')}.gpx`;
 
-        // Instancia mapa estático miniatura
         const miniMap = L.map(mapElementId, {
           zoomControl: false,
           dragging: false,
@@ -405,29 +502,29 @@
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
 
-        // Carrega rota GPX no mini mapa
         const gpxLayer = omnivore.gpx(gpxFilename)
           .on('ready', function() {
             miniMap.fitBounds(gpxLayer.getBounds(), { padding: [10, 10] });
           })
           .on('error', function() {
-            // Se o arquivo .gpx não existir, substitui pela caixa "Sem Tracklog"
             mapContainer.innerHTML = '<div class="no-tracklog-placeholder">Sem Tracklog</div>';
           })
           .addTo(miniMap);
       });
     }
 
-    // Modal Pop-up GPX Viewer Interativo
+    // Modal GPX Viewer com Métricas e Perfil de Elevação
     function openGpxModal(index) {
       const trilha = tracklogsData[index];
       if (!trilha) return;
 
       document.getElementById('modalTitle').textContent = trilha.nome;
-      document.getElementById('modalSub').textContent = `Região: ${trilha.regiao} | Distância: ${trilha.distancia} | Tempo Médio: ${trilha.tempoMedio}`;
+      document.getElementById('modalSub').textContent = `Região: ${trilha.regiao} | Data: ${trilha.data}`;
       
       const modal = document.getElementById('gpxModal');
       modal.classList.add('active');
+
+      const gpxFilename = `tracklogs/${trilha.nome.toLowerCase().trim().replace(/\s+/g, '-')}.gpx`;
 
       setTimeout(() => {
         if (modalMapInstance) modalMapInstance.remove();
@@ -438,17 +535,110 @@
           attribution: '© OpenStreetMap contributors'
         }).addTo(modalMapInstance);
 
-        const gpxFilename = `tracklogs/${trilha.nome.toLowerCase().trim().replace(/\s+/g, '-')}.gpx`;
+        // Carrega o arquivo GPX usando a biblioteca L.GPX
+        new L.GPX(gpxFilename, {
+          async: true,
+          marker_options: {
+            startIconUrl: null,
+            endIconUrl: null,
+            shadowUrl: null
+          },
+          polyline_options: {
+            color: '#1b3320',
+            opacity: 0.85,
+            weight: 4,
+            lineCap: 'round'
+          }
+        }).on('loaded', function(e) {
+          const gpx = e.target;
+          modalMapInstance.fitBounds(gpx.getBounds());
 
-        const runLayer = omnivore.gpx(gpxFilename)
-          .on('ready', function() {
-            modalMapInstance.fitBounds(runLayer.getBounds());
-          })
-          .on('error', function() {
-            console.log('Arquivo GPX não encontrado:', gpxFilename);
-          })
-          .addTo(modalMapInstance);
+          // Preenche métricas no painel
+          const distKm = (gpx.get_distance() / 1000).toFixed(1);
+          const eleGain = Math.round(gpx.get_elevation_gain());
+          const eleLoss = Math.round(gpx.get_elevation_loss());
+          const durMs = gpx.get_moving_time();
+          
+          const hours = Math.floor(durMs / 3600000);
+          const mins = Math.floor((durMs % 3600000) / 60000);
+          const durationStr = `${hours}h ${mins}m`;
+
+          const avgSpeed = (gpx.get_moving_speed()).toFixed(1);
+          const maxSpeed = (gpx.get_speed_max()).toFixed(1);
+          const totalPoints = gpx.get_moving_data() ? gpx._info.elevation.points.length : '--';
+
+          document.getElementById('statDistance').textContent = distKm;
+          document.getElementById('statGain').textContent = eleGain.toLocaleString();
+          document.getElementById('statLoss').textContent = eleLoss.toLocaleString();
+          document.getElementById('statDuration').textContent = durationStr;
+          document.getElementById('statAvgSpeed').textContent = avgSpeed;
+          document.getElementById('statMaxSpeed').textContent = maxSpeed;
+          document.getElementById('statPoints').textContent = totalPoints;
+
+          // Extrai dados de distância vs elevação para montar o gráfico Chart.js
+          const elevationData = gpx.get_elevation_data(); 
+          // Retorna matriz [distância em km, elevação em m, tempo]
+          
+          const labels = [];
+          const dataPoints = [];
+
+          elevationData.forEach(pt => {
+            labels.push(pt[0].toFixed(1) + ' km');
+            dataPoints.push(Math.round(pt[1]));
+          });
+
+          renderElevationChart(labels, dataPoints);
+
+        }).on('error', function() {
+          console.warn('Arquivo GPX indisponível para análise detalhada:', gpxFilename);
+        }).addTo(modalMapInstance);
+
       }, 200);
+    }
+
+    // Renderizador do Gráfico de Elevação (Chart.js)
+    function renderElevationChart(labels, dataPoints) {
+      const ctx = document.getElementById('elevationChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Elevação (m)',
+            data: dataPoints,
+            borderColor: '#2d7a3e',
+            borderWidth: 2,
+            backgroundColor: 'rgba(45, 122, 62, 0.25)',
+            fill: true,
+            pointRadius: 0,
+            tension: 0.2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.raw} m`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { maxTicksLimit: 6, font: { size: 10 } }
+            },
+            y: {
+              grid: { color: '#e8ece9' },
+              ticks: { font: { size: 10 } }
+            }
+          }
+        }
+      });
     }
 
     document.getElementById('modalClose').addEventListener('click', () => {
@@ -461,7 +651,7 @@
       }
     });
 
-    // Menu Mobile
+    // Mobile Navigation
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
@@ -475,7 +665,6 @@
       navLinks.classList.remove('active');
     }
 
-    // Inicialização
     loadTracklogs();
   </script>
 </body>
