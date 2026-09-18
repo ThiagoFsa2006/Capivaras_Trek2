@@ -383,6 +383,12 @@
     let modalMapInstance = null;
     let chartInstance = null;
 
+    // Função utilitária para mapear o nome do arquivo exatamente como salvo no repositório
+    function getGpxFilePath(nomeTrilha) {
+      const cleanName = nomeTrilha.trim().replace(/\s+/g, '-');
+      return `tracklogs/${cleanName}.gpx`;
+    }
+
     function parseCSV(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       if (lines.length < 2) return [];
@@ -488,7 +494,7 @@
         const mapContainer = document.getElementById(mapElementId);
         if (!mapContainer) return;
 
-        const gpxFilename = `tracklogs/${t.nome.toLowerCase().trim().replace(/\s+/g, '-')}.gpx`;
+        const gpxFilename = getGpxFilePath(t.nome);
 
         const miniMap = L.map(mapElementId, {
           zoomControl: false,
@@ -524,7 +530,7 @@
       const modal = document.getElementById('gpxModal');
       modal.classList.add('active');
 
-      const gpxFilename = `tracklogs/${trilha.nome.toLowerCase().trim().replace(/\s+/g, '-')}.gpx`;
+      const gpxFilename = getGpxFilePath(trilha.nome);
 
       // Reseta os valores das estatísticas antes do carregamento
       document.getElementById('statDistance').textContent = '--';
