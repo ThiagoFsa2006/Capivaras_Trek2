@@ -590,7 +590,7 @@
   <!-- Banner do Topo -->
   <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
-      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Histório de Aventuras</h1>
+      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Histórico de Aventuras</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
         Acompanhe nosso histórico de aventuras, percepções além de registros de tempo e distância.
         Esperamos que este conteúdo possa ajudar a planejar suas trilhas.
@@ -825,6 +825,7 @@
             resumo: obj['resumo'] || '',
             descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || '',
             data: obj['data'] || '',
+            status: obj['status'] || '',
             qtdPessoas: obj['qtdpessoas'] || obj['pessoas'] || obj['numero de pessoas'] || ''
           })).filter(t => t.nome !== '');
         }
@@ -922,8 +923,9 @@
         return;
       }
 
-      // Mapeamento de todos os eventos com data válida
+      // Mapeamento de todos os eventos com data válida e status "Realizada"
       const allEvents = trilhasData
+        .filter(item => (item.status || '').toLowerCase().trim() === 'realizada')
         .map((item, originalIndex) => {
           const ts = parseDateToTimestamp(item.data);
           if (!ts) return null;
@@ -939,7 +941,7 @@
         .filter(item => item !== null);
 
       if (allEvents.length === 0) {
-        track.innerHTML = '<p style="color: #d0e0d2;">Nenhuma atividade registrada.</p>';
+        track.innerHTML = '<p style="color: #d0e0d2;">Nenhuma atividade realizada registrada.</p>';
         return;
       }
 
@@ -958,13 +960,13 @@
         .sort((a, b) => a.timestamp - b.timestamp);
 
       if (filteredEvents.length === 0) {
-        track.innerHTML = `<p style="color: #d0e0d2; text-align: center; width: 100%;">Nenhuma atividade registrada em ${selectedTimelineYear}.</p>`;
+        track.innerHTML = `<p style="color: #d0e0d2; text-align: center; width: 100%;">Nenhuma atividade realizada registrada em ${selectedTimelineYear}.</p>`;
         return;
       }
 
       let htmlMarkup = '';
 
-      // Marcação inicial do Ano Selecionado (Ex: 2024 para a aba de 2024)
+      // Marcação inicial do Ano Selecionado
       htmlMarkup += `
         <div class="timeline-year-marker" style="left: 0%;">${selectedTimelineYear}</div>
         <div class="timeline-year-line" style="left: 0%;"></div>
@@ -998,7 +1000,7 @@
         }
       });
 
-      // Lógica do rótulo final: "hoje" apenas para o ano atual, ou selectedTimelineYear + 1 (ex: 2025 para 2024, 2026 para 2025)
+      // Lógica do rótulo final: "hoje" apenas para o ano atual, ou selectedTimelineYear + 1
       const endLabel = (selectedTimelineYear === actualCurrentYear) ? 'hoje' : (selectedTimelineYear + 1);
       
       htmlMarkup += `
@@ -1009,13 +1011,17 @@
       track.innerHTML = htmlMarkup;
     }
 
-    // Renderiza Lista de Cards
+    // Renderiza Lista de Cards (Filtrado estritamente por status "Realizada")
     function filterAndRenderTrilhas() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
       const sortValue = document.getElementById('sortSelect').value;
       const listContainer = document.getElementById('trilhasList');
 
-      let filtered = trilhasData.filter(t => t.nome.toLowerCase().includes(searchTerm));
+      let filtered = trilhasData.filter(t => {
+        const isRealizada = (t.status || '').toLowerCase().trim() === 'realizada';
+        const matchesSearch = t.nome.toLowerCase().includes(searchTerm);
+        return isRealizada && matchesSearch;
+      });
 
       filtered.sort((a, b) => {
         if (sortValue === 'data-desc') {
@@ -1031,7 +1037,7 @@
       });
 
       if (filtered.length === 0) {
-        listContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #556357;">Nenhuma trilha encontrada com o termo buscado.</p>';
+        listContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #556357;">Nenhuma trilha realizada encontrada com o termo buscado.</p>';
         return;
       }
 
