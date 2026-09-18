@@ -18,7 +18,7 @@
     }
 
     /* -----------------------------------------------------------
-       1. LINHA DO TEMPO LATERAL (VERDE ESCURO)
+       1. LINHA DO TEMPO LATERAL (DESKTOP)
     ----------------------------------------------------------- */
     .sidebar-timeline {
       width: 280px;
@@ -63,7 +63,7 @@
       transform: translateX(-50%);
     }
 
-    /* Marcadores do Topo ("hoje" ou Ano) e Rodapé */
+    /* Marcadores do Topo ("hoje") e Rodapé */
     .timeline-v-marker {
       position: absolute;
       left: 50%;
@@ -93,7 +93,6 @@
       z-index: 2;
     }
 
-    /* Alternância Esquerda / Direita (Desktop) */
     .timeline-v-node.left { flex-direction: row; }
     .timeline-v-node.right { flex-direction: row-reverse; }
 
@@ -126,7 +125,6 @@
       line-height: 1.2;
     }
 
-    /* Ponto/Tick na linha */
     .timeline-v-dot {
       width: 10px;
       height: 10px;
@@ -139,7 +137,6 @@
       transition: all 0.25s ease;
     }
 
-    /* Highlight do Mês Selecionado no Calendário */
     .timeline-v-node.highlight-month .timeline-v-content {
       background: rgba(74, 222, 128, 0.18);
       border-color: #4ade80;
@@ -316,7 +313,6 @@
       line-height: 1.2;
     }
 
-    /* Tags Status (Realizada/Planejada) */
     .status-tag {
       align-self: flex-start;
       padding: 2px 6px;
@@ -367,7 +363,7 @@
     }
 
     /* -----------------------------------------------------------
-       3. REGRAS EXCLUSIVAS PARA DISPOSITIVOS MÓVEIS / CELULAR
+       3. REGRAS RESPONSIVAS PARA CELULAR (SOLUÇÃO DE ENCAVALAMENTO)
     ----------------------------------------------------------- */
     @media (max-width: 992px) {
       .page-layout { 
@@ -377,51 +373,71 @@
       .sidebar-timeline { 
         width: 100% !important;
         min-width: 100% !important;
-        min-height: 520px; 
         box-sizing: border-box;
       }
 
       .timeline-vertical-wrapper {
-        margin: 40px 0;
-        min-height: 420px;
+        margin: 30px 0 20px 0 !important;
+        padding-bottom: 20px !important;
+        display: block !important;
+        height: auto !important;
       }
 
-      /* Move a linha guia vertical para a esquerda */
+      /* Move a linha guia totalmente para a esquerda */
       .timeline-vertical-line {
-        left: 20px !important;
+        left: 18px !important;
         transform: none !important;
       }
 
-      /* Alinha os marcadores "hoje" e "2026" sobre a linha da esquerda */
       .timeline-v-marker {
-        left: 20px !important;
+        left: 18px !important;
         transform: translateX(-50%) !important;
       }
 
-      /* Força todos os nós/cards a ficarem no lado direito da linha */
+      .timeline-v-marker.top { top: -22px !important; }
+      .timeline-v-marker.bottom { 
+        position: relative !important;
+        bottom: auto !important;
+        margin-top: 25px !important;
+        display: inline-block !important;
+      }
+
+      #timelineNodesContainer {
+        position: relative !important;
+        height: auto !important;
+        min-height: 120px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 18px !important; /* Distância garantida entre cada evento no celular */
+        padding-top: 10px !important;
+      }
+
+      /* Converte posicionamento absoluto em fluxo relativo no celular */
       .timeline-v-node,
       .timeline-v-node.left,
       .timeline-v-node.right {
-        flex-direction: row !important;
+        position: relative !important;
+        top: auto !important;
         left: 0 !important;
         width: 100% !important;
+        flex-direction: row !important;
+        align-items: center !important;
       }
 
-      /* Centraliza a bolinha sobre a linha da esquerda */
       .timeline-v-dot {
-        left: 20px !important;
+        left: 18px !important;
         transform: translateX(-50%) !important;
+        top: 50% !important;
       }
 
-      /* Expande o conteúdo do card na largura total à direita da linha */
       .timeline-v-content,
       .timeline-v-node.left .timeline-v-content,
       .timeline-v-node.right .timeline-v-content {
-        width: calc(100% - 45px) !important;
-        margin-left: 38px !important;
+        width: calc(100% - 40px) !important;
+        margin-left: 36px !important;
         margin-right: 0 !important;
         text-align: left !important;
-        box-sizing: border-box;
+        box-sizing: border-box !important;
       }
     }
   </style>
@@ -462,7 +478,7 @@
     </div>
   </section>
 
-  <!-- Conteúdo Principal em Duas Colunas -->
+  <!-- Conteúdo Principal -->
   <main class="section" style="padding-top: 30px; padding-bottom: 50px;">
     <div class="container">
       
@@ -477,8 +493,10 @@
           <div class="timeline-vertical-wrapper">
             <div class="timeline-v-marker top" id="markerTop">hoje</div>
             <div class="timeline-vertical-line"></div>
-            <div id="timelineNodesContainer" style="width: 100%; height: 100%; position: relative;"></div>
-            <div class="timeline-v-marker bottom" id="markerBottom">2026</div>
+            <div id="timelineNodesContainer"></div>
+            <div style="text-align: center;">
+              <div class="timeline-v-marker bottom" id="markerBottom">2026</div>
+            </div>
           </div>
         </aside>
 
@@ -698,20 +716,24 @@
       .sort((a, b) => a.timestamp - b.timestamp);
 
       if (events.length === 0) {
-        container.innerHTML = `<p style="color: #a3c9a8; text-align: center; font-size: 0.8rem; padding-top: 40px;">Sem trilhas em ${selectedYear}</p>`;
+        container.innerHTML = `<p style="color: #a3c9a8; text-align: center; font-size: 0.8rem; padding: 20px 0;">Sem trilhas em ${selectedYear}</p>`;
         return;
       }
 
       const totalEvents = events.length;
+      const isMobile = window.innerWidth <= 992;
       
       events.forEach((evt, idx) => {
         const isLeft = idx % 2 === 0;
         const topPercent = (idx / (totalEvents > 1 ? totalEvents - 1 : 1)) * 80 + 8;
         const isSelectedMonth = (evt.month === selectedMonth);
 
+        // No Desktop aplica topPercent absoluto; no Celular deixa o fluxo sequencial CSS tomar conta
+        const styleTop = isMobile ? '' : `style="top: ${topPercent}%;"`;
+
         container.innerHTML += `
           <div class="timeline-v-node ${isLeft ? 'left' : 'right'} ${isSelectedMonth ? 'highlight-month' : ''}" 
-               style="top: ${topPercent}%;" 
+               ${styleTop} 
                onclick="openModal(${evt.originalIndex})"
                title="${evt.nome} (${evt.data})">
             <div class="timeline-v-content">
@@ -843,6 +865,11 @@
     modalClose.addEventListener('click', () => modal.classList.remove('active'));
     modal.addEventListener('click', (e) => {
       if (e.target === modal) modal.classList.remove('active');
+    });
+
+    // Re-renderiza dinamicamente se a janela for redimensionada
+    window.addEventListener('resize', () => {
+      renderSidebarTimeline();
     });
 
     loadData();
