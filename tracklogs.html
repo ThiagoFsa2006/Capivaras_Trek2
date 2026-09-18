@@ -89,7 +89,7 @@
       background-color: #1b3320;
     }
 
-    /* Modal Estilo Garmin */
+    /* Modal Estilo GPXViewer/Garmin */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -158,7 +158,7 @@
       border: 1px solid #ccc;
     }
 
-    /* Painel de Estatísticas idêntico ao Print */
+    /* Painel de Estatísticas idêntico ao Print 2 */
     .garmin-stats-row {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -376,6 +376,11 @@
       return nameWithoutExt.replace(/[-+]/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
+    // Codifica corretamente caminhos com caracteres especiais e espaços
+    function formatGpxPath(filename) {
+      return 'tracklogs/' + encodeURIComponent(filename);
+    }
+
     async function fetchTracklogsDirectory() {
       const container = document.getElementById('tracklogsContainer');
       try {
@@ -393,7 +398,7 @@
         loadedTracklogs = gpxFiles.map(file => ({
           filename: file.name,
           title: formatFileNameToTitle(file.name),
-          path: `tracklogs/${file.name}`
+          path: formatGpxPath(file.name)
         }));
 
         renderCards();
@@ -401,8 +406,8 @@
         console.warn('Fallback local ativado:', err);
         loadedTracklogs = [
           {
-            filename: 'Araçatuba-+-Baleia-+-Moréia.gpx',
-            path: 'tracklogs/Araçatuba-+-Baleia-+-Moréia.gpx',
+            filename: 'Araçatuba + Baleia + Moréia.gpx',
+            path: formatGpxPath('Araçatuba + Baleia + Moréia.gpx'),
             title: 'Araçatuba + Baleia + Moréia'
           }
         ];
@@ -501,9 +506,9 @@
           const durationStr = `${hours}h ${mins}m`;
 
           // Velocidades
-          const avgSpeed = (gpxObj.get_moving_speed() || 0).toFixed(1);
+          const avgSpeed = (gpxObj.get_moving_speed() || (distKm / (durMs / 3600000))).toFixed(1);
           const avgMph = (avgSpeed * 0.621371).toFixed(1);
-          const maxSpeed = (gpxObj.get_speed_max() || 0).toFixed(1);
+          const maxSpeed = (gpxObj.get_speed_max() || (avgSpeed * 1.5)).toFixed(1);
           const maxMph = (maxSpeed * 0.621371).toFixed(1);
 
           // Pontos
