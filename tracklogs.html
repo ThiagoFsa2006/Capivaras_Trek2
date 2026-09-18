@@ -183,7 +183,7 @@
       background: #e5e5e5;
     }
 
-    /* Painel de Estatísticas GPX (Estilo GPXStudio/Wikiloc) */
+    /* Painel de Estatísticas GPX */
     .gpx-stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
@@ -230,7 +230,7 @@
       font-weight: 600;
     }
 
-    /* Gráfico de Elevação / Altimetria */
+    /* Gráfico de Altimetria / Elevação */
     .elevation-chart-container {
       margin-top: 15px;
       height: 180px;
@@ -310,7 +310,7 @@
       <!-- Mapa Interativo -->
       <div id="modalMapContainer"></div>
 
-      <!-- Painel de Métricas (Distance, Gain, Loss, Duration, etc.) -->
+      <!-- Painel de Métricas -->
       <div class="gpx-stats-grid">
         <div class="stat-card">
           <span class="stat-label">DISTANCE</span>
@@ -526,6 +526,15 @@
 
       const gpxFilename = `tracklogs/${trilha.nome.toLowerCase().trim().replace(/\s+/g, '-')}.gpx`;
 
+      // Reseta os valores das estatísticas antes do carregamento
+      document.getElementById('statDistance').textContent = '--';
+      document.getElementById('statGain').textContent = '--';
+      document.getElementById('statLoss').textContent = '--';
+      document.getElementById('statDuration').textContent = '--';
+      document.getElementById('statAvgSpeed').textContent = '--';
+      document.getElementById('statMaxSpeed').textContent = '--';
+      document.getElementById('statPoints').textContent = '--';
+
       setTimeout(() => {
         if (modalMapInstance) modalMapInstance.remove();
 
@@ -535,8 +544,7 @@
           attribution: '© OpenStreetMap contributors'
         }).addTo(modalMapInstance);
 
-        // Carrega o arquivo GPX usando a biblioteca L.GPX
-        new L.GPX(gpxFilename, {
+        const gpx = new L.GPX(gpxFilename, {
           async: true,
           marker_options: {
             startIconUrl: null,
@@ -549,23 +557,29 @@
             weight: 4,
             lineCap: 'round'
           }
-        }).on('loaded', function(e) {
-          const gpx = e.target;
-          modalMapInstance.fitBounds(gpx.getBounds());
+        });
+
+        gpx.on('loaded', function(e) {
+          const gpxObj = e.target;
+          modalMapInstance.fitBounds(gpxObj.getBounds());
 
           // Preenche métricas no painel
-          const distKm = (gpx.get_distance() / 1000).toFixed(1);
-          const eleGain = Math.round(gpx.get_elevation_gain());
-          const eleLoss = Math.round(gpx.get_elevation_loss());
-          const durMs = gpx.get_moving_time();
+          const distKm = (gpxObj.get_distance() / 1000).toFixed(1);
+          const eleGain = Math.round(gpxObj.get_elevation_gain());
+          const eleLoss = Math.round(gpxObj.get_elevation_loss());
+          const durMs = gpxObj.get_moving_time();
           
           const hours = Math.floor(durMs / 3600000);
           const mins = Math.floor((durMs % 3600000) / 60000);
           const durationStr = `${hours}h ${mins}m`;
 
-          const avgSpeed = (gpx.get_moving_speed()).toFixed(1);
-          const maxSpeed = (gpx.get_speed_max()).toFixed(1);
-          const totalPoints = gpx.get_moving_data() ? gpx._info.elevation.points.length : '--';
+          const avgSpeed = (gpxObj.get_moving_speed()).toFixed(1);
+          const maxSpeed = (gpxObj.get_speed_max()).toFixed(1);
+
+          let totalPoints = '--';
+          if (gpxObj._info && gpxObj._info.elevation && gpxObj._info.elevation.points) {
+            totalPoints = gpxObj._info.elevation.points.length.toLocaleString();
+          }
 
           document.getElementById('statDistance').textContent = distKm;
           document.getElementById('statGain').textContent = eleGain.toLocaleString();
@@ -575,10 +589,8 @@
           document.getElementById('statMaxSpeed').textContent = maxSpeed;
           document.getElementById('statPoints').textContent = totalPoints;
 
-          // Extrai dados de distância vs elevação para montar o gráfico Chart.js
-          const elevationData = gpx.get_elevation_data(); 
-          // Retorna matriz [distância em km, elevação em m, tempo]
-          
+          // Extrai pontos do gráfico de elevação
+          const elevationData = gpxObj.get_elevation_data();
           const labels = [];
           const dataPoints = [];
 
@@ -590,13 +602,12 @@
           renderElevationChart(labels, dataPoints);
 
         }).on('error', function() {
-          console.warn('Arquivo GPX indisponível para análise detalhada:', gpxFilename);
+          console.warn('Arquivo GPX indisponível ou inacessível:', gpxFilename);
         }).addTo(modalMapInstance);
 
       }, 200);
     }
 
-    // Renderizador do Gráfico de Elevação (Chart.js)
     function renderElevationChart(labels, dataPoints) {
       const ctx = document.getElementById('elevationChart').getContext('2d');
       if (chartInstance) chartInstance.destroy();
