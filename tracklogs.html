@@ -362,32 +362,28 @@
         await processAndSortTracks(items);
 
       } catch (err) {
-        console.warn('Erro na busca pelo GitHub, carregando diretamente da pasta local:', err);
-        const fallbackItems = [
-          {
-            filename: 'Araçatuba + Baleia + Moréia.gpx',
-            title: 'Araçatuba + Baleia + Moréia',
-            downloadUrl: 'tracklogs/' + encodeURIComponent('Araçatuba + Baleia + Moréia.gpx')
-          }
-        ];
-        await processAndSortTracks(fallbackItems);
+        console.warn('Erro na busca pelo GitHub, buscando arquivos da pasta local:', err);
+        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Não foi possível carregar a lista de tracklogs.</p>';
       }
     }
 
     async function processAndSortTracks(items) {
-      const tempContainer = document.createElement('div');
+      const tempDiv = document.createElement('div');
+      document.body.appendChild(tempDiv);
+      tempDiv.style.display = 'none';
 
       const promises = items.map(async (item) => {
         try {
-          // Busca o texto bruto do arquivo XML GPX
           const res = await fetch(item.downloadUrl);
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const gpxText = await res.text();
 
           return new Promise((resolve) => {
-            const map = L.map(tempContainer, { zoomControl: false });
+            const mapContainer = document.createElement('div');
+            tempDiv.appendChild(mapContainer);
+
+            const map = L.map(mapContainer, { zoomControl: false });
             
-            // Passa o próprio XML do arquivo como parâmetro
             const gpx = new L.GPX(gpxText, {
               async: true,
               marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null, wptIconUrls: { '': null } }
@@ -417,6 +413,8 @@
               }
 
               map.remove();
+              mapContainer.remove();
+
               resolve({
                 ...item,
                 gpxText: gpxText,
@@ -430,6 +428,7 @@
 
             gpx.on('error', function() {
               map.remove();
+              mapContainer.remove();
               resolve({
                 ...item,
                 gpxText: gpxText,
@@ -459,8 +458,9 @@
       });
 
       const results = await Promise.all(promises);
+      tempDiv.remove();
 
-      // Ordena do mais antigo para o mais novo
+      // Ordena chronologicamente
       loadedTracklogs = results.sort((a, b) => a.timestamp - b.timestamp);
 
       renderCards();
