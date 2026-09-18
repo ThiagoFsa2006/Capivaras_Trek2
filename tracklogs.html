@@ -4,110 +4,273 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tracklogs - Capivaras Trek</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Estilos Leaflet (Mapa Interativo) -->
+  <!-- Leaflet CSS (Biblioteca do Mapa Interativo) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
-    /* Estilos Globais e Layout Base */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background-color: #f7f9f7; color: #1b3320; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-    .section { padding: 40px 0; }
+    /* Grade de Cards da Tracklog */
+    .tracklog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      margin-top: 30px;
+    }
 
-    /* Header & Navegação */
-    .navbar { background: #1b3320; padding: 15px 0; position: fixed; width: 100%; top: 0; z-index: 1000; }
-    .nav-container { display: flex; justify-content: space-between; align-items: center; }
-    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; font-weight: 800; font-size: 1.2rem; }
-    .logo-img { height: 35px; width: auto; }
-    .nav-links { display: flex; gap: 20px; }
-    .nav-links a { color: #d0e0d2; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
-    .nav-links a.active, .nav-links a:hover { color: #ffffff; }
+    .tracklog-card {
+      background: #ffffff;
+      border: 1px solid #dcdfdc;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
 
-    /* Cards da Tracklog Grid */
-    .tracklog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-top: 30px; }
-    .tracklog-card { background: #ffffff; border: 1px solid #dcdfdc; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; }
-    .tracklog-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-    
-    /* Capa com Mapa Lúdico Padrão */
-    .card-map-cover { height: 160px; background: #e2e8e3 url('https://tile.openstreetmap.org/10/276/621.png') center/cover; position: relative; display: flex; align-items: center; justify-content: center; }
-    .card-map-overlay { position: absolute; inset: 0; background: rgba(27, 51, 32, 0.35); }
-    .card-map-title { position: relative; z-index: 2; color: #ffffff; font-weight: 800; font-size: 1.2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.6); text-align: center; padding: 0 15px; }
+    .tracklog-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
 
-    .tracklog-info { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .tracklog-meta { list-style: none; margin: 12px 0; font-size: 0.88rem; color: #3d4a3f; display: flex; flex-direction: column; gap: 6px; }
+    /* Área de Capa do Card (Mapa Rendilhado ou Fallback) */
+    .card-map-cover {
+      height: 180px;
+      width: 100%;
+      position: relative;
+      background-color: #e5ebe6;
+      border-bottom: 1px solid #dcdfdc;
+      overflow: hidden;
+    }
 
-    /* Botões de Ação dos Cards */
-    .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-    .btn-action { padding: 10px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; text-align: center; text-decoration: none; cursor: pointer; border: none; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    
-    /* Botão Wikiloc Ativo e Transparente */
-    .btn-wikiloc { background-color: #2d7a3e; color: #ffffff; }
-    .btn-wikiloc:hover { background-color: #1b3320; }
-    .btn-wikiloc.translucent { opacity: 0.35; pointer-events: none; background-color: #8c998e; color: #ffffff; }
+    .card-map-render {
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Fallback quando o arquivo GPX não é encontrado */
+    .no-tracklog-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #d8e0d9;
+      color: #556357;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* Informações e Metadados do Card */
+    .tracklog-info {
+      padding: 18px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tracklog-meta {
+      list-style: none;
+      margin: 10px 0 16px 0;
+      padding: 0;
+      font-size: 0.88rem;
+      color: #3d4a3f;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Botões de Ação na Parte Inferior do Card */
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-action {
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* Botão Wikiloc (Com ou Sem Link) */
+    .btn-wikiloc {
+      background-color: #2d7a3e;
+      color: #ffffff;
+    }
+
+    .btn-wikiloc:hover {
+      background-color: #1b3320;
+    }
+
+    .btn-wikiloc.translucent {
+      opacity: 0.35;
+      pointer-events: none;
+      background-color: #8c998e;
+      color: #ffffff;
+      cursor: not-allowed;
+    }
 
     /* Botão GPX Viewer */
-    .btn-gpx { background-color: #eaf2eb; color: #1b3320; border: 1px solid #c2d6c5; }
-    .btn-gpx:hover { background-color: #2d7a3e; color: #ffffff; border-color: #2d7a3e; }
+    .btn-gpx {
+      background-color: #eaf2eb;
+      color: #1b3320;
+      border: 1px solid #c2d6c5;
+    }
 
-    /* Modal Pop-up para Visualização do GPX */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-    .modal-overlay.active { display: flex; }
-    .modal-content { background: #ffffff; border-radius: 12px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; padding: 24px; }
-    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; background: none; border: none; cursor: pointer; color: #556357; }
-    
-    #mapContainer { height: 400px; width: 100%; border-radius: 8px; margin-top: 15px; background: #e5e5e5; }
+    .btn-gpx:hover {
+      background-color: #2d7a3e;
+      color: #ffffff;
+      border-color: #2d7a3e;
+    }
+
+    /* Pop-up / Modal GPX Viewer */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      padding: 24px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.8rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #556357;
+    }
+
+    #modalMapContainer {
+      height: 480px;
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 15px;
+      background: #e5e5e5;
+    }
+
+    @media (max-width: 768px) {
+      .card-actions {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Header Fixo -->
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand">
-        <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img" onerror="this.style.display='none'">
-        <span>Capivaras Trek</span>
+        <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
+        <span class="brand-name">Capivaras Trek</span>
       </a>
-      <nav class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="trilhas.html">Trilhas</a>
-        <a href="galeria.html">Galeria</a>
-        <a href="tracklogs.html" class="active">Tracklogs</a>
-        <a href="contato.html">Contato</a>
+
+      <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#home" onclick="closeMenu()">Home</a>
+        <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
+        <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
+        <a href="galeria.html" onclick="closeMenu()">Galeria</a>
+        <a href="tracklogs.html" class="active" onclick="closeMenu()">Tracklogs</a>
+        <a href="calendario.html" onclick="closeMenu()">Calendário</a>
+        <a href="contato.html" onclick="closeMenu()">Contato</a>
       </nav>
     </div>
   </header>
 
-  <!-- Banner Topo -->
-  <section class="section" style="padding-top: 110px; background-color: #1b3320; color: #ffffff; text-align: center;">
+  <!-- Banner do Topo -->
+  <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
-      <h1 style="font-size: 2.2rem; font-weight: 800;">Tracklogs & GPX</h1>
-      <p style="color: #d0e0d2; font-size: 1rem; margin-top: 8px;">Explore os trajetos percorridos pelo grupo em mapas interativos e baixe os arquivos GPX.</p>
+      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Tracklogs & GPX</h1>
+      <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
+        Explore os trajetos percorridos pelo grupo em mapas interativos e navegue através do Wikiloc.
+      </p>
     </div>
   </section>
 
-  <!-- Grade de Cards -->
-  <main class="section">
+  <!-- Conteúdo Principal -->
+  <main class="section" style="padding-top: 30px;">
     <div class="container">
+      
+      <!-- Grade de Cards das Trilhas -->
       <div class="tracklog-grid" id="tracklogsContainer">
-        <p style="text-align: center; grid-column: 1/-1;">Carregando tracklogs...</p>
+        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Carregando tracklogs...</p>
       </div>
+
     </div>
   </main>
 
-  <!-- Modal com Leitor GPX -->
+  <!-- Modal Pop-up com Mapa GPX Ampliado -->
   <div class="modal-overlay" id="gpxModal">
     <div class="modal-content">
-      <button class="modal-close" id="modalClose">×</button>
-      <h2 id="modalTitle" style="color: #1b3320; font-size: 1.6rem;">Visualizador de Tracklog</h2>
+      <button class="modal-close" id="modalClose">&times;</button>
+      <h2 id="modalTitle" style="color: #1b3320; font-size: 1.6rem; font-weight: 800;">Visualizador de Tracklog</h2>
       <p id="modalSub" style="color: #556357; font-size: 0.9rem; margin-top: 4px;"></p>
       
-      <!-- Mapa Interativo (Leaflet) -->
-      <div id="mapContainer"></div>
+      <!-- Contêiner do Mapa Interativo Leaflet -->
+      <div id="modalMapContainer"></div>
     </div>
   </div>
 
-  <!-- Scripts para leitura do CSV e Leaflet Map -->
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-brand">
+        <img src="logo.png" alt="Capivaras Trek Logo" class="footer-logo">
+        <h3>Capivaras Trek</h3>
+        <p>Vivendo a montanha de forma autêntica e segura.</p>
+      </div>
+      <div class="footer-copy">
+        <p>&copy; 2026 Capivaras Trek. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts para Leaflet Map & Omnivore GPX Parser -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
 
@@ -115,9 +278,8 @@
     const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
 
     let tracklogsData = [];
-    let mapInstance = null;
+    let modalMapInstance = null;
 
-    // Utilitário para ler o CSV publicado da Página 1
     function parseCSV(text) {
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       if (lines.length < 2) return [];
@@ -154,8 +316,15 @@
         const text = await res.text();
         const parsed = parseCSV(text);
 
-        // Exibe apenas trilhas com status 'Realizada'
-        tracklogsData = parsed.filter(t => (t.status || '').toLowerCase().trim() === 'realizada');
+        // Mapeia todas as trilhas com nome cadastrado na planilha
+        tracklogsData = parsed.map(obj => ({
+          nome: obj['nome'] || '',
+          regiao: obj['regiao'] || '',
+          distancia: obj['distancia'] || '',
+          tempoMedio: obj['tempomedio'] || obj['tempo'] || '',
+          data: obj['data'] || '',
+          linkwic: obj['linkwic'] || ''
+        })).filter(t => t.nome !== '');
 
         renderCards();
       } catch (e) {
@@ -167,30 +336,32 @@
     function renderCards() {
       const container = document.getElementById('tracklogsContainer');
       if (tracklogsData.length === 0) {
-        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhuma tracklog encontrada.</p>';
+        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhum tracklog encontrado.</p>';
         return;
       }
 
       container.innerHTML = tracklogsData.map((t, idx) => {
         const hasWikiloc = t.linkwic && t.linkwic.trim().startsWith('http');
-        
+
         return `
           <article class="tracklog-card">
-            <!-- Capa Mapa Lúdico Padrão -->
+            <!-- Capa com Miniatura do Mapa ou Mensagem de Fallback -->
             <div class="card-map-cover">
-              <div class="card-map-overlay"></div>
-              <div class="card-map-title">${t.nome}</div>
+              <div id="cardMap_${idx}" class="card-map-render"></div>
             </div>
 
             <div class="tracklog-info">
-              <ul class="tracklog-meta">
-                <li>📍 <strong>Região:</strong> ${t.regiao || 'N/A'}</li>
-                <li>📏 <strong>Distância:</strong> ${t.distancia || 'N/A'}</li>
-                <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempomedio || t.tempo || 'N/A'}</li>
-                <li>📅 <strong>Data:</strong> ${t.data || 'N/A'}</li>
-              </ul>
+              <div>
+                <h3 style="color: #1b3320; font-size: 1.25rem; font-weight: 800; margin-bottom: 4px;">${t.nome}</h3>
+                <ul class="tracklog-meta">
+                  <li>📍 <strong>Região:</strong> ${t.regiao || 'N/A'}</li>
+                  <li>📏 <strong>Distância:</strong> ${t.distancia || 'N/A'}</li>
+                  <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio || 'N/A'}</li>
+                  <li>📅 <strong>Data:</strong> ${t.data || 'N/A'}</li>
+                </ul>
+              </div>
 
-              <!-- 2 Botões de Ação -->
+              <!-- Botões de Ação -->
               <div class="card-actions">
                 <a href="${hasWikiloc ? t.linkwic : '#'}" 
                    target="_blank" 
@@ -207,42 +378,76 @@
           </article>
         `;
       }).join('');
+
+      // Renderiza os mini mapas Leaflet dentro de cada card
+      initCardMaps();
     }
 
-    // Modal & Leitor de Mapa GPX
+    function initCardMaps() {
+      tracklogsData.forEach((t, idx) => {
+        const mapElementId = `cardMap_${idx}`;
+        const mapContainer = document.getElementById(mapElementId);
+        if (!mapContainer) return;
+
+        // Nome de arquivo padronizado para a pasta tracklogs/
+        const gpxFilename = `tracklogs/${t.nome.toLowerCase().trim().replace(/\s+/g, '-')}.gpx`;
+
+        // Instancia mapa estático miniatura
+        const miniMap = L.map(mapElementId, {
+          zoomControl: false,
+          dragging: false,
+          touchZoom: false,
+          scrollWheelZoom: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          attributionControl: false
+        }).setView([-25.4284, -49.2733], 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
+
+        // Carrega rota GPX no mini mapa
+        const gpxLayer = omnivore.gpx(gpxFilename)
+          .on('ready', function() {
+            miniMap.fitBounds(gpxLayer.getBounds(), { padding: [10, 10] });
+          })
+          .on('error', function() {
+            // Se o arquivo .gpx não existir, substitui pela caixa "Sem Tracklog"
+            mapContainer.innerHTML = '<div class="no-tracklog-placeholder">Sem Tracklog</div>';
+          })
+          .addTo(miniMap);
+      });
+    }
+
+    // Modal Pop-up GPX Viewer Interativo
     function openGpxModal(index) {
       const trilha = tracklogsData[index];
       if (!trilha) return;
 
       document.getElementById('modalTitle').textContent = trilha.nome;
-      document.getElementById('modalSub').textContent = `Região: ${trilha.regiao} | Distância: ${trilha.distancia}`;
+      document.getElementById('modalSub').textContent = `Região: ${trilha.regiao} | Distância: ${trilha.distancia} | Tempo Médio: ${trilha.tempoMedio}`;
       
       const modal = document.getElementById('gpxModal');
       modal.classList.add('active');
 
-      // Inicializa o mapa Leaflet
       setTimeout(() => {
-        if (mapInstance) mapInstance.remove();
+        if (modalMapInstance) modalMapInstance.remove();
 
-        // Ponto central padrão (Paraná)
-        mapInstance = L.map('mapContainer').setView([-25.4284, -49.2733], 10);
+        modalMapInstance = L.map('modalMapContainer').setView([-25.4284, -49.2733], 10);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap'
-        }).addTo(mapInstance);
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(modalMapInstance);
 
-        // Nome padronizado do arquivo GPX na pasta /tracklogs
-        const gpxFilename = `tracklogs/${trilha.nome.toLowerCase().replace(/\s+/g, '-')}.gpx`;
+        const gpxFilename = `tracklogs/${trilha.nome.toLowerCase().trim().replace(/\s+/g, '-')}.gpx`;
 
-        // Carrega o arquivo GPX usando omnivore
         const runLayer = omnivore.gpx(gpxFilename)
           .on('ready', function() {
-            mapInstance.fitBounds(runLayer.getBounds());
+            modalMapInstance.fitBounds(runLayer.getBounds());
           })
           .on('error', function() {
-            console.log('Arquivo GPX não localizado localmente:', gpxFilename);
+            console.log('Arquivo GPX não encontrado:', gpxFilename);
           })
-          .addTo(mapInstance);
+          .addTo(modalMapInstance);
       }, 200);
     }
 
@@ -250,6 +455,27 @@
       document.getElementById('gpxModal').classList.remove('active');
     });
 
+    document.getElementById('gpxModal').addEventListener('click', (e) => {
+      if (e.target.id === 'gpxModal') {
+        document.getElementById('gpxModal').classList.remove('active');
+      }
+    });
+
+    // Menu Mobile
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.getElementById('nav-links');
+
+    mobileBtn.addEventListener('click', () => {
+      mobileBtn.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+
+    function closeMenu() {
+      mobileBtn.classList.remove('active');
+      navLinks.classList.remove('active');
+    }
+
+    // Inicialização
     loadTracklogs();
   </script>
 </body>
