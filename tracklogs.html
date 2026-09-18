@@ -108,7 +108,7 @@
       background-color: #1b3320;
     }
 
-    /* Modal Estilo GPX Viewer / Garmin Connect */
+    /* Modal Estilo GPX Viewer */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -144,7 +144,7 @@
       color: #666;
     }
 
-    .garmin-source { font-size: 0.8rem; color: #777; margin-bottom: 10px; }
+    .garmin-source { font-size: 0.82rem; color: #555; font-weight: 600; margin-bottom: 10px; }
 
     .garmin-links-bar {
       display: flex;
@@ -268,7 +268,7 @@
   <main class="section" style="padding-top: 20px;">
     <div class="container">
       <div class="tracklog-grid" id="tracklogsContainer">
-        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Buscando e lendo arquivos GPX da pasta tracklogs...</p>
+        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Buscando arquivos GPX...</p>
       </div>
     </div>
   </main>
@@ -278,7 +278,8 @@
     <div class="modal-content-garmin">
       <button class="modal-close" id="modalClose">&times;</button>
       
-      <div class="garmin-source">Source: Garmin Connect / Original GPX File</div>
+      <!-- APENAS "Original GPX File" SEM O "Source:" -->
+      <div class="garmin-source">Original GPX File</div>
 
       <div class="garmin-links-bar">
         <span>OPEN IN</span>
@@ -447,12 +448,21 @@
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
 
-        const gpx = new L.GPX(item.path, { async: true });
+        // Desativa marcadores/ícones na miniatura do mapa para evitar erros visuais
+        const gpx = new L.GPX(item.path, {
+          async: true,
+          marker_options: {
+            startIconUrl: null,
+            endIconUrl: null,
+            shadowUrl: null,
+            wptIconUrls: { '': null }
+          }
+        });
+
         gpx.on('loaded', function(e) {
           const gpxObj = e.target;
           miniMap.fitBounds(gpxObj.getBounds(), { padding: [10, 10] });
 
-          // Lê e preenche as métricas reais do próprio arquivo GPX no Card
           const distKm = (gpxObj.get_distance() / 1000).toFixed(1);
           const gainM = Math.round(gpxObj.get_elevation_gain());
           const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
@@ -489,39 +499,40 @@
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(modalMapInstance);
 
+        // Remove os ícones e pontos indesejados para manter a rota limpa
         const gpx = new L.GPX(track.path, {
           async: true,
-          marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null },
-          polyline_options: { color: '#1b3320', opacity: 0.85, weight: 4 }
+          marker_options: {
+            startIconUrl: null,
+            endIconUrl: null,
+            shadowUrl: null,
+            wptIconUrls: { '': null }
+          },
+          polyline_options: { color: '#0000FF', opacity: 0.9, weight: 4 }
         });
 
         gpx.on('loaded', function(e) {
           const gpxObj = e.target;
           modalMapInstance.fitBounds(gpxObj.getBounds());
 
-          // Distância Real do Arquivo GPX
           const distKm = (gpxObj.get_distance() / 1000).toFixed(1);
           const distMi = (distKm * 0.621371).toFixed(2);
 
-          // Elevação Acumulada Real
           const gainM = Math.round(gpxObj.get_elevation_gain());
           const gainFt = Math.round(gainM * 3.28084);
           const lossM = Math.round(gpxObj.get_elevation_loss());
           const lossFt = Math.round(lossM * 3.28084);
 
-          // Duração Total do GPX
           const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
           const hours = Math.floor(durMs / 3600000);
           const mins = Math.floor((durMs % 3600000) / 60000);
           const durationStr = `${hours}h ${mins}m`;
 
-          // Velocidade
           const avgSpeed = (gpxObj.get_moving_speed() || (distKm / (durMs / 3600000))).toFixed(1);
           const avgMph = (avgSpeed * 0.621371).toFixed(1);
           const maxSpeed = (gpxObj.get_speed_max() || (avgSpeed * 1.5)).toFixed(1);
           const maxMph = (maxSpeed * 0.621371).toFixed(1);
 
-          // Pontos gravados no GPX
           let totalPts = '--';
           if (gpxObj._info && gpxObj._info.elevation && gpxObj._info.elevation.points) {
             totalPts = gpxObj._info.elevation.points.length.toLocaleString();
@@ -546,7 +557,6 @@
 
           document.getElementById('statPts').textContent = totalPts;
 
-          // Gráfico de Elevação
           const elevationData = gpxObj.get_elevation_data();
           const labels = [];
           const dataPoints = [];
