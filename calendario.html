@@ -49,7 +49,7 @@
       flex-grow: 1;
       display: flex;
       justify-content: center;
-      margin: 20px 0;
+      margin: 35px 0; /* Aumentado a margem para evitar choque no topo e rodapé */
     }
 
     /* Linha central vertical */
@@ -74,12 +74,12 @@
       background-color: #1b3320;
       padding: 2px 8px;
       border-radius: 4px;
-      z-index: 2;
+      z-index: 5;
       white-space: nowrap;
     }
 
-    .timeline-v-marker.top { top: -16px; }
-    .timeline-v-marker.bottom { bottom: -16px; color: #a3c9a8; }
+    .timeline-v-marker.top { top: -25px; }
+    .timeline-v-marker.bottom { bottom: -25px; color: #a3c9a8; }
 
     /* Nós das Trilhas no Eixo Vertical */
     .timeline-v-node {
@@ -90,6 +90,7 @@
       align-items: center;
       cursor: pointer;
       transition: all 0.25s ease;
+      z-index: 2;
     }
 
     /* Alternância Esquerda / Direita */
@@ -134,7 +135,7 @@
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 2;
+      z-index: 3;
       transition: all 0.25s ease;
     }
 
@@ -659,8 +660,8 @@
       
       events.forEach((evt, idx) => {
         const isLeft = idx % 2 === 0;
-        // Posição percentual de 5% a 95% ao longo de toda a altura disponível
-        const topPercent = (idx / (totalEvents > 1 ? totalEvents - 1 : 1)) * 90 + 5;
+        // Posição percentual de 8% a 88% para garantir folga na etiqueta do topo e do rodapé
+        const topPercent = (idx / (totalEvents > 1 ? totalEvents - 1 : 1)) * 80 + 8;
         const isSelectedMonth = (evt.month === selectedMonth);
 
         container.innerHTML += `
