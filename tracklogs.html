@@ -153,7 +153,7 @@
       border: 1px solid #ccc;
     }
 
-    /* Painel de Estatísticas GPX Ajustado para 6 Colunas */
+    /* Painel de Estatísticas GPX Ajustado */
     .garmin-stats-row {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -251,7 +251,7 @@
   <main class="section" style="padding-top: 20px;">
     <div class="container">
       <div class="tracklog-grid" id="tracklogsContainer">
-        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Buscando arquivos GPX...</p>
+        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Buscando e processando arquivos GPX...</p>
       </div>
     </div>
   </main>
@@ -266,7 +266,7 @@
       <!-- Mapa -->
       <div id="modalMapContainer"></div>
 
-      <!-- Estatísticas GPX (6 Colunas sem "POINTS") -->
+      <!-- Estatísticas GPX -->
       <div class="garmin-stats-row">
         <div class="garmin-stat-col">
           <span class="garmin-label">DISTANCE</span>
@@ -357,24 +357,96 @@
           return;
         }
 
-        loadedTracklogs = gpxFiles.map(file => ({
+        const items = gpxFiles.map(file => ({
           filename: file.name,
           title: formatTitleFromFileName(file.name),
           path: formatGpxPath(file.name)
         }));
 
-        renderCards();
+        await processAndSortTracks(items);
+
       } catch (err) {
         console.warn('Usando fallback local:', err);
-        loadedTracklogs = [
+        const fallbackItems = [
           {
             filename: 'Araçatuba + Baleia + Moréia.gpx',
             title: 'Araçatuba + Baleia + Moréia',
             path: formatGpxPath('Araçatuba + Baleia + Moréia.gpx')
           }
         ];
-        renderCards();
+        await processAndSortTracks(fallbackItems);
       }
+    }
+
+    // Lê os arquivos GPX, extrai os metadados (incluindo a data) e ordena do mais antigo para o mais novo
+    async function processAndSortTracks(items) {
+      const tempMap = document.createElement('div');
+      
+      const processPromises = items.map(item => {
+        return new Promise((resolve) => {
+          const map = L.map(tempMap, { zoomControl: false });
+          const gpx = new L.GPX(item.path, {
+            async: true,
+            marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null, wptIconUrls: { '': null } }
+          });
+
+          gpx.on('loaded', function(e) {
+            const gpxObj = e.target;
+            
+            const distKm = (gpxObj.get_distance() / 1000).toFixed(1);
+            const gainM = Math.round(gpxObj.get_elevation_gain());
+            const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
+            
+            const hours = Math.floor(durMs / 3600000);
+            const mins = Math.floor((durMs % 3600000) / 60000);
+            const durationStr = `${hours}h ${mins}m`;
+
+            // Extração da data de início do GPX
+            let dateObj = gpxObj.get_start_time();
+            let dateStr = 'Data N/A';
+            let timestamp = 0;
+
+            if (dateObj && !isNaN(dateObj.getTime())) {
+              timestamp = dateObj.getTime();
+              const day = String(dateObj.getDate()).padStart(2, '0');
+              const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+              const year = dateObj.getFullYear();
+              dateStr = `${day}/${month}/${year}`;
+            }
+
+            map.remove();
+            resolve({
+              ...item,
+              distKm: `${distKm} km`,
+              gainM: `${gainM.toLocaleString()} m`,
+              durationStr: durationStr,
+              dateStr: dateStr,
+              timestamp: timestamp
+            });
+          });
+
+          gpx.on('error', function() {
+            map.remove();
+            resolve({
+              ...item,
+              distKm: 'N/A',
+              gainM: 'N/A',
+              durationStr: 'N/A',
+              dateStr: 'Data N/A',
+              timestamp: 0
+            });
+          });
+
+          gpx.addTo(map);
+        });
+      });
+
+      const processed = await Promise.all(processPromises);
+
+      // ORDENAÇÃO: Do mais antigo (menor timestamp) para o mais novo (maior timestamp)
+      loadedTracklogs = processed.sort((a, b) => a.timestamp - b.timestamp);
+
+      renderCards();
     }
 
     function renderCards() {
@@ -386,9 +458,10 @@
             <div>
               <h3 class="tracklog-title">${item.title}</h3>
               <ul class="tracklog-meta">
-                <li>📏 <strong>Distância:</strong> <span id="cardDist_${idx}">Lendo GPX...</span></li>
-                <li>📈 <strong>Ganho de Elevação:</strong> <span id="cardGain_${idx}">Lendo GPX...</span></li>
-                <li>⏱️ <strong>Duração Total:</strong> <span id="cardDur_${idx}">Lendo GPX...</span></li>
+                <li>📅 <strong>Data:</strong> ${item.dateStr}</li>
+                <li>📏 <strong>Distância:</strong> ${item.distKm}</li>
+                <li>📈 <strong>Ganho de Elevação:</strong> ${item.gainM}</li>
+                <li>⏱️ <strong>Duração Total:</strong> ${item.durationStr}</li>
               </ul>
             </div>
             <button class="btn-view-details">Ver Detalhes do Percurso ↗</button>
@@ -427,25 +500,7 @@
         });
 
         gpx.on('loaded', function(e) {
-          const gpxObj = e.target;
-          miniMap.fitBounds(gpxObj.getBounds(), { padding: [10, 10] });
-
-          const distKm = (gpxObj.get_distance() / 1000).toFixed(1);
-          const gainM = Math.round(gpxObj.get_elevation_gain());
-          const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
-          
-          const hours = Math.floor(durMs / 3600000);
-          const mins = Math.floor((durMs % 3600000) / 60000);
-          const durationStr = `${hours}h ${mins}m`;
-
-          const elemDist = document.getElementById(`cardDist_${idx}`);
-          const elemGain = document.getElementById(`cardGain_${idx}`);
-          const elemDur = document.getElementById(`cardDur_${idx}`);
-
-          if (elemDist) elemDist.textContent = `${distKm} km`;
-          if (elemGain) elemGain.textContent = `${gainM.toLocaleString()} m`;
-          if (elemDur) elemDur.textContent = durationStr;
-
+          miniMap.fitBounds(e.target.getBounds(), { padding: [10, 10] });
         }).addTo(miniMap);
       });
     }
