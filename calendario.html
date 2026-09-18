@@ -3,11 +3,263 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calendário | Capivaras Trek</title>
+  <title>Calendário - Capivaras Trek</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Container Principal do Calendário */
+    .calendar-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border: 1px solid #dcdfdc;
+      overflow: hidden;
+    }
+
+    /* Cabeçalho do Calendário */
+    .calendar-header {
+      background-color: #1b3320;
+      color: #ffffff;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .calendar-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .calendar-title-group h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin: 0;
+      color: #ffffff;
+      min-width: 180px;
+    }
+
+    .calendar-nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      border-radius: 6px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .calendar-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Seletores Rápidos de Mês e Ano */
+    .calendar-selects {
+      display: flex;
+      gap: 10px;
+    }
+
+    .calendar-select {
+      background: #ffffff;
+      color: #1b3320;
+      border: 1px solid #cbd2cc;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Grade do Calendário */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      width: 100%;
+    }
+
+    /* Cabeçalho dos Dias da Semana */
+    .calendar-day-header {
+      background: #eef2ef;
+      color: #1b3320;
+      padding: 12px 6px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      border-bottom: 1px solid #dcdfdc;
+      border-right: 1px solid #e2e8e3;
+    }
+
+    .calendar-day-header:last-child {
+      border-right: none;
+    }
+
+    /* Células dos Dias */
+    .calendar-day-cell {
+      min-height: 120px;
+      border-bottom: 1px solid #e2e8e3;
+      border-right: 1px solid #e2e8e3;
+      padding: 8px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: background 0.2s ease;
+    }
+
+    .calendar-day-cell:nth-child(7n) {
+      border-right: none;
+    }
+
+    .calendar-day-cell.other-month {
+      background: #f8faf8;
+      opacity: 0.5;
+    }
+
+    .calendar-day-cell.today {
+      background: #f0f7f1;
+    }
+
+    .day-number {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: #1b3320;
+      margin-bottom: 6px;
+    }
+
+    .calendar-day-cell.today .day-number {
+      background: #2d7a3e;
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Item de Trilha no Dia */
+    .event-item {
+      background: #f2f6f3;
+      border: 1px solid #cbd2cc;
+      border-radius: 6px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .event-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      border-color: #2d7a3e;
+    }
+
+    .event-title {
+      font-weight: 700;
+      color: #1b3320;
+      line-height: 1.2;
+    }
+
+    /* Tags Status */
+    .status-tag {
+      align-self: flex-start;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #ffffff;
+    }
+
+    .status-tag.realizada {
+      background-color: #059669; /* Verde */
+    }
+
+    .status-tag.planejada {
+      background-color: #d97706; /* Laranja */
+    }
+
+    /* Modal Pop-up */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-content {
+      background: #ffffff;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      padding: 24px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.8rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #556357;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .calendar-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .calendar-title-group {
+        justify-content: space-between;
+      }
+      .calendar-selects {
+        justify-content: space-between;
+      }
+      .calendar-day-cell {
+        min-height: 80px;
+        padding: 4px;
+      }
+      .event-title {
+        font-size: 0.7rem;
+      }
+      .status-tag {
+        font-size: 0.6rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -18,14 +270,11 @@
         <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
         <span class="brand-name">Capivaras Trek</span>
       </a>
-      
-      <!-- Botão Hambúrguer Mobile -->
+
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
-      
+
       <!-- Links de Navegação -->
       <nav class="nav-links" id="nav-links">
         <a href="index.html#home" onclick="closeMenu()">Home</a>
@@ -35,23 +284,79 @@
         <a href="tracklogs.html" onclick="closeMenu()">Tracklogs</a>
         <a href="calendario.html" class="active" onclick="closeMenu()">Calendário</a>
         <a href="contato.html" onclick="closeMenu()">Contato</a>
-      </nav>      
+      </nav>
     </div>
   </header>
 
-  <!-- Conteúdo Principal Reservado -->
-  <main class="page-content container" style="padding-top: 140px; padding-bottom: 80px; min-height: 70vh;">
-    <div class="section-header">
-      <h2>Calendário de Saídas</h2>
-      <p class="section-desc">
-        Em construção!.
+  <!-- Banner do Topo -->
+  <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
+    <div class="container">
+      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Calendário de Trilhas</h1>
+      <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
+        Acompanhe nosso cronograma de expedições. Mude de mês e ano para visualizar saídas planejadas e realizadas.
       </p>
+    </div>
+  </section>
+
+  <!-- Conteúdo Principal -->
+  <main class="section" style="padding-top: 30px; padding-bottom: 50px;">
+    <div class="container">
+      
+      <div class="calendar-container">
+        <!-- Header do Calendário -->
+        <div class="calendar-header">
+          <div class="calendar-title-group">
+            <button class="calendar-nav-btn" onclick="changeMonth(-1)" title="Mês Anterior">◄</button>
+            <h2 id="calendarTitle">Carregando...</h2>
+            <button class="calendar-nav-btn" onclick="changeMonth(1)" title="Próximo Mês">►</button>
+          </div>
+
+          <!-- Seletores rápidos de Mês e Ano -->
+          <div class="calendar-selects">
+            <select id="monthSelect" class="calendar-select" onchange="onSelectChange()"></select>
+            <select id="yearSelect" class="calendar-select" onchange="onSelectChange()"></select>
+          </div>
+        </div>
+
+        <!-- Grade de Dias da Semana -->
+        <div class="calendar-grid">
+          <div class="calendar-day-header">Dom</div>
+          <div class="calendar-day-header">Seg</div>
+          <div class="calendar-day-header">Ter</div>
+          <div class="calendar-day-header">Qua</div>
+          <div class="calendar-day-header">Qui</div>
+          <div class="calendar-day-header">Sex</div>
+          <div class="calendar-day-header">Sáb</div>
+        </div>
+
+        <!-- Grade com Células dos Dias -->
+        <div class="calendar-grid" id="calendarDaysGrid"></div>
+      </div>
+
     </div>
   </main>
 
-  <!-- Rodapé -->
-  <footer id="contato" class="footer">
-    <div class="container footer-content">
+  <!-- Modal com Detalhes da Trilha -->
+  <div class="modal-overlay" id="trilhaModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <div id="modalImgContainer"></div>
+      
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; margin-top: 10px;">
+        <span id="modalStatusTag" class="status-tag"></span>
+      </div>
+
+      <h2 id="modalTitulo" style="color: #1b3320; font-size: 1.6rem; margin: 8px 0;"></h2>
+      <ul class="trilha-meta" id="modalMeta" style="margin-bottom: 16px; font-size: 0.9rem; list-style: none; padding: 0;"></ul>
+      <hr style="border: 0; border-top: 1px solid #e1e8e2; margin: 16px 0;">
+      <h4 style="color: #1b3320; margin-bottom: 8px;">Descrição</h4>
+      <p id="modalDescricao" style="color: #435245; line-height: 1.6; font-size: 0.95rem;"></p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
       <div class="footer-brand">
         <img src="logo.png" alt="Capivaras Trek Logo" class="footer-logo">
         <h3>Capivaras Trek</h3>
@@ -63,21 +368,246 @@
     </div>
   </footer>
 
-  <!-- Script Menu Mobile -->
   <script>
-    const menuBtn = document.getElementById('mobile-menu-btn');
+    const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+
+    const monthNames = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
+
+    let currentDate = new Date(); // Padrão: Mês e Ano Atual
+    let trilhasData = [];
+
+    function parseCSV(text) {
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 2) return [];
+
+      const splitLine = (line) => {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        result.push(current.trim().replace(/^"|"$/g, ''));
+        return result;
+      };
+
+      const headers = splitLine(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, ''));
+
+      return lines.slice(1).map(line => {
+        const values = splitLine(line);
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header] = values[index] || '';
+        });
+        return obj;
+      });
+    }
+
+    async function loadData() {
+      try {
+        const response = await fetch(GOOGLE_SHEET_URL);
+        if (response.ok) {
+          const csvText = await response.text();
+          const parsed = parseCSV(csvText);
+          
+          trilhasData = parsed.map(obj => ({
+            nome: obj['nome'] || '',
+            nivel: obj['nivel'] || '',
+            foto: obj['foto'] || '',
+            regiao: obj['regiao'] || '',
+            distancia: obj['distancia'] || '',
+            tempoMedio: obj['tempomedio'] || obj['tempo'] || '',
+            resumo: obj['resumo'] || '',
+            descricao: obj['descricaocompleta'] || obj['descricao'] || '',
+            data: obj['data'] || '',
+            status: obj['status'] || 'Planejada',
+            qtdPessoas: obj['qtdpessoas'] || obj['pessoas'] || ''
+          })).filter(t => t.nome !== '' && t.data !== '');
+        }
+
+        setupSelects();
+        renderCalendar();
+      } catch (err) {
+        console.error("Erro ao carregar os dados:", err);
+      }
+    }
+
+    function setupSelects() {
+      const monthSelect = document.getElementById('monthSelect');
+      const yearSelect = document.getElementById('yearSelect');
+
+      monthSelect.innerHTML = monthNames.map((m, idx) => `<option value="${idx}">${m}</option>`).join('');
+      
+      const currentYear = new Date().getFullYear();
+      let years = [currentYear - 2, currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
+      
+      yearSelect.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+    }
+
+    function updateSelectValues() {
+      document.getElementById('monthSelect').value = currentDate.getMonth();
+      document.getElementById('yearSelect').value = currentDate.getFullYear();
+    }
+
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function onSelectChange() {
+      const month = parseInt(document.getElementById('monthSelect').value, 10);
+      const year = parseInt(document.getElementById('yearSelect').value, 10);
+      currentDate = new Date(year, month, 1);
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+
+      document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
+      updateSelectValues();
+
+      const daysGrid = document.getElementById('calendarDaysGrid');
+      daysGrid.innerHTML = '';
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const lastDay = new Date(year, month + 1, 0).getDate();
+      const prevLastDay = new Date(year, month, 0).getDate();
+
+      const today = new Date();
+
+      // Mapeamento de Trilhas por Data (Dia)
+      const eventsByDay = {};
+      trilhasData.forEach((item, index) => {
+        const parts = item.data.split('/');
+        if (parts.length === 3) {
+          const d = parseInt(parts[0], 10);
+          const m = parseInt(parts[1], 10) - 1;
+          const y = parseInt(parts[2], 10);
+
+          if (m === month && y === year) {
+            if (!eventsByDay[d]) eventsByDay[d] = [];
+            eventsByDay[d].push({ ...item, originalIndex: index });
+          }
+        }
+      });
+
+      // Dias do Mês Anterior
+      for (let x = firstDayIndex; x > 0; x--) {
+        const dayNum = prevLastDay - x + 1;
+        daysGrid.innerHTML += `
+          <div class="calendar-day-cell other-month">
+            <span class="day-number">${dayNum}</span>
+          </div>
+        `;
+      }
+
+      // Dias do Mês Atual
+      for (let day = 1; day <= lastDay; day++) {
+        const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+        const events = eventsByDay[day] || [];
+
+        let eventsMarkup = events.map(evt => {
+          const isRealizada = (evt.status || '').toLowerCase().trim() === 'realizada';
+          const tagClass = isRealizada ? 'realizada' : 'planejada';
+          const tagText = isRealizada ? 'Realizada' : 'Planejada';
+
+          return `
+            <div class="event-item" onclick="openModal(${evt.originalIndex})">
+              <span class="event-title">${evt.nome}</span>
+              <span class="status-tag ${tagClass}">${tagText}</span>
+            </div>
+          `;
+        }).join('');
+
+        daysGrid.innerHTML += `
+          <div class="calendar-day-cell ${isToday ? 'today' : ''}">
+            <span class="day-number">${day}</span>
+            ${eventsMarkup}
+          </div>
+        `;
+      }
+
+      // Completa com dias do Próximo Mês
+      const totalCells = firstDayIndex + lastDay;
+      const nextDays = (totalCells % 7 === 0) ? 0 : 7 - (totalCells % 7);
+
+      for (let j = 1; j <= nextDays; j++) {
+        daysGrid.innerHTML += `
+          <div class="calendar-day-cell other-month">
+            <span class="day-number">${j}</span>
+          </div>
+        `;
+      }
+    }
+
+    // Modal
+    const modal = document.getElementById('trilhaModal');
+    const modalClose = document.getElementById('modalClose');
+
+    function openModal(index) {
+      const trilha = trilhasData[index];
+      if (!trilha) return;
+
+      const isRealizada = (trilha.status || '').toLowerCase().trim() === 'realizada';
+      const statusTag = document.getElementById('modalStatusTag');
+      
+      statusTag.textContent = isRealizada ? 'Realizada' : 'Planejada';
+      statusTag.className = `status-tag ${isRealizada ? 'realizada' : 'planejada'}`;
+
+      const modalImgBox = document.getElementById('modalImgContainer');
+      if (trilha.foto) {
+        modalImgBox.innerHTML = `<img src="${trilha.foto}" alt="${trilha.nome}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" onerror="this.parentNode.innerHTML='';">`;
+      } else {
+        modalImgBox.innerHTML = '';
+      }
+
+      document.getElementById('modalTitulo').textContent = trilha.nome;
+      document.getElementById('modalMeta').innerHTML = `
+        <li>📅 <strong>Data:</strong> ${trilha.data}</li>
+        <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
+        <li>📏 <strong>Distância:</strong> ${trilha.distancia}</li>
+        <li>⏱️ <strong>Tempo Médio:</strong> ${trilha.tempoMedio}</li>
+        ${trilha.qtdPessoas ? `<li>👥 <strong>Pessoas:</strong> ${trilha.qtdPessoas}</li>` : ''}
+      `;
+      document.getElementById('modalDescricao').textContent = trilha.descricao || trilha.resumo;
+
+      modal.classList.add('active');
+    }
+
+    modalClose.addEventListener('click', () => modal.classList.remove('active'));
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
+
+    // Inicialização
+    loadData();
+
+    // Menu Mobile
+    const mobileBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
-    menuBtn.addEventListener('click', () => {
-      menuBtn.classList.toggle('active');
+    mobileBtn.addEventListener('click', () => {
+      mobileBtn.classList.toggle('active');
       navLinks.classList.toggle('active');
     });
 
     function closeMenu() {
-      menuBtn.classList.remove('active');
+      mobileBtn.classList.remove('active');
       navLinks.classList.remove('active');
     }
   </script>
-
 </body>
 </html>
