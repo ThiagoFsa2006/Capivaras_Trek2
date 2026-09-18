@@ -108,7 +108,7 @@
       background-color: #1b3320;
     }
 
-    /* Modal Estilo GPX Viewer */
+    /* Modal GPX Viewer */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -153,7 +153,7 @@
       border: 1px solid #ccc;
     }
 
-    /* Painel de Estatísticas GPX Ajustado */
+    /* Estatísticas GPX */
     .garmin-stats-row {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -251,7 +251,7 @@
   <main class="section" style="padding-top: 20px;">
     <div class="container">
       <div class="tracklog-grid" id="tracklogsContainer">
-        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Buscando e processando arquivos GPX...</p>
+        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Carregando arquivos GPX...</p>
       </div>
     </div>
   </main>
@@ -339,15 +339,11 @@
       return name.replace(/[-+]/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
-    function formatGpxPath(filename) {
-      return 'tracklogs/' + encodeURIComponent(filename);
-    }
-
     async function fetchTracklogsDirectory() {
       const container = document.getElementById('tracklogsContainer');
       try {
         const response = await fetch(GITHUB_API_URL);
-        if (!response.ok) throw new Error('Falha ao acessar repositório no GitHub');
+        if (!response.ok) throw new Error('Falha ao acessar o repositório');
 
         const files = await response.json();
         const gpxFiles = files.filter(f => f.name.toLowerCase().endsWith('.gpx'));
@@ -360,34 +356,39 @@
         const items = gpxFiles.map(file => ({
           filename: file.name,
           title: formatTitleFromFileName(file.name),
-          path: formatGpxPath(file.name)
+          downloadUrl: file.download_url || `tracklogs/${encodeURIComponent(file.name)}`
         }));
 
         await processAndSortTracks(items);
 
       } catch (err) {
-        console.warn('Usando fallback local:', err);
+        console.warn('Erro na busca pelo GitHub, carregando diretamente da pasta local:', err);
         const fallbackItems = [
           {
             filename: 'Araçatuba + Baleia + Moréia.gpx',
             title: 'Araçatuba + Baleia + Moréia',
-            path: formatGpxPath('Araçatuba + Baleia + Moréia.gpx')
+            downloadUrl: 'tracklogs/' + encodeURIComponent('Araçatuba + Baleia + Moréia.gpx')
           }
         ];
         await processAndSortTracks(fallbackItems);
       }
     }
 
-    // Processamento resiliente dos arquivos GPX
     async function processAndSortTracks(items) {
-      const tempMapContainer = document.createElement('div');
-      
-      const processPromises = items.map(item => {
-        return new Promise((resolve) => {
-          let map = null;
-          try {
-            map = L.map(tempMapContainer, { zoomControl: false });
-            const gpx = new L.GPX(item.path, {
+      const tempContainer = document.createElement('div');
+
+      const promises = items.map(async (item) => {
+        try {
+          // Busca o texto bruto do arquivo XML GPX
+          const res = await fetch(item.downloadUrl);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const gpxText = await res.text();
+
+          return new Promise((resolve) => {
+            const map = L.map(tempContainer, { zoomControl: false });
+            
+            // Passa o próprio XML do arquivo como parâmetro
+            const gpx = new L.GPX(gpxText, {
               async: true,
               marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null, wptIconUrls: { '': null } }
             });
@@ -401,7 +402,7 @@
               
               const hours = Math.floor(durMs / 3600000);
               const mins = Math.floor((durMs % 3600000) / 60000);
-              const durationStr = `${hours}h ${mins}m`;
+              const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
 
               let dateObj = gpxObj.get_start_time();
               let dateStr = 'Data N/A';
@@ -415,10 +416,10 @@
                 dateStr = `${day}/${month}/${year}`;
               }
 
-              if (map) map.remove();
-
+              map.remove();
               resolve({
                 ...item,
+                gpxText: gpxText,
                 distKm: `${distKm} km`,
                 gainM: `${gainM.toLocaleString()} m`,
                 durationStr: durationStr,
@@ -428,9 +429,10 @@
             });
 
             gpx.on('error', function() {
-              if (map) map.remove();
+              map.remove();
               resolve({
                 ...item,
+                gpxText: gpxText,
                 distKm: 'N/A',
                 gainM: 'N/A',
                 durationStr: 'N/A',
@@ -440,25 +442,26 @@
             });
 
             gpx.addTo(map);
+          });
 
-          } catch (err) {
-            if (map) map.remove();
-            resolve({
-              ...item,
-              distKm: 'N/A',
-              gainM: 'N/A',
-              durationStr: 'N/A',
-              dateStr: 'Data N/A',
-              timestamp: 0
-            });
-          }
-        });
+        } catch (err) {
+          console.error(`Erro ao carregar ${item.filename}:`, err);
+          return {
+            ...item,
+            gpxText: null,
+            distKm: 'N/A',
+            gainM: 'N/A',
+            durationStr: 'N/A',
+            dateStr: 'Data N/A',
+            timestamp: 0
+          };
+        }
       });
 
-      const processed = await Promise.all(processPromises);
+      const results = await Promise.all(promises);
 
       // Ordena do mais antigo para o mais novo
-      loadedTracklogs = processed.sort((a, b) => a.timestamp - b.timestamp);
+      loadedTracklogs = results.sort((a, b) => a.timestamp - b.timestamp);
 
       renderCards();
     }
@@ -489,7 +492,7 @@
     function initCardMiniMaps() {
       loadedTracklogs.forEach((item, idx) => {
         const mapElem = document.getElementById(`cardMap_${idx}`);
-        if (!mapElem) return;
+        if (!mapElem || !item.gpxText) return;
 
         const miniMap = L.map(`cardMap_${idx}`, {
           zoomControl: false,
@@ -503,7 +506,7 @@
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
 
-        const gpx = new L.GPX(item.path, {
+        const gpx = new L.GPX(item.gpxText, {
           async: true,
           marker_options: {
             startIconUrl: null,
@@ -521,7 +524,7 @@
 
     function openGarminModal(idx) {
       const track = loadedTracklogs[idx];
-      if (!track) return;
+      if (!track || !track.gpxText) return;
 
       const modal = document.getElementById('gpxModal');
       modal.classList.add('active');
@@ -535,7 +538,7 @@
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(modalMapInstance);
 
-        const gpx = new L.GPX(track.path, {
+        const gpx = new L.GPX(track.gpxText, {
           async: true,
           marker_options: {
             startIconUrl: null,
@@ -561,7 +564,7 @@
           const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
           const hours = Math.floor(durMs / 3600000);
           const mins = Math.floor((durMs % 3600000) / 60000);
-          const durationStr = `${hours}h ${mins}m`;
+          const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
 
           const avgSpeed = (gpxObj.get_moving_speed() || (distKm / (durMs / 3600000))).toFixed(1);
           const avgMph = (avgSpeed * 0.621371).toFixed(1);
