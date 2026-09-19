@@ -193,7 +193,7 @@
       gap: 6px;
     }
 
-    /* LINHA DO TEMPO COM ALTURA DE 500PX E DISTRIBUIÇÃO EQUIDISTANTE */
+    /* LINHA DO TEMPO */
     .timeline-scroll-wrapper {
       width: 100%;
       height: 500px;
@@ -381,7 +381,7 @@
       display: flex;
       flex-direction: row;
       align-items: stretch;
-      max-height: 160px;
+      min-height: 160px;
     }
 
     .trilha-card:hover {
@@ -393,7 +393,7 @@
     .trilha-img-box {
       width: 240px;
       min-width: 240px;
-      height: 100%;
+      height: auto;
       background: #eef2ef;
       overflow: hidden;
       display: flex;
@@ -424,7 +424,7 @@
     }
 
     .trilha-info {
-      padding: 10px 18px;
+      padding: 12px 18px;
       display: flex;
       flex-direction: column;
       flex-grow: 1;
@@ -460,10 +460,11 @@
     .trilha-resumo {
       color: #556357;
       font-size: 0.88rem;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       line-height: 1.35;
     }
 
+    /* Meta Primária */
     .trilha-meta {
       list-style: none;
       padding: 6px 0 0 0;
@@ -478,6 +479,27 @@
 
     .trilha-meta li {
       margin-bottom: 0;
+    }
+
+    /* Grade Secundária (Métricas Avançadas) */
+    .trilha-stats-grid {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #f0f4f1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      font-size: 0.8rem;
+      color: #4a574c;
+      background-color: #fafcfb;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .trilha-stats-grid span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     /* Modal Pop-up */
@@ -541,14 +563,14 @@
       }
       .trilha-card {
         flex-direction: column;
-        max-height: none;
+        min-height: auto;
       }
       .trilha-img-box {
         width: 100%;
         min-width: 100%;
         height: 160px;
       }
-      .trilha-meta {
+      .trilha-meta, .trilha-stats-grid {
         flex-direction: column;
         gap: 4px;
       }
@@ -578,10 +600,10 @@
       <nav class="nav-links" id="nav-links">
         <a href="index.html#home" onclick="closeMenu()">Home</a>
         <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
-        <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
+        <a href="trilhas.html" class="active" onclick="closeMenu()">Trilhas</a>
         <a href="galeria.html" onclick="closeMenu()">Galeria</a>
         <a href="tracklogs.html" onclick="closeMenu()">Tracklogs</a>
-        <a href="calendario.html" class="active" onclick="closeMenu()">Calendário</a>
+        <a href="calendario.html" onclick="closeMenu()">Calendário</a>
         <a href="contato.html" onclick="closeMenu()">Contato</a>
       </nav>
     </div>
@@ -650,7 +672,7 @@
           </div>
         </section>
 
-        <!-- 2. Painel Timeline (Recolhido por padrão com botões de navegação de ano) -->
+        <!-- 2. Painel Timeline -->
         <section class="summary-board collapsed" id="timelineBoard">
           <div class="summary-board-header">
             <div class="timeline-title-group" onclick="toggleBoard('timelineBoard', 'toggleTextTimeline')">
@@ -666,7 +688,6 @@
             </button>
           </div>
 
-          <!-- Área de Visualização com Espaçamento Igualitário -->
           <div class="timeline-scroll-wrapper">
             <div class="timeline-track" id="timelineTrack">
               <p style="color: #d0e0d2; text-align: center; width: 100%;">Carregando linha do tempo...</p>
@@ -693,7 +714,7 @@
         </div>
       </div>
 
-      <!-- Lista Empilhada de Cards Compactos -->
+      <!-- Lista Empilhada de Cards -->
       <div class="trilhas-list-container" id="trilhasList">
         <p style="padding: 20px; text-align: center; width: 100%;">Carregando dados da planilha...</p>
       </div>
@@ -712,7 +733,8 @@
       </div>
 
       <h2 id="modalTitulo" style="color: #1b3320; font-size: 1.8rem; margin: 8px 0;"></h2>
-      <ul class="trilha-meta" id="modalMeta" style="margin-bottom: 16px; font-size: 0.95rem; display: block;"></ul>
+      <ul class="trilha-meta" id="modalMeta" style="margin-bottom: 12px; font-size: 0.95rem; display: block;"></ul>
+      <div class="trilha-stats-grid" id="modalStats" style="margin-bottom: 16px; font-size: 0.9rem;"></div>
       <hr style="border: 0; border-top: 1px solid #e1e8e2; margin: 16px 0;">
       <h4 style="color: #1b3320; margin-bottom: 8px;">Descrição Detalhada</h4>
       <p id="modalDescricaoCompleta" style="color: #435245; line-height: 1.7; font-size: 0.95rem;"></p>
@@ -739,9 +761,8 @@
 
     let trilhasData = [];
     let conquistasData = [];
-    let selectedTimelineYear = new Date().getFullYear(); // Padrão: 2026
+    let selectedTimelineYear = new Date().getFullYear();
 
-    // Alternar Painéis Retráteis
     function toggleBoard(boardId, textId) {
       const board = document.getElementById(boardId);
       const text = document.getElementById(textId);
@@ -815,19 +836,30 @@
         if (response1.ok) {
           const csvText1 = await response1.text();
           const parsed1 = parseCSV(csvText1);
-          trilhasData = parsed1.map(obj => ({
-            nome: obj['nome'] || '',
-            nivel: obj['nivel'] || '',
-            foto: obj['foto'] || '',
-            regiao: obj['regiao'] || '',
-            distancia: obj['distancia'] || '',
-            tempoMedio: obj['tempomedio'] || obj['tempo'] || '',
-            resumo: obj['resumo'] || '',
-            descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || '',
-            data: obj['data'] || '',
-            status: obj['status'] || '',
-            qtdPessoas: obj['qtdpessoas'] || obj['pessoas'] || obj['numero de pessoas'] || ''
-          })).filter(t => t.nome !== '');
+          trilhasData = parsed1.map(obj => {
+            // Lógica de Fallback (Verde preferencial, depois Azul)
+            const distanciaVal = obj['distance'] || obj['distancia'] || '';
+            const tempoVal = obj['time'] || obj['tempomedio'] || obj['tempo'] || '';
+
+            return {
+              nome: obj['nome'] || '',
+              nivel: obj['nivel'] || '',
+              foto: obj['foto'] || '',
+              regiao: obj['regiao'] || '',
+              distancia: distanciaVal,
+              tempoMedio: tempoVal,
+              trailtype: obj['trailtype'] || '',
+              elevationGain: obj['elevation_gain'] || '',
+              elevationLoss: obj['elevation_loss'] || '',
+              maxElevation: obj['max_elevation'] || obj['max_eleva'] || '',
+              minElevation: obj['min_elevation'] || obj['min_eleva'] || '',
+              resumo: obj['resumo'] || '',
+              descricaoCompleta: obj['descricaocompleta'] || obj['descricao'] || '',
+              data: obj['data'] || '',
+              status: obj['status'] || '',
+              qtdPessoas: obj['qtdpessoas'] || obj['pessoas'] || obj['numero de pessoas'] || ''
+            };
+          }).filter(t => t.nome !== '');
         }
 
         try {
@@ -854,7 +886,6 @@
       }
     }
 
-    // Renderiza Seção 1: Conquistas (Ordenado A-Z)
     function renderSummaryBoard() {
       const cumesList = document.getElementById('list-cumes');
       const travessiaList = document.getElementById('list-travessia');
@@ -906,13 +937,11 @@
       cachoeirasList.innerHTML = buildListHTML(categories.cachoeiras);
     }
 
-    // Alterar o Ano Selecionado na Timeline
     function changeTimelineYear(delta) {
       selectedTimelineYear += delta;
       renderTimeline();
     }
 
-    // Renderiza Seção 2: TIMELINE DOS CAPIVARAS (Distribuição Sequencial / Espaçamento Igualitário)
     function renderTimeline() {
       const track = document.getElementById('timelineTrack');
       const btnPrev = document.getElementById('btnPrevYear');
@@ -923,7 +952,6 @@
         return;
       }
 
-      // Mapeamento de todos os eventos com data válida e status "Realizada"
       const allEvents = trilhasData
         .filter(item => (item.status || '').toLowerCase().trim() === 'realizada')
         .map((item, originalIndex) => {
@@ -945,16 +973,13 @@
         return;
       }
 
-      // Descobre os anos limites dos dados disponíveis
       const availableYears = [...new Set(allEvents.map(e => e.year))].sort((a, b) => a - b);
       const minYear = Math.min(...availableYears);
       const maxYear = Math.max(...availableYears);
 
-      // Atualiza o estado dos botões discretos (Transparente/Desabilitado nos limites)
       btnPrev.disabled = selectedTimelineYear <= minYear;
       btnNext.disabled = selectedTimelineYear >= maxYear;
 
-      // Filtragem de eventos do ano selecionado ordenados cronologicamente
       const filteredEvents = allEvents
         .filter(item => item.year === selectedTimelineYear)
         .sort((a, b) => a.timestamp - b.timestamp);
@@ -966,16 +991,14 @@
 
       let htmlMarkup = '';
 
-      // Marcação inicial do Ano Selecionado
       htmlMarkup += `
         <div class="timeline-year-marker" style="left: 0%;">${selectedTimelineYear}</div>
         <div class="timeline-year-line" style="left: 0%;"></div>
       `;
 
       const totalEvents = filteredEvents.length;
-      const actualCurrentYear = new Date().getFullYear(); // 2026
+      const actualCurrentYear = new Date().getFullYear();
 
-      // Distribuição uniformemente dividida ao longo de 100% da largura
       filteredEvents.forEach((evt, idx) => {
         const step = 90 / (totalEvents > 1 ? totalEvents - 1 : 1);
         const leftPercent = 5 + (idx * step);
@@ -1000,7 +1023,6 @@
         }
       });
 
-      // Lógica do rótulo final: "hoje" apenas para o ano atual, ou selectedTimelineYear + 1
       const endLabel = (selectedTimelineYear === actualCurrentYear) ? 'hoje' : (selectedTimelineYear + 1);
       
       htmlMarkup += `
@@ -1011,7 +1033,6 @@
       track.innerHTML = htmlMarkup;
     }
 
-    // Renderiza Lista de Cards (Filtrado estritamente por status "Realizada")
     function filterAndRenderTrilhas() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
       const sortValue = document.getElementById('sortSelect').value;
@@ -1049,6 +1070,18 @@
           ? `<img src="${t.foto}" alt="${t.nome}" class="trilha-img" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\\'no-image-placeholder\\'>No Image</div>';">`
           : `<div class="no-image-placeholder">No Image</div>`;
 
+        // Montagem condicional dos itens das métricas adicionais
+        const statsItems = [];
+        if (t.trailtype) statsItems.push(`🔄 <strong>Tipo:</strong> ${t.trailtype}`);
+        if (t.elevationGain) statsItems.push(`📈 <strong>Ganho Elev.:</strong> ${t.elevationGain}`);
+        if (t.elevationLoss) statsItems.push(`📉 <strong>Perda Elev.:</strong> ${t.elevationLoss}`);
+        if (t.maxElevation) statsItems.push(`⛰️ <strong>Elev. Máx:</strong> ${t.maxElevation}`);
+        if (t.minElevation) statsItems.push(`🏞️ <strong>Elev. Mín:</strong> ${t.minElevation}`);
+
+        const statsGridHtml = statsItems.length > 0 
+          ? `<div class="trilha-stats-grid">${statsItems.map(s => `<span>${s}</span>`).join('')}</div>`
+          : '';
+
         return `
           <article class="trilha-card" onclick="openModal(${originalIndex})">
             
@@ -1065,13 +1098,17 @@
                 <p class="trilha-resumo">${t.resumo}</p>
               </div>
               
-              <ul class="trilha-meta">
-                <li>📍 <strong>Região:</strong> ${t.regiao}</li>
-                <li>📏 <strong>Distância:</strong> ${t.distancia}</li>
-                <li>⏱️ <strong>Tempo Médio:</strong> ${t.tempoMedio}</li>
-                <li>📅 <strong>Data:</strong> ${t.data}</li>
-                <li>👥 <strong>Número de Pessoas:</strong> ${t.qtdPessoas}</li>
-              </ul>
+              <div>
+                <ul class="trilha-meta">
+                  ${t.regiao ? `<li>📍 <strong>Região:</strong> ${t.regiao}</li>` : ''}
+                  ${t.distancia ? `<li>📏 <strong>Distância:</strong> ${t.distancia}</li>` : ''}
+                  ${t.tempoMedio ? `<li>⏱️ <strong>Tempo:</strong> ${t.tempoMedio}</li>` : ''}
+                  ${t.data ? `<li>📅 <strong>Data:</strong> ${t.data}</li>` : ''}
+                  ${t.qtdPessoas ? `<li>👥 <strong>Integrantes:</strong> ${t.qtdPessoas}</li>` : ''}
+                </ul>
+                ${statsGridHtml}
+              </div>
+
             </div>
 
           </article>
@@ -1101,12 +1138,22 @@
 
       document.getElementById('modalTitulo').textContent = trilha.nome;
       document.getElementById('modalMeta').innerHTML = `
-        <li>📍 <strong>Região:</strong> ${trilha.regiao}</li>
-        <li>📏 <strong>Distância:</strong> ${trilha.distancia}</li>
-        <li>⏱️ <strong>Tempo Médio:</strong> ${trilha.tempoMedio}</li>
-        <li>📅 <strong>Data:</strong> ${trilha.data}</li>
-        <li>👥 <strong>Número de Pessoas:</strong> ${trilha.qtdPessoas}</li>
+        ${trilha.regiao ? `<li>📍 <strong>Região:</strong> ${trilha.regiao}</li>` : ''}
+        ${trilha.distancia ? `<li>📏 <strong>Distância:</strong> ${trilha.distancia}</li>` : ''}
+        ${trilha.tempoMedio ? `<li>⏱️ <strong>Tempo:</strong> ${trilha.tempoMedio}</li>` : ''}
+        ${trilha.data ? `<li>📅 <strong>Data:</strong> ${trilha.data}</li>` : ''}
+        ${trilha.qtdPessoas ? `<li>👥 <strong>Integrantes:</strong> ${trilha.qtdPessoas}</li>` : ''}
       `;
+
+      const statsItems = [];
+      if (trilha.trailtype) statsItems.push(`🔄 <strong>Tipo:</strong> ${trilha.trailtype}`);
+      if (trilha.elevationGain) statsItems.push(`📈 <strong>Ganho Elev.:</strong> ${trilha.elevationGain}`);
+      if (trilha.elevationLoss) statsItems.push(`📉 <strong>Perda Elev.:</strong> ${trilha.elevationLoss}`);
+      if (trilha.maxElevation) statsItems.push(`⛰️ <strong>Elev. Máx:</strong> ${trilha.maxElevation}`);
+      if (trilha.minElevation) statsItems.push(`🏞️ <strong>Elev. Mín:</strong> ${trilha.minElevation}`);
+
+      document.getElementById('modalStats').innerHTML = statsItems.map(s => `<span>${s}</span>`).join('');
+
       document.getElementById('modalDescricaoCompleta').textContent = trilha.descricaoCompleta;
 
       modal.classList.add('active');
@@ -1117,7 +1164,6 @@
       if (e.target === modal) modal.classList.remove('active');
     });
 
-    // Inicialização
     loadData();
 
     // Menu Mobile
