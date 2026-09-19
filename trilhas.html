@@ -354,7 +354,7 @@
 
     .trilha-card {
       width: 100%;
-      min-height: 220px; /* Altura padronizada para acomodar as 3 linhas */
+      height: 160px; /* Altura compacta fixa */
       background: #ffffff;
       border: 1px solid #dcdfdc;
       border-radius: 12px;
@@ -373,10 +373,12 @@
       border-color: #2d7a3e;
     }
 
+    /* PROPORÇÃO QUADRADA 1:1 PARA A IMAGEM NO CARD */
     .trilha-img-box {
-      width: 260px;
-      min-width: 260px;
-      height: 100%;
+      width: 160px;
+      height: 160px;
+      aspect-ratio: 1 / 1;
+      flex-shrink: 0;
       background: #eef2ef;
       overflow: hidden;
     }
@@ -436,17 +438,21 @@
       line-height: 1.2;
     }
 
-    /* GRADE DE 4 COLUNAS X 3 LINHAS (ALINHAMENTO PERFEITO) */
+    /* LAYOUT DAS DUAS LINHAS DE INFORMAÇÕES NO CARD */
     .trilha-details-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr)); /* 4 colunas */
-      gap: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       width: 100%;
-      font-size: 0.82rem;
+      font-size: 0.88rem;
       color: #3d4a3f;
-      border: none;
-      padding: 0;
-      margin: 0;
+    }
+
+    .details-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
     }
 
     .grid-cell {
@@ -478,7 +484,7 @@
       text-overflow: ellipsis;
     }
 
-    /* Modal Pop-up */
+    /* ESTILOS DO MODAL COM TODAS AS INFORMAÇÕES E FOTO MAIOR */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -514,29 +520,15 @@
       color: #556357;
     }
 
-    /* RESPONSIVIDADE */
-    @media (max-width: 992px) {
-      .summary-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-      }
-      .summary-column {
-        border-right: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-        padding-bottom: 10px;
-      }
-      .summary-column:last-child {
-        border-bottom: none;
-      }
-      .trilha-card {
-        height: auto;
-        min-height: 200px;
-      }
-      .trilha-details-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 16px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
     }
 
+    /* RESPONSIVIDADE */
     @media (max-width: 768px) {
       .filter-bar {
         flex-direction: column;
@@ -551,16 +543,21 @@
       }
       .trilha-img-box {
         width: 100%;
-        min-width: 100%;
-        height: 180px;
+        height: 200px;
+        aspect-ratio: auto;
+      }
+      .details-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      .modal-grid {
+        grid-template-columns: 1fr;
       }
     }
 
     @media (max-width: 576px) {
       .summary-grid {
-        grid-template-columns: 1fr;
-      }
-      .trilha-details-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -610,7 +607,7 @@
       <!-- Container das Seções Expandíveis (Conquistas + Timeline) -->
       <div class="expandable-sections-container">
 
-        <!-- 1. Painel Conquistas (Recolhido por padrão) -->
+        <!-- 1. Painel Conquistas -->
         <section class="summary-board collapsed" id="summaryBoard">
           <div class="summary-board-header" onclick="toggleBoard('summaryBoard', 'toggleTextConquistas')">
             <h2>Conquistas</h2>
@@ -642,7 +639,6 @@
             </div>
           </div>
 
-          <!-- Legenda dos Adesivos -->
           <div class="summary-legend">
             <div class="legend-item">
               <img src="logo.png" alt="Adesivado" class="sticker-logo">
@@ -705,7 +701,7 @@
     </div>
   </main>
 
-  <!-- Modal Detalhado -->
+  <!-- Modal Detalhado com foto maior e todas as informações -->
   <div class="modal-overlay" id="trilhaModal">
     <div class="modal-content">
       <button class="modal-close" id="modalClose">&times;</button>
@@ -716,7 +712,9 @@
       </div>
 
       <h2 id="modalTitulo" style="color: #1b3320; font-size: 1.8rem; margin: 8px 0;"></h2>
-      <div class="trilha-details-grid" id="modalDetailsGrid" style="margin-bottom: 16px; grid-template-columns: repeat(2, 1fr);"></div>
+      
+      <div class="modal-grid" id="modalDetailsGrid"></div>
+
       <hr style="border: 0; border-top: 1px solid #e1e8e2; margin: 16px 0;">
       <h4 style="color: #1b3320; margin-bottom: 8px;">Descrição Detalhada</h4>
       <p id="modalDescricaoCompleta" style="color: #435245; line-height: 1.7; font-size: 0.95rem;"></p>
@@ -1058,70 +1056,43 @@
                 <h3 class="trilha-titulo">${t.nome}</h3>
               </div>
               
-              <!-- GRID DE INFORMAÇÕES (4 COLUNAS X 3 LINHAS) -->
+              <!-- DUAS LINHAS DE INFORMAÇÕES CONFORME SOLICITADO -->
               <div class="trilha-details-grid">
                 
                 <!-- LINHA 1 -->
-                <div class="grid-cell" title="Região: ${t.regiao || 'N/A'}">
-                  <span class="cell-icon">📍</span>
-                  <span class="cell-label">Região:</span>
-                  <span class="cell-value">${t.regiao || ''}</span>
-                </div>
+                <div class="details-row">
+                  <div class="grid-cell" title="Região: ${t.regiao || 'N/A'}">
+                    <span class="cell-icon">📍</span>
+                    <span class="cell-label">Região:</span>
+                    <span class="cell-value">${t.regiao || ''}</span>
+                  </div>
 
-                <div class="grid-cell" title="Data: ${t.data || 'N/A'}">
-                  <span class="cell-icon">📅</span>
-                  <span class="cell-label">Data:</span>
-                  <span class="cell-value">${t.data || ''}</span>
-                </div>
+                  <div class="grid-cell" title="Distância: ${t.distancia || 'N/A'}">
+                    <span class="cell-icon">🏷️</span>
+                    <span class="cell-label">Distância:</span>
+                    <span class="cell-value">${t.distancia || ''}</span>
+                  </div>
 
-                <div class="grid-cell" title="Integrantes: ${t.qtdPessoas || 'N/A'}">
-                  <span class="cell-icon">👥</span>
-                  <span class="cell-label">Integrantes:</span>
-                  <span class="cell-value">${t.qtdPessoas || ''}</span>
-                </div>
-
-                <div class="grid-cell" title="Tipo: ${t.trailtype || 'N/A'}">
-                  <span class="cell-icon">🔄</span>
-                  <span class="cell-label">Tipo:</span>
-                  <span class="cell-value">${t.trailtype || ''}</span>
+                  <div class="grid-cell" title="Tempo: ${t.tempoMedio || 'N/A'}">
+                    <span class="cell-icon">⏱️</span>
+                    <span class="cell-label">Tempo:</span>
+                    <span class="cell-value">${t.tempoMedio || ''}</span>
+                  </div>
                 </div>
 
                 <!-- LINHA 2 -->
-                <div class="grid-cell" title="Distância: ${t.distancia || 'N/A'}">
-                  <span class="cell-icon">🏷️</span>
-                  <span class="cell-label">Distância:</span>
-                  <span class="cell-value">${t.distancia || ''}</span>
-                </div>
+                <div class="details-row">
+                  <div class="grid-cell" title="Data: ${t.data || 'N/A'}">
+                    <span class="cell-icon">📅</span>
+                    <span class="cell-label">Data:</span>
+                    <span class="cell-value">${t.data || ''}</span>
+                  </div>
 
-                <div class="grid-cell" title="Tempo: ${t.tempoMedio || 'N/A'}">
-                  <span class="cell-icon">⏱️</span>
-                  <span class="cell-label">Tempo:</span>
-                  <span class="cell-value">${t.tempoMedio || ''}</span>
-                </div>
-
-                <div class="grid-cell" title="Ganho Elev.: ${t.elevationGain || 'N/A'}">
-                  <span class="cell-icon">📈</span>
-                  <span class="cell-label">Ganho Elev.:</span>
-                  <span class="cell-value">${t.elevationGain || ''}</span>
-                </div>
-
-                <div class="grid-cell" title="Perda Elev.: ${t.elevationLoss || 'N/A'}">
-                  <span class="cell-icon">📉</span>
-                  <span class="cell-label">Perda Elev.:</span>
-                  <span class="cell-value">${t.elevationLoss || ''}</span>
-                </div>
-
-                <!-- LINHA 3 -->
-                <div class="grid-cell" title="Elev. Máx: ${t.maxElevation || 'N/A'}">
-                  <span class="cell-icon">⛰️</span>
-                  <span class="cell-label">Elev. Máx:</span>
-                  <span class="cell-value">${t.maxElevation || ''}</span>
-                </div>
-
-                <div class="grid-cell" title="Elev. Mín: ${t.minElevation || 'N/A'}">
-                  <span class="cell-icon">🏞️</span>
-                  <span class="cell-label">Elev. Mín:</span>
-                  <span class="cell-value">${t.minElevation || ''}</span>
+                  <div class="grid-cell" title="Integrantes: ${t.qtdPessoas || 'N/A'}">
+                    <span class="cell-icon">👥</span>
+                    <span class="cell-label">Integrantes:</span>
+                    <span class="cell-value">${t.qtdPessoas || ''}</span>
+                  </div>
                 </div>
 
               </div>
@@ -1133,7 +1104,7 @@
       }).join('');
     }
 
-    /* MODAL POP-UP */
+    /* MODAL POP-UP (EXIBE TODAS AS INFORMAÇÕES E FOTO MAIOR) */
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
@@ -1145,9 +1116,9 @@
 
       const modalImgBox = document.getElementById('modalImgContainer');
       if (trilha.foto) {
-        modalImgBox.innerHTML = `<img src="${trilha.foto}" alt="${trilha.nome}" style="width: 100%; height: 240px; object-fit: cover; border-radius: 8px; margin-bottom: 16px;" onerror="this.parentNode.innerHTML='<div class=\\'no-image-placeholder\\' style=\\'height:240px; border-radius:8px; margin-bottom:16px;\\'>No Image</div>';">`;
+        modalImgBox.innerHTML = `<img src="${trilha.foto}" alt="${trilha.nome}" style="width: 100%; height: 320px; object-fit: cover; border-radius: 8px; margin-bottom: 16px;" onerror="this.parentNode.innerHTML='<div class=\\'no-image-placeholder\\' style=\\'height:320px; border-radius:8px; margin-bottom:16px;\\'>No Image</div>';">`;
       } else {
-        modalImgBox.innerHTML = `<div class="no-image-placeholder" style="height: 240px; border-radius: 8px; margin-bottom: 16px;">No Image</div>`;
+        modalImgBox.innerHTML = `<div class="no-image-placeholder" style="height: 320px; border-radius: 8px; margin-bottom: 16px;">No Image</div>`;
       }
 
       document.getElementById('modalNivel').textContent = trilha.nivel || 'Moderado';
