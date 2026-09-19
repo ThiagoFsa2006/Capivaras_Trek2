@@ -343,9 +343,9 @@
   <main class="section" style="padding-top: 30px;">
     <div class="container">
 
-      <!-- Grade de Cards preenchida via JavaScript -->
+      <!-- Grade de Cards onde os cards com linkwic serão inseridos -->
       <div class="tracklogs-grid" id="tracklogs-grid">
-        <p style="text-align: center; grid-column: 1 / -1; color: #556357;">Carregando dados da planilha...</p>
+        <p style="text-align: center; grid-column: 1 / -1; color: #556357;">Carregando tracklogs...</p>
       </div>
 
     </div>
@@ -380,7 +380,7 @@
     }
 
     /* ==========================================
-       SCRIPT DE LEITURA E RENDERING DA PLANILHA
+       LÓGICA: SÓ EXIBE CARDS COM LINKWIC PREENCHIDO
        ========================================== */
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
 
@@ -411,7 +411,7 @@
       return match ? match[1] : null;
     }
 
-    async function loadAndRenderTracklogs() {
+    async function renderTracklogs() {
       const grid = document.getElementById('tracklogs-grid');
       try {
         const response = await fetch(CSV_URL);
@@ -420,33 +420,36 @@
         const csvText = await response.text();
         const data = parseCSV(csvText);
 
-        grid.innerHTML = ''; // Limpa a mensagem de carregando
+        grid.innerHTML = ''; // Limpa o "Carregando..."
 
         data.forEach(row => {
-          const nome = row['nome'] || '';
-          if (!nome) return; // Ignora linhas vazias
+          const linkwic = row['linkwic'] ? row['linkwic'].trim() : '';
 
-          const linkWikiloc = row['linkwic'] || row['wikiloc_link'] || '#';
-          const wikilocId = extractWikilocId(linkWikiloc);
+          // REGRA DE NEGÓCIO: Se NÃO houver link na coluna linkwic, NÃO mostra o card
+          if (!linkwic || linkwic === '') {
+            return;
+          }
+
+          const nome = row['nome'] || 'Sem Nome';
+          const wikilocId = extractWikilocId(linkwic);
           const dataTrilha = row['data'] || row['dataTrilha'] || '--/--/----';
 
-          const distance = row['distance'] || row['distancia'] || '--';
+          const distance = row['distance'] || '--';
           const trailtype = row['trailtype'] || '--';
           const elevationGain = row['elevation_gain'] || '--';
           const elevationLoss = row['elevation_loss'] || '--';
           const maxElevation = row['max_elevation'] || row['max_eleva'] || '--';
           const minElevation = row['min_elevation'] || row['min_eleva'] || '--';
-          const time = row['time'] || row['tempoMedio'] || '--';
+          const time = row['time'] || '--';
 
-          // Renderiza o iframe caso encontre o ID do Wikiloc na URL
-          const mapHtml = wikilocId 
+          const mapIframe = wikilocId 
             ? `<iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=${wikilocId}&elevation=on&images=off&maptype=H" scrolling="no"></iframe>`
             : `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#556357;">Mapa não disponível</div>`;
 
           const cardHTML = `
             <article class="tracklog-card">
               <div class="tracklog-map-wrapper">
-                ${mapHtml}
+                ${mapIframe}
               </div>
               <div class="tracklog-content">
                 <h3 class="tracklog-title">${nome}</h3>
@@ -464,7 +467,7 @@
                   <div class="stat-item full-width"><span class="stat-label">Tempo Estimado</span><span class="stat-value">${time}</span></div>
                 </div>
 
-                <a href="${linkWikiloc}" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+                <a href="${linkwic}" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
                   Ver no Wikiloc ↗
                 </a>
               </div>
@@ -475,11 +478,11 @@
         });
 
       } catch (err) {
-        console.error('Erro ao ler a planilha:', err);
+        console.error('Erro ao ler dados da planilha:', err);
       }
     }
 
-    document.addEventListener('DOMContentLoaded', loadAndRenderTracklogs);
+    document.addEventListener('DOMContentLoaded', renderTracklogs);
   </script>
 </body>
 </html>
