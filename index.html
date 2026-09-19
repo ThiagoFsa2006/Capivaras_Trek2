@@ -673,6 +673,12 @@
         let totalMinutes = 0;
 
         rows.forEach(row => {
+          // Filtro: Considerar SOMENTE trilhas com status "Realizada"
+          const status = (row['status'] || row['situacao'] || '').trim().toLowerCase();
+          if (status !== 'realizada') {
+            return; // Pula as trilhas que não estão como Realizada
+          }
+          
           // 1. Trilhas do Grupo: countif coluna nome não vazia
           const nome = row['nome'] || row['trilha'] || row['title'] || row['name'] || '';
           if (nome.trim() !== '') {
