@@ -149,11 +149,11 @@
     }
 
     /* ==========================================
-       ESTILOS DOS CARDS DE TRACKLOGS
+       ESTILOS DOS CARDS DE TRACKLOGS COM MAPA
        ========================================== */
     .tracklogs-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 24px;
       margin-top: 32px;
     }
@@ -175,38 +175,18 @@
       border-color: #2d7a3e;
     }
 
-    .tracklog-media {
-      position: relative;
+    /* ÁREA DO MAPA INCORPORADO (IFRAME DO WIKILOC) */
+    .tracklog-map-container {
       width: 100%;
-      height: 160px;
+      height: 260px;
       background-color: #eaf2eb;
-      overflow: hidden;
+      border-bottom: 1px solid #e1e8e2;
     }
 
-    .tracklog-map {
+    .tracklog-map-container iframe {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    .tracklog-card:hover .tracklog-map {
-      transform: scale(1.04);
-    }
-
-    .tracklog-badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background-color: rgba(27, 51, 32, 0.85);
-      color: #ffffff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 20px;
-      backdrop-filter: blur(4px);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      border: none;
     }
 
     .tracklog-content {
@@ -228,7 +208,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       color: #556357;
       margin-bottom: 18px;
       padding-bottom: 12px;
@@ -340,7 +320,7 @@
       <div class="section-header">
         <h2>Tracklogs & Rotas</h2>
         <p class="section-desc">
-          Explore os trajetos das nossas expedições no Wikiloc. Clique no botão de cada card para acessar o mapa completo e os detalhes do trajeto.
+          Interaja com os mapas das nossas rotas diretamente abaixo ou clique no botão para abrir o trajeto completo no Wikiloc.
         </p>
       </div>
 
@@ -349,15 +329,13 @@
 
         <!-- Card: Capivari Mirim -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/capivari-mirim.jpg" alt="Mapa Capivari Mirim" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286517513&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Capivari Mirim</h3>
             <div class="tracklog-meta">
               <span>📅 29/03/2025</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/capivari-mirim-286517513" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -367,15 +345,13 @@
 
         <!-- Card: Tucum -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/tucum.jpg" alt="Mapa Tucum" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286515133&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Tucum</h3>
             <div class="tracklog-meta">
               <span>📅 19/04/2025</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/walking-trails/cerro-verde-286515133" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -385,15 +361,13 @@
 
         <!-- Card: Caminho do Itupava -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/caminho-do-itupava.jpg" alt="Mapa Caminho do Itupava" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286514935&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Caminho do Itupava</h3>
             <div class="tracklog-meta">
               <span>📅 05/07/2025</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/walking-trails/caminho-do-itupava-286514935" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -403,15 +377,13 @@
 
         <!-- Card: Cerro Verde -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/cerro-verde.jpg" alt="Mapa Cerro Verde" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286515133&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Cerro Verde</h3>
             <div class="tracklog-meta">
               <span>📅 19/07/2025</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/walking-trails/cerro-verde-286515133" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -421,15 +393,13 @@
 
         <!-- Card: Circular Serra da Melança -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/serra-da-melanca.jpg" alt="Mapa Circular Serra da Melança" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286453605&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Circular Serra da Melança</h3>
             <div class="tracklog-meta">
               <span>📅 17/08/2025</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/serra-da-melanca-286453605" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -439,15 +409,13 @@
 
         <!-- Card: Acampamento Capivari Mirim -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/acampamento-capivari.jpg" alt="Mapa Acampamento Capivari Mirim" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457969&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Acampamento Capivari Mirim</h3>
             <div class="tracklog-meta">
               <span>📅 20/04/2026</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/subida-capivari-mirim-286457969" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -457,15 +425,13 @@
 
         <!-- Card: Itapiroca -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/itapiroca.jpg" alt="Mapa Itapiroca" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457628&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Itapiroca</h3>
             <div class="tracklog-meta">
               <span>📅 06/06/2026</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/itapiroca-286457628" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -475,15 +441,13 @@
 
         <!-- Card: Travessia dos Capivaris -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/travessia-capivaris.jpg" alt="Mapa Travessia dos Capivaris" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457425&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Travessia dos Capivaris</h3>
             <div class="tracklog-meta">
               <span>📅 13/06/2026</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/travessia-dos-capivaris-286457425" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -493,15 +457,13 @@
 
         <!-- Card: Circular dos Capivaris -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/circular-capivaris.jpg" alt="Mapa Circular dos Capivaris" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457268&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Circular dos Capivaris</h3>
             <div class="tracklog-meta">
               <span>📅 18/07/2026</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/circular-dos-capivaris-286457268" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -511,15 +473,13 @@
 
         <!-- Card: Araçatuba + Inferno Verde -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/aracatuba-inferno-verde.jpg" alt="Mapa Araçatuba + Inferno Verde" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457074&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Araçatuba + Inferno Verde</h3>
             <div class="tracklog-meta">
               <span>📅 25/07/2026</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/aracatuba-inferno-verde-286457074" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -529,15 +489,13 @@
 
         <!-- Card: Araçatuba + Baleia + Moréia -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/aracatuba-baleia-moreia.jpg" alt="Mapa Araçatuba + Baleia + Moréia" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286456315&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Araçatuba + Baleia + Moréia</h3>
             <div class="tracklog-meta">
               <span>📅 16/08/2026</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/aracatuba-baleia-moreia-286456315" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -547,15 +505,13 @@
 
         <!-- Card: Taipabuçu + Ferraria -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/taipabucu-ferraria.jpg" alt="Mapa Taipabuçu + Ferraria" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286456126&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Taipabuçu + Ferraria</h3>
             <div class="tracklog-meta">
               <span>📅 22/08/2026</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/taipabucu-ferraria-286456126" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
@@ -565,15 +521,13 @@
 
         <!-- Card: Jacutinga -->
         <article class="tracklog-card">
-          <div class="tracklog-media">
-            <img src="images/maps/jacutinga.jpg" alt="Mapa Jacutinga" class="tracklog-map">
-            <span class="tracklog-badge">Realizada</span>
+          <div class="tracklog-map-container">
+            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286455488&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
             <h3 class="tracklog-title">Jacutinga</h3>
             <div class="tracklog-meta">
               <span>📅 29/08/2026</span>
-              <span>📏 -- km</span>
             </div>
             <a href="https://www.wikiloc.com/hiking-trails/jacutinga-286455488" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
               Ver no Wikiloc ↗
