@@ -175,11 +175,11 @@
       border-color: #2d7a3e;
     }
 
-    /* CONTAINER CORTADOR (Ajustado para mostrar mapa e perfil de elevação) */
+    /* CONTAINER CORTADOR (Aumentado para 320px para caber Mapa + Gráfico de Elevação) */
     .tracklog-map-wrapper {
       position: relative;
       width: 100%;
-      height: 250px; /* Altura ajustada para caber o mapa e o gráfico de elevação */
+      height: 320px;
       overflow: hidden;
       background-color: #eaf2eb;
       border-bottom: 1px solid #e1e8e2;
@@ -188,12 +188,12 @@
     /* ENQUADRAMENTO DO IFRAME DO WIKILOC */
     .tracklog-map-wrapper iframe {
       position: absolute;
-      top: -55px;     /* Esconde o título superior do Wikiloc */
+      top: -55px;     /* Corta o título/cabeçalho do Wikiloc */
       left: -5px;
       width: calc(100% + 10px);
-      height: 500px;  /* Mantém os textos de rodapé fora da área visível */
+      height: 480px;  /* Altura interna suficiente para empurrar os textos inferiores para fora */
       border: none;
-      pointer-events: none; /* Mantém a rolagem da página fluida */
+      pointer-events: none; /* Mantém a rolagem fluida da página */
     }
 
     .tracklog-content {
