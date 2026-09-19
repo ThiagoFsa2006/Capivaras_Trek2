@@ -10,7 +10,7 @@
   
   <style>
     /* ==========================================
-       ESTILOS GERAIS E ESTRUTURA
+       ESTILOS GERAIS E ESTRUTURA GLOBAL
        ========================================== */
     * {
       margin: 0;
@@ -35,16 +35,15 @@
       margin: 0 auto;
     }
 
-    /* --- NAVBAR --- */
+    /* --- HEADER / NAVBAR IGUAL À IMAGEM --- */
     .navbar {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      background-color: #1b3320;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      background-color: #112316; /* Verde escuro uniforme */
       z-index: 1000;
-      padding: 14px 0;
+      padding: 16px 0;
     }
 
     .nav-container {
@@ -61,7 +60,7 @@
     }
 
     .logo-img {
-      height: 42px;
+      height: 38px;
       width: auto;
       object-fit: contain;
     }
@@ -123,29 +122,32 @@
       transform: translateY(-8.5px) rotate(-45deg);
     }
 
-    /* --- SEÇÃO PRINCIPAL --- */
-    .section {
-      padding: 120px 0 80px;
-    }
-
-    .section-header {
+    /* --- BANNER / HERO DO TOPO IGUAL À IMAGEM --- */
+    .hero-banner {
+      background-color: #112316; /* Mesmo verde escuro da nav */
+      padding: 140px 0 60px;
       text-align: center;
-      margin-bottom: 35px;
+      color: #ffffff;
     }
 
-    .section-header h2 {
-      font-size: 2.2rem;
-      color: #1b3320;
-      margin-bottom: 16px;
+    .hero-banner h1 {
+      font-size: 2.5rem;
       font-weight: 800;
+      margin-bottom: 16px;
+      color: #ffffff;
     }
 
-    .section-desc {
+    .hero-banner p {
       max-width: 820px;
       margin: 0 auto;
-      color: #3d4a3f;
+      color: #e1e8e2;
       font-size: 1.1rem;
-      line-height: 1.7;
+      line-height: 1.6;
+    }
+
+    /* --- SEÇÃO DOS CARDS --- */
+    .section-content {
+      padding: 50px 0 80px;
     }
 
     /* ==========================================
@@ -155,7 +157,6 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 24px;
-      margin-top: 32px;
     }
 
     .tracklog-card {
@@ -175,7 +176,6 @@
       border-color: #2d7a3e;
     }
 
-    /* CONTAINER CORTADOR (Aumentado para 320px para caber Mapa + Gráfico de Elevação) */
     .tracklog-map-wrapper {
       position: relative;
       width: 100%;
@@ -185,15 +185,14 @@
       border-bottom: 1px solid #e1e8e2;
     }
 
-    /* ENQUADRAMENTO DO IFRAME DO WIKILOC */
     .tracklog-map-wrapper iframe {
       position: absolute;
-      top: -59px;     /* Corta o título/cabeçalho do Wikiloc */
+      top: -59px;
       left: -5px;
       width: calc(100% + 10px);
-      height: 480px;  /* Altura interna suficiente para empurrar os textos inferiores para fora */
+      height: 480px;
       border: none;
-      pointer-events: none; /* Mantém a rolagem fluida da página */
+      pointer-events: none;
     }
 
     .tracklog-content {
@@ -278,7 +277,7 @@
         top: 68px;
         left: 0;
         width: 100%;
-        background-color: #1b3320;
+        background-color: #112316;
         flex-direction: column;
         padding: 24px 0;
         gap: 20px;
@@ -290,12 +289,20 @@
       .nav-links.active {
         transform: translateY(0);
       }
+
+      .hero-banner {
+        padding: 110px 0 40px;
+      }
+
+      .hero-banner h1 {
+        font-size: 1.8rem;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Header / Navbar -->
+  <!-- Navbar -->
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand">
@@ -321,17 +328,17 @@
     </div>
   </header>
 
-  <!-- Conteúdo Principal -->
-  <main class="section">
+  <!-- Banner do Topo Verde Escuro -->
+  <section class="hero-banner">
     <div class="container">
-      <div class="section-header">
-        <h2>Tracklogs & Rotas</h2>
-        <p class="section-desc">
-          Confira o trajeto e o perfil de elevação de cada expedição realizada. Clique no botão para acessar os detalhes no Wikiloc.
-        </p>
-      </div>
+      <h1>Tracklogs & Rotas</h1>
+      <p>Confira o trajeto e o perfil de elevação de cada expedição realizada. Clique no botão para acessar os detalhes no Wikiloc.</p>
+    </div>
+  </section>
 
-      <!-- Grade de Cards -->
+  <!-- Conteúdo dos Cards -->
+  <main class="section-content">
+    <div class="container">
       <div class="tracklogs-grid">
 
         <!-- Card: Capivari Mirim -->
