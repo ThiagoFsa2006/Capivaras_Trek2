@@ -125,7 +125,7 @@
       transform: translateY(-8.5px) rotate(-45deg);
     }
 
-    /* --- CARDS E MÁSCARA DO MAPA + ELEVAÇÃO (INALTERADOS) --- */
+    /* --- CARDS & GRID --- */
     .tracklogs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -180,19 +180,48 @@
       font-size: 1.15rem;
       color: #1b3320;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       line-height: 1.3;
     }
 
     .tracklog-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       color: #556357;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       padding-bottom: 10px;
       border-bottom: 1px solid #f0f4f1;
+      font-weight: 600;
+    }
+
+    /* --- LAYOUT DE ESTATÍSTICAS EM 2 COLUNAS EM PORTUGUÊS --- */
+    .trail-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      margin-bottom: 16px;
+      background: #f7faf8;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e5ebe6;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: #728274;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .stat-value {
+      font-size: 0.88rem;
+      color: #1b3320;
+      font-weight: 800;
     }
 
     .btn-wikiloc {
@@ -206,7 +235,7 @@
       font-size: 0.88rem;
       padding: 11px 16px;
       border-radius: 8px;
-      transition: background-color 0.2s ease, transform 0.1s ease;
+      transition: background-color 0.2s ease;
     }
 
     .btn-wikiloc:hover {
@@ -240,7 +269,6 @@
       font-size: 0.85rem;
     }
 
-    /* --- RESPONSIVIDADE --- */
     @media (max-width: 768px) {
       .mobile-menu-btn {
         display: flex;
@@ -293,12 +321,12 @@
     </div>
   </header>
 
-  <!-- Banner do Topo (Identico ao da Galeria) -->
+  <!-- Banner do Topo -->
   <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
       <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Tracklogs & Rotas</h1>
       <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
-        Confira o trajeto e o perfil de elevação de cada expedição realizada. Clique no botão para acessar os detalhes no Wikiloc.
+        Confira o trajeto, dados técnicos e o perfil de elevação de cada expedição realizada.
       </p>
     </div>
   </section>
@@ -306,218 +334,9 @@
   <!-- Conteúdo Principal -->
   <main class="section" style="padding-top: 30px;">
     <div class="container">
-
-      <!-- Grade de Cards (Exatamente como estava) -->
-      <div class="tracklogs-grid">
-
-        <!-- Card: Capivari Mirim -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286517513&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Capivari Mirim</h3>
-            <div class="tracklog-meta">
-              <span>📅 29/03/2025</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/capivari-mirim-286517513" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Tucum -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286515133&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Tucum</h3>
-            <div class="tracklog-meta">
-              <span>📅 19/04/2025</span>
-            </div>
-            <a href="https://www.wikiloc.com/walking-trails/cerro-verde-286515133" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Caminho do Itupava -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286514935&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Caminho do Itupava</h3>
-            <div class="tracklog-meta">
-              <span>📅 05/07/2025</span>
-            </div>
-            <a href="https://www.wikiloc.com/walking-trails/caminho-do-itupava-286514935" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Cerro Verde -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286515133&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Cerro Verde</h3>
-            <div class="tracklog-meta">
-              <span>📅 19/07/2025</span>
-            </div>
-            <a href="https://www.wikiloc.com/walking-trails/cerro-verde-286515133" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Circular Serra da Melança -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286453605&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Circular Serra da Melança</h3>
-            <div class="tracklog-meta">
-              <span>📅 17/08/2025</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/serra-da-melanca-286453605" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Acampamento Capivari Mirim -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457969&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Acampamento Capivari Mirim</h3>
-            <div class="tracklog-meta">
-              <span>📅 20/04/2026</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/subida-capivari-mirim-286457969" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Itapiroca -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457628&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Itapiroca</h3>
-            <div class="tracklog-meta">
-              <span>📅 06/06/2026</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/itapiroca-286457628" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Travessia dos Capivaris -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457425&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Travessia dos Capivaris</h3>
-            <div class="tracklog-meta">
-              <span>📅 13/06/2026</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/travessia-dos-capivaris-286457425" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Circular dos Capivaris -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457268&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Circular dos Capivaris</h3>
-            <div class="tracklog-meta">
-              <span>📅 18/07/2026</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/circular-dos-capivaris-286457268" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Araçatuba + Inferno Verde -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457074&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Araçatuba + Inferno Verde</h3>
-            <div class="tracklog-meta">
-              <span>📅 25/07/2026</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/aracatuba-inferno-verde-286457074" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Araçatuba + Baleia + Moréia -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286456315&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Araçatuba + Baleia + Moréia</h3>
-            <div class="tracklog-meta">
-              <span>📅 16/08/2026</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/aracatuba-baleia-moreia-286456315" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Taipabuçu + Ferraria -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286456126&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Taipabuçu + Ferraria</h3>
-            <div class="tracklog-meta">
-              <span>📅 22/08/2026</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/taipabucu-ferraria-286456126" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
-        <!-- Card: Jacutinga -->
-        <article class="tracklog-card">
-          <div class="tracklog-map-wrapper">
-            <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286455488&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
-          </div>
-          <div class="tracklog-content">
-            <h3 class="tracklog-title">Jacutinga</h3>
-            <div class="tracklog-meta">
-              <span>📅 29/08/2026</span>
-            </div>
-            <a href="https://www.wikiloc.com/hiking-trails/jacutinga-286455488" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-              Ver no Wikiloc ↗
-            </a>
-          </div>
-        </article>
-
+      <!-- Grade Dinâmica de Tracklogs -->
+      <div class="tracklogs-grid" id="tracklogsGrid">
+        <p style="text-align: center; grid-column: 1 / -1; padding: 20px;">Carregando dados dos tracklogs...</p>
       </div>
     </div>
   </main>
@@ -537,6 +356,141 @@
   </footer>
 
   <script>
+    const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+
+    function parseCSV(text) {
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 2) return [];
+
+      const splitLine = (line) => {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        result.push(current.trim().replace(/^"|"$/g, ''));
+        return result;
+      };
+
+      const headers = splitLine(lines[0]).map(h => h.toLowerCase().replace(/[\s_]+/g, ''));
+
+      return lines.slice(1).map(line => {
+        const values = splitLine(line);
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header] = values[index] || '';
+        });
+        return obj;
+      });
+    }
+
+    // Função para traduzir o tempo para português
+    function formatTime(timeStr) {
+      if (!timeStr) return '-';
+      return timeStr
+        .replace(/hours?/gi, 'h')
+        .replace(/minutes?/gi, 'min')
+        .replace(/seconds?/gi, 's');
+    }
+
+    async function loadTracklogs() {
+      const gridContainer = document.getElementById('tracklogsGrid');
+      try {
+        const response = await fetch(GOOGLE_SHEET_URL);
+        if (!response.ok) throw new Error('Erro ao buscar dados da planilha');
+
+        const csvText = await response.text();
+        const data = parseCSV(csvText);
+
+        if (data.length === 0) {
+          gridContainer.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Nenhum tracklog encontrado.</p>';
+          return;
+        }
+
+        gridContainer.innerHTML = data.map(item => {
+          const nome = item['nome'] || item['trilha'] || 'Trilha';
+          const dataTrilha = item['data'] || '';
+          const iframeUrl = item['iframe'] || item['embed'] || '';
+          const wikilocLink = item['linkwikiloc'] || item['wikiloc'] || '#';
+
+          // Leitura dos dados das colunas fornecidas
+          const distance = item['distance'] || '-';
+          const trailtype = item['trailtype'] || '-';
+          const elevationGain = item['elevationgain'] || '-';
+          const elevationLoss = item['elevationloss'] || '-';
+          const maxElevation = item['maxeleva'] || item['maxelevation'] || '-';
+          const minElevation = item['mineleva'] || item['minelevation'] || '-';
+          const time = formatTime(item['time']);
+
+          return `
+            <article class="tracklog-card">
+              ${iframeUrl ? `
+                <div class="tracklog-map-wrapper">
+                  <iframe src="${iframeUrl}" scrolling="no"></iframe>
+                </div>
+              ` : ''}
+              
+              <div class="tracklog-content">
+                <h3 class="tracklog-title">${nome}</h3>
+                ${dataTrilha ? `<div class="tracklog-meta">📅 ${dataTrilha}</div>` : ''}
+
+                <!-- Estatísticas em 2 Colunas em Português -->
+                <div class="trail-stats-grid">
+                  <div class="stat-item">
+                    <span class="stat-label">Distância</span>
+                    <span class="stat-value">${distance}</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Tipo de Trilha</span>
+                    <span class="stat-value">${trailtype}</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Ganho de Elevação</span>
+                    <span class="stat-value">${elevationGain}</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Perda de Elevação</span>
+                    <span class="stat-value">${elevationLoss}</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Elevação Máxima</span>
+                    <span class="stat-value">${maxElevation}</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Elevação Mínima</span>
+                    <span class="stat-value">${minElevation}</span>
+                  </div>
+                  <div class="stat-item" style="grid-column: span 2;">
+                    <span class="stat-label">Tempo Estimado</span>
+                    <span class="stat-value">${time}</span>
+                  </div>
+                </div>
+
+                <a href="${wikilocLink}" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+                  Ver no Wikiloc ↗
+                </a>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error("Erro ao carregar tracklogs:", err);
+        gridContainer.innerHTML = '<p style="color: red; text-align: center; grid-column: 1 / -1;">Erro ao carregar as informações dos tracklogs.</p>';
+      }
+    }
+
+    loadTracklogs();
+
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
