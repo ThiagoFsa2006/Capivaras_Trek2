@@ -127,7 +127,7 @@
     .hero-page {
       background-color: #1b3320;
       color: #ffffff;
-      padding: 130px 0 80px; /* Aumentado padding inferior de 60px para 80px */
+      padding: 130px 0 80px;
       text-align: center;
     }
     
@@ -147,7 +147,7 @@
     
     /* --- SEÇÃO DE FILTROS --- */
     .filter-section {
-      margin-top: -40px; /* Ajustado para sobrepor suavemente sem invadir os textos */
+      margin-top: -35px;
       margin-bottom: 40px;
       position: relative;
       z-index: 10;
@@ -155,10 +155,10 @@
 
     .filter-card {
       background: #ffffff;
-      border: 1px solid #e1e8e2;
+      border: 1px solid #dbe2dc;
       border-radius: 12px;
-      padding: 16px 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      padding: 16px 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
       display: flex;
       gap: 20px;
       align-items: center;
@@ -174,16 +174,19 @@
 
     .search-box input {
       width: 100%;
-      padding: 10px 16px 10px 40px;
-      border: 1px solid #d0dad1;
+      padding: 10px 16px 10px 42px;
+      background-color: #f8faf8;
+      border: 1px solid #c8d6cb;
       border-radius: 8px;
       font-size: 0.95rem;
+      color: #2b302a;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, background-color 0.2s;
     }
 
     .search-box input:focus {
       border-color: #2d7a3e;
+      background-color: #ffffff;
     }
 
     .search-icon {
@@ -191,17 +194,18 @@
       left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      color: #88968a;
+      font-size: 1.05rem;
+      pointer-events: none;
     }
 
     .sort-box {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .sort-box label {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #1b3320;
       white-space: nowrap;
@@ -209,12 +213,19 @@
 
     .sort-box select {
       padding: 10px 16px;
-      border: 1px solid #d0dad1;
+      border: 1px solid #c8d6cb;
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1b3320;
       outline: none;
-      background-color: #fff;
+      background-color: #ffffff;
       cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .sort-box select:focus {
+      border-color: #2d7a3e;
     }
 
     /* --- SEÇÃO DOS CARDS --- */
