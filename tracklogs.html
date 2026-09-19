@@ -7,266 +7,22 @@
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <style>
-    /* Reset & Base */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background-color: #f4f7f4; color: #1b3320; }
-    .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-    .section { padding: 40px 0; }
-
-    /* Navbar */
-    .navbar { background-color: #1b3320; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
-    .nav-container { display: flex; justify-content: space-between; align-items: center; height: 70px; }
-    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #ffffff; }
-    .logo-img { height: 42px; width: auto; }
-    .brand-name { font-weight: 800; font-size: 1.25rem; }
-    .nav-links { display: flex; gap: 20px; }
-    .nav-links a { color: #d0e0d2; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: color 0.2s; }
-    .nav-links a:hover, .nav-links a.active { color: #ffffff; }
-
-    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; }
-    .mobile-menu-btn span { display: block; width: 25px; height: 3px; background-color: #ffffff; border-radius: 2px; }
-
-    /* Grid de Cards */
-    .tracklog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 24px;
-      margin-top: 20px;
-    }
-
-    .tracklog-card {
-      background: #ffffff;
-      border: 1px solid #dcdfdc;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .tracklog-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    }
-
-    .card-header-map {
-      height: 240px;
-      width: 100%;
-      background-color: #e5ebe6;
-      border-bottom: 1px solid #dcdfdc;
-      position: relative;
-    }
-
-    .tracklog-info {
-      padding: 18px;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .tracklog-title {
-      color: #1b3320;
-      font-size: 1.25rem;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .tracklog-meta {
-      list-style: none;
-      padding: 0;
-      margin: 10px 0 16px 0;
-      font-size: 0.88rem;
-      color: #3d4a3f;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .card-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .btn-action {
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      text-align: center;
-      text-decoration: none;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .btn-wikiloc {
-      background-color: #2e7d32;
-      color: #ffffff;
-      border-bottom: 3px solid #f57c00;
-    }
-
-    .btn-wikiloc:hover {
-      background-color: #1b5e20;
-      border-bottom-color: #e65100;
-    }
-
-    .btn-wikiloc.disabled {
-      opacity: 0.35;
-      pointer-events: none;
-      background-color: #9e9e9e;
-      border-bottom-color: #757575;
-      cursor: not-allowed;
-    }
-
-    .btn-gpx {
-      background-color: #1b3320;
-      color: #ffffff;
-    }
-
-    .btn-gpx:hover {
-      background-color: #2d7a3e;
-    }
-
-    .btn-gpx.disabled {
-      opacity: 0.35;
-      pointer-events: none;
-      background-color: #9e9e9e;
-      cursor: not-allowed;
-    }
-
-    /* Modal GPX Viewer */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      padding: 20px;
-    }
-
-    .modal-overlay.active { display: flex; }
-
-    .modal-content-garmin {
-      background: #ffffff;
-      border-radius: 8px;
-      max-width: 980px;
-      width: 100%;
-      max-height: 94vh;
-      overflow-y: auto;
-      position: relative;
-      padding: 20px 24px;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      font-size: 1.8rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #666;
-    }
-
-    .modal-header-title {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #1b3320;
-      margin-bottom: 12px;
-    }
-
-    #modalMapContainer {
-      height: 380px;
-      width: 100%;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
-    .garmin-stats-row {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      border: 1px solid #e2e8e3;
-      border-radius: 6px;
-      margin-top: 15px;
-      background: #fafcfb;
-      padding: 12px 6px;
-      text-align: left;
-    }
-
-    .garmin-stat-col {
-      padding: 0 10px;
-      border-right: 1px solid #e8ece9;
-    }
-
-    .garmin-stat-col:last-child { border-right: none; }
-
-    .garmin-label {
-      font-size: 0.68rem;
-      color: #778879;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .garmin-val { font-size: 1.35rem; font-weight: 800; color: #111; line-height: 1.1; }
-    .garmin-unit { font-size: 0.85rem; font-weight: 700; color: #333; margin-left: 2px; }
-    .garmin-sub { font-size: 0.72rem; color: #888; margin-top: 3px; display: block; }
-
-    .elevation-chart-wrapper {
-      margin-top: 15px;
-      height: 180px;
-      width: 100%;
-      background: #fafcfb;
-      border: 1px solid #e2e8e3;
-      border-radius: 6px;
-      padding: 10px;
-    }
-
-    .footer { background-color: #1b3320; color: #ffffff; padding: 30px 0; margin-top: 40px; text-align: center; }
-    .footer-brand h3 { font-size: 1.2rem; margin-top: 8px; }
-    .footer-brand p { color: #a3baa6; font-size: 0.85rem; margin-top: 4px; }
-    .footer-logo { height: 40px; width: auto; }
-    .footer-copy { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; color: #819984; font-size: 0.8rem; }
-
-    @media (max-width: 820px) {
-      .garmin-stats-row { grid-template-columns: repeat(3, 1fr); gap: 12px; }
-      .garmin-stat-col { border-right: none; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-      .nav-links { display: none; position: absolute; top: 70px; left: 0; right: 0; background-color: #1b3320; flex-direction: column; padding: 20px; gap: 15px; }
-      .nav-links.active { display: flex; }
-      .mobile-menu-btn { display: flex; }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Navbar -->
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand">
         <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
         <span class="brand-name">Capivaras Trek</span>
       </a>
-
+      
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu">
-        <span></span><span></span><span></span>
+        <span></span>
+        <span></span>
+        <span></span>
       </button>
 
       <nav class="nav-links" id="nav-links">
@@ -274,87 +30,218 @@
         <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
         <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
         <a href="galeria.html" onclick="closeMenu()">Galeria</a>
-        <a href="tracklogs.html" class="active" onclick="closeMenu()">Tracklogs</a>
+        <a href="tracklogs.html" onclick="closeMenu()">Tracklogs</a>
         <a href="calendario.html" onclick="closeMenu()">Calendário</a>
         <a href="contato.html" onclick="closeMenu()">Contato</a>
       </nav>
     </div>
   </header>
 
-  <!-- Banner Topo -->
-  <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
+  <!-- Seção Principal de Tracklogs -->
+  <main class="section" style="padding-top: 120px;">
     <div class="container">
-      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Tracklogs & GPX</h1>
-      <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
-        Trajetos e métricas calculados diretamente dos arquivos GPX originais.
-      </p>
-    </div>
-  </section>
+      <div class="section-header">
+        <h2>Tracklogs & Rotas</h2>
+        <p class="section-desc">
+          Confira os registros de trajetos e rotas no Wikiloc de nossas expedições realizadas.
+        </p>
+      </div>
 
-  <!-- Conteúdo Principal -->
-  <main class="section" style="padding-top: 20px;">
-    <div class="container">
-      <div class="tracklog-grid" id="tracklogsContainer">
-        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Carregando arquivos GPX...</p>
+      <!-- Grade de Cards de Tracklogs -->
+      <div class="tracklogs-grid">
+
+        <!-- Capivari Mirim -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Capivari Mirim</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 29/03/2025</p>
+            <!-- Futuramente aqui entra a distância extraída do Wikiloc -->
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/capivari-mirim-286517513" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Tucum -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Tucum</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 19/04/2025</p>
+          </div>
+          <a href="https://www.wikiloc.com/walking-trails/cerro-verde-286515133" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Caminho do Itupava -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Caminho do Itupava</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 05/07/2025</p>
+          </div>
+          <a href="https://www.wikiloc.com/walking-trails/caminho-do-itupava-286514935" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Cerro Verde -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Cerro Verde</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 19/07/2025</p>
+          </div>
+          <a href="https://www.wikiloc.com/walking-trails/cerro-verde-286515133" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Circular Serra da Melança -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Circular Serra da Melança</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 17/08/2025</p>
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/serra-da-melanca-286453605" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Acampamento Capivari Mirim -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Acampamento Capivari Mirim</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 20/04/2026</p>
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/subida-capivari-mirim-286457969" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Itapiroca -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Itapiroca</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 06/06/2026</p>
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/itapiroca-286457628" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Travessia dos Capivaris -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Travessia dos Capivaris</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 13/06/2026</p>
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/travessia-dos-capivaris-286457425" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Circular dos Capivaris -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Circular dos Capivaris</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 18/07/2026</p>
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/circular-dos-capivaris-286457268" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Araçatuba + Inferno Verde -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Araçatuba + Inferno Verde</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 25/07/2026</p>
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/aracatuba-inferno-verde-286457074" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Araçatuba + Baleia + Moréia -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Araçatuba + Baleia + Moréia</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 16/08/2026</p>
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/aracatuba-baleia-moreia-286456315" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Taipabuçu + Ferraria -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Taipabuçu + Ferraria</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 22/08/2026</p>
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/taipabucu-ferraria-286456126" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
+        <!-- Jacutinga -->
+        <article class="tracklog-card">
+          <div class="tracklog-header">
+            <h3>Jacutinga</h3>
+            <span class="tracklog-badge">Realizada</span>
+          </div>
+          <div class="tracklog-body">
+            <p class="tracklog-date">📅 29/08/2026</p>
+          </div>
+          <a href="https://www.wikiloc.com/hiking-trails/jacutinga-286455488" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+            Ver no Wikiloc ↗
+          </a>
+        </article>
+
       </div>
     </div>
   </main>
 
-  <!-- Modal GPX Viewer -->
-  <div class="modal-overlay" id="gpxModal">
-    <div class="modal-content-garmin">
-      <button class="modal-close" id="modalClose">&times;</button>
-      
-      <h2 class="modal-header-title" id="modalTrilhaTitle">Detalhes da Trilha</h2>
-
-      <!-- Mapa -->
-      <div id="modalMapContainer"></div>
-
-      <!-- Estatísticas GPX -->
-      <div class="garmin-stats-row">
-        <div class="garmin-stat-col">
-          <span class="garmin-label">DISTANCE</span>
-          <span class="garmin-val" id="statDist">--</span><span class="garmin-unit">km</span>
-          <span class="garmin-sub" id="statDistMi">-- mi</span>
-        </div>
-        <div class="garmin-stat-col">
-          <span class="garmin-label">GAIN</span>
-          <span class="garmin-val" id="statGain">--</span><span class="garmin-unit">m</span>
-          <span class="garmin-sub" id="statGainFt">-- ft</span>
-        </div>
-        <div class="garmin-stat-col">
-          <span class="garmin-label">LOSS</span>
-          <span class="garmin-val" id="statLoss">--</span><span class="garmin-unit">m</span>
-          <span class="garmin-sub" id="statLossFt">-- ft</span>
-        </div>
-        <div class="garmin-stat-col">
-          <span class="garmin-label">DURATION</span>
-          <span class="garmin-val" id="statDur">--</span>
-        </div>
-        <div class="garmin-stat-col">
-          <span class="garmin-label">AVG SPEED</span>
-          <span class="garmin-val" id="statAvg">--</span><span class="garmin-unit">km/h</span>
-          <span class="garmin-sub" id="statAvgMph">-- mph</span>
-        </div>
-        <div class="garmin-stat-col">
-          <span class="garmin-label">MAX SPEED</span>
-          <span class="garmin-val" id="statMax">--</span><span class="garmin-unit">km/h</span>
-          <span class="garmin-sub" id="statMaxMph">-- mph</span>
-        </div>
-      </div>
-
-      <!-- Gráfico de Altimetria -->
-      <div class="elevation-chart-wrapper">
-        <canvas id="elevationChart"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
+  <!-- Rodapé -->
   <footer class="footer">
     <div class="container">
+      <img src="logo.png" alt="Capivaras Trek" class="footer-logo">
       <div class="footer-brand">
-        <img src="logo.png" alt="Capivaras Trek Logo" class="footer-logo">
         <h3>Capivaras Trek</h3>
         <p>Vivendo a montanha de forma autêntica e segura.</p>
       </div>
@@ -364,474 +251,7 @@
     </div>
   </footer>
 
-  <!-- Bibliotecas JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <script>
-    const GOOGLE_SHEET_PAGINA1_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
-
-    let loadedTracklogs = [];
-    let modalMapInstance = null;
-    let chartInstance = null;
-
-    function extractWikilocUrl(cellValue) {
-      if (!cellValue) return '';
-      const str = cellValue.trim();
-      const match = str.match(/https?:\/\/[^\s"'>]+/i);
-      return match ? match[0] : (str.startsWith('http') ? str : '');
-    }
-
-    function parseCSV(text) {
-      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      if (lines.length < 2) return [];
-
-      const splitLine = (line) => {
-        const result = [];
-        let current = '';
-        let inQuotes = false;
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          if (char === '"') inQuotes = !inQuotes;
-          else if (char === ',' && !inQuotes) {
-            result.push(current.trim().replace(/^"|"$/g, ''));
-            current = '';
-          } else current += char;
-        }
-        result.push(current.trim().replace(/^"|"$/g, ''));
-        return result;
-      };
-
-      const headers = splitLine(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, ''));
-
-      return lines.slice(1).map(line => {
-        const values = splitLine(line);
-        const obj = {};
-        headers.forEach((header, index) => obj[header] = values[index] || '');
-        return obj;
-      });
-    }
-
-    async function loadDataFromSheet() {
-      const container = document.getElementById('tracklogsContainer');
-      try {
-        const res = await fetch(GOOGLE_SHEET_PAGINA1_URL);
-        if (!res.ok) throw new Error('Falha ao carregar a planilha');
-
-        const csvText = await res.text();
-        const rows = parseCSV(csvText);
-
-        const validItems = rows.filter(r => (r.gpxfile || '').trim() !== '' || (r.linkwic || r.linkwikiloc || '').trim() !== '').map(r => {
-          let fileName = r.gpxfile ? r.gpxfile.trim() : '';
-          if (fileName && !fileName.toLowerCase().endsWith('.gpx')) {
-            fileName += '.gpx';
-          }
-          
-          const rawWic = r.linkwic || r.linkwikiloc || '';
-          const titleName = r.nome || (fileName ? fileName.replace(/\.gpx$/i, '') : 'Trilha sem nome');
-
-          return {
-            title: titleName,
-            filename: fileName,
-            linkwic: extractWikilocUrl(rawWic),
-            downloadUrl: fileName ? `tracklogs/${encodeURIComponent(fileName)}` : null
-          };
-        });
-
-        if (validItems.length === 0) {
-          container.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Nenhuma trilha encontrada na planilha.</p>';
-          return;
-        }
-
-        await processAndSortTracks(validItems);
-
-      } catch (err) {
-        console.error('Erro ao ler a planilha:', err);
-        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: red;">Erro ao carregar dados.</p>';
-      }
-    }
-
-    // Processa o arquivo GPX local diretamente
-    async function processAndSortTracks(items) {
-      const tempDiv = document.createElement('div');
-      document.body.appendChild(tempDiv);
-      tempDiv.style.display = 'none';
-
-      const promises = items.map(async (item) => {
-        if (!item.downloadUrl) {
-          return {
-            ...item,
-            gpxText: null,
-            distKm: '--', gainM: '--', lossM: '--', maxAlt: '--', minAlt: '--', durationStr: '--', dateStr: 'Data N/A', timestamp: 0
-          };
-        }
-
-        try {
-          const res = await fetch(item.downloadUrl);
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const gpxText = await res.text();
-
-          return new Promise((resolve) => {
-            const mapContainer = document.createElement('div');
-            tempDiv.appendChild(mapContainer);
-
-            const map = L.map(mapContainer, { zoomControl: false });
-            
-            const gpx = new L.GPX(gpxText, {
-              async: true,
-              marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null, wptIconUrls: { '': null } }
-            });
-
-            gpx.on('loaded', function(e) {
-              const gpxObj = e.target;
-              
-              // Cálculo filtrado de distância e ganho de elevação
-              let totalDistMeters = 0;
-              let totalElevationGain = 0;
-              let totalElevationLoss = 0;
-              let maxAlt = -Infinity;
-              let minAlt = Infinity;
-
-              const ELEVATION_THRESHOLD = 3; 
-              const DISTANCE_THRESHOLD = 2;
-
-              gpxObj.eachLayer(function(layer) {
-                if (layer instanceof L.Polyline) {
-                  const latlngs = layer.getLatLngs();
-                  if (latlngs.length >= 2) {
-                    let lastValidLatLng = latlngs[0];
-                    let lastValidAlt = latlngs[0].alt || 0;
-
-                    latlngs.forEach(pt => {
-                      if (pt.alt !== undefined) {
-                        if (pt.alt > maxAlt) maxAlt = pt.alt;
-                        if (pt.alt < minAlt) minAlt = pt.alt;
-                      }
-                    });
-
-                    for (let i = 1; i < latlngs.length; i++) {
-                      const current = latlngs[i];
-                      const dist = lastValidLatLng.distanceTo(current);
-
-                      if (dist >= DISTANCE_THRESHOLD) {
-                        totalDistMeters += dist;
-                        lastValidLatLng = current;
-                      }
-
-                      if (current.alt !== undefined) {
-                        const diff = current.alt - lastValidAlt;
-                        if (diff >= ELEVATION_THRESHOLD) {
-                          totalElevationGain += diff;
-                          lastValidAlt = current.alt;
-                        } else if (diff <= -ELEVATION_THRESHOLD) {
-                          totalElevationLoss += Math.abs(diff);
-                          lastValidAlt = current.alt;
-                        }
-                      }
-                    }
-                  }
-                }
-              });
-
-              const distKm = (totalDistMeters / 1000).toFixed(1);
-              const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
-              
-              const hours = Math.floor(durMs / 3600000);
-              const mins = Math.floor((durMs % 3600000) / 60000);
-              const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-
-              let dateObj = gpxObj.get_start_time();
-              let dateStr = 'Data N/A';
-              let timestamp = 0;
-
-              if (dateObj && !isNaN(dateObj.getTime())) {
-                timestamp = dateObj.getTime();
-                const day = String(dateObj.getDate()).padStart(2, '0');
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const year = dateObj.getFullYear();
-                dateStr = `${day}/${month}/${year}`;
-              }
-
-              map.remove();
-              mapContainer.remove();
-
-              resolve({
-                ...item,
-                gpxText: gpxText,
-                distKm: `${distKm} km`,
-                gainM: `${Math.round(totalElevationGain).toLocaleString()} m`,
-                lossM: `${Math.round(totalElevationLoss).toLocaleString()} m`,
-                maxAlt: maxAlt !== -Infinity ? `${Math.round(maxAlt)} m` : '--',
-                minAlt: minAlt !== Infinity ? `${Math.round(minAlt)} m` : '--',
-                durationStr: durationStr,
-                dateStr: dateStr,
-                timestamp: timestamp
-              });
-            });
-
-            gpx.on('error', function() {
-              map.remove();
-              mapContainer.remove();
-              resolve({
-                ...item, gpxText: gpxText, distKm: '--', gainM: '--', lossM: '--', maxAlt: '--', minAlt: '--', durationStr: '--', dateStr: 'Data N/A', timestamp: 0
-              });
-            });
-
-            gpx.addTo(map);
-          });
-
-        } catch (err) {
-          console.error(`Erro ao carregar ${item.filename}:`, err);
-          return {
-            ...item, gpxText: null, distKm: '--', gainM: '--', lossM: '--', maxAlt: '--', minAlt: '--', durationStr: '--', dateStr: 'Data N/A', timestamp: 0
-          };
-        }
-      });
-
-      const results = await Promise.all(promises);
-      tempDiv.remove();
-
-      loadedTracklogs = results.sort((a, b) => a.timestamp - b.timestamp);
-      renderCards();
-    }
-
-    function renderCards() {
-      const container = document.getElementById('tracklogsContainer');
-      container.innerHTML = loadedTracklogs.map((item, idx) => {
-        const hasWikiloc = item.linkwic && item.linkwic.length > 0;
-        const hasGpx = item.gpxText !== null;
-        
-        return `
-          <article class="tracklog-card">
-            <div class="card-header-map" id="cardMap_${idx}"></div>
-            <div class="tracklog-info">
-              <div>
-                <h3 class="tracklog-title">${item.title}</h3>
-                
-                <ul class="tracklog-meta">
-                  <li>📅 <strong>Data:</strong> ${item.dateStr}</li>
-                  <li>📏 <strong>Distância:</strong> ${item.distKm}</li>
-                  <li>📈 <strong>Ganho de Elevação:</strong> ${item.gainM}</li>
-                  <li>📉 <strong>Perda de Elevação:</strong> ${item.lossM}</li>
-                  <li>🏔️ <strong>Altitude Máxima:</strong> ${item.maxAlt}</li>
-                  <li>🏞️ <strong>Altitude Mínima:</strong> ${item.minAlt}</li>
-                  <li>⏱️ <strong>Duração Total:</strong> ${item.durationStr}</li>
-                </ul>
-              </div>
-
-              <div class="card-actions">
-                <a href="${hasWikiloc ? item.linkwic : '#'}" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   class="btn-action btn-wikiloc ${hasWikiloc ? '' : 'disabled'}">
-                   🟢 Wikiloc ↗
-                </a>
-
-                <button class="btn-action btn-gpx ${hasGpx ? '' : 'disabled'}" 
-                        onclick="${hasGpx ? `openGarminModal(${idx})` : ''}">
-                  🗺️ Ver GPX
-                </button>
-              </div>
-            </div>
-          </article>
-        `;
-      }).join('');
-
-      initCardMiniMaps();
-    }
-
-    function initCardMiniMaps() {
-      loadedTracklogs.forEach((item, idx) => {
-        const mapElem = document.getElementById(`cardMap_${idx}`);
-        if (!mapElem) return;
-
-        if (item.gpxText) {
-          const miniMap = L.map(`cardMap_${idx}`, {
-            zoomControl: false, dragging: false, touchZoom: false,
-            scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, attributionControl: false
-          }).setView([-25.4284, -49.2733], 10);
-
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
-
-          const gpx = new L.GPX(item.gpxText, {
-            async: true,
-            marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null, wptIconUrls: { '': null } }
-          });
-
-          gpx.on('loaded', function(e) {
-            miniMap.fitBounds(e.target.getBounds(), { padding: [10, 10] });
-          }).addTo(miniMap);
-
-        } else {
-          mapElem.innerHTML = `
-            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#778879;font-size:0.85rem;background:#e5ebe6;">
-              Mapa indisponível
-            </div>`;
-        }
-      });
-    }
-
-    function openGarminModal(idx) {
-      const track = loadedTracklogs[idx];
-      if (!track || !track.gpxText) return;
-
-      document.getElementById('modalTrilhaTitle').textContent = track.title;
-
-      const modal = document.getElementById('gpxModal');
-      modal.classList.add('active');
-
-      setTimeout(() => {
-        if (modalMapInstance) modalMapInstance.remove();
-
-        modalMapInstance = L.map('modalMapContainer').setView([-25.4284, -49.2733], 10);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(modalMapInstance);
-
-        const gpx = new L.GPX(track.gpxText, {
-          async: true,
-          marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null, wptIconUrls: { '': null } },
-          polyline_options: { color: '#0000FF', opacity: 0.9, weight: 4 }
-        });
-
-        gpx.on('loaded', function(e) {
-          const gpxObj = e.target;
-          modalMapInstance.fitBounds(gpxObj.getBounds());
-
-          let totalDistMeters = 0;
-          let totalElevationGain = 0;
-          let totalElevationLoss = 0;
-          const ELEVATION_THRESHOLD = 3; 
-          const DISTANCE_THRESHOLD = 2;
-
-          gpxObj.eachLayer(function(layer) {
-            if (layer instanceof L.Polyline) {
-              const latlngs = layer.getLatLngs();
-              if (latlngs.length >= 2) {
-                let lastValidLatLng = latlngs[0];
-                let lastValidAlt = latlngs[0].alt || 0;
-
-                for (let i = 1; i < latlngs.length; i++) {
-                  const current = latlngs[i];
-                  const dist = lastValidLatLng.distanceTo(current);
-
-                  if (dist >= DISTANCE_THRESHOLD) {
-                    totalDistMeters += dist;
-                    lastValidLatLng = current;
-                  }
-
-                  if (current.alt !== undefined) {
-                    const diff = current.alt - lastValidAlt;
-                    if (diff >= ELEVATION_THRESHOLD) {
-                      totalElevationGain += diff;
-                      lastValidAlt = current.alt;
-                    } else if (diff <= -ELEVATION_THRESHOLD) {
-                      totalElevationLoss += Math.abs(diff);
-                      lastValidAlt = current.alt;
-                    }
-                  }
-                }
-              }
-            }
-          });
-
-          const distKm = (totalDistMeters / 1000).toFixed(1);
-          const distMi = (distKm * 0.621371).toFixed(2);
-
-          const gainM = Math.round(totalElevationGain);
-          const gainFt = Math.round(gainM * 3.28084);
-          const lossM = Math.round(totalElevationLoss);
-          const lossFt = Math.round(lossM * 3.28084);
-
-          const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
-          const hours = Math.floor(durMs / 3600000);
-          const mins = Math.floor((durMs % 3600000) / 60000);
-          const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-
-          const avgSpeed = (gpxObj.get_moving_speed() || (distKm / (durMs / 3600000))).toFixed(1);
-          const avgMph = (avgSpeed * 0.621371).toFixed(1);
-          const maxSpeed = (gpxObj.get_speed_max() || (avgSpeed * 1.5)).toFixed(1);
-          const maxMph = (maxSpeed * 0.621371).toFixed(1);
-
-          document.getElementById('statDist').textContent = distKm;
-          document.getElementById('statDistMi').textContent = `${distMi} mi`;
-
-          document.getElementById('statGain').textContent = gainM.toLocaleString();
-          document.getElementById('statGainFt').textContent = `${gainFt.toLocaleString()} ft`;
-
-          document.getElementById('statLoss').textContent = lossM.toLocaleString();
-          document.getElementById('statLossFt').textContent = `${lossFt.toLocaleString()} ft`;
-
-          document.getElementById('statDur').textContent = durationStr;
-
-          document.getElementById('statAvg').textContent = avgSpeed;
-          document.getElementById('statAvgMph').textContent = `${avgMph} mph`;
-
-          document.getElementById('statMax').textContent = maxSpeed;
-          document.getElementById('statMaxMph').textContent = `${maxMph} mph`;
-
-          const elevationData = gpxObj.get_elevation_data();
-          const labels = [];
-          const dataPoints = [];
-
-          elevationData.forEach(pt => {
-            labels.push(pt[0].toFixed(1) + ' km');
-            dataPoints.push(Math.round(pt[1]));
-          });
-
-          renderElevationChart(labels, dataPoints);
-
-        }).addTo(modalMapInstance);
-
-      }, 150);
-    }
-
-    function renderElevationChart(labels, dataPoints) {
-      const ctx = document.getElementById('elevationChart').getContext('2d');
-      if (chartInstance) chartInstance.destroy();
-
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Elevação (m)',
-            data: dataPoints,
-            borderColor: '#2d7a3e',
-            borderWidth: 2,
-            backgroundColor: 'rgba(45, 122, 62, 0.25)',
-            fill: true,
-            pointRadius: 0,
-            tension: 0.2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: (ctx) => `${ctx.raw} m` } }
-          },
-          scales: {
-            x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
-            y: { grid: { color: '#e8ece9' }, ticks: { font: { size: 10 } } }
-          }
-        }
-      });
-    }
-
-    document.getElementById('modalClose').addEventListener('click', () => {
-      document.getElementById('gpxModal').classList.remove('active');
-    });
-
-    document.getElementById('gpxModal').addEventListener('click', (e) => {
-      if (e.target.id === 'gpxModal') {
-        document.getElementById('gpxModal').classList.remove('active');
-      }
-    });
-
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
@@ -844,8 +264,6 @@
       mobileBtn.classList.remove('active');
       navLinks.classList.remove('active');
     }
-
-    loadDataFromSheet();
   </script>
 </body>
 </html>
