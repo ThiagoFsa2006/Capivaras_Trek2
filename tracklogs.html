@@ -56,7 +56,7 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
-    /* Ampliado a área do Mapa no Card */
+    /* Área ampliada para o Mapa no Card */
     .card-header-map {
       height: 260px;
       width: 100%;
@@ -681,12 +681,50 @@
           const gpxObj = e.target;
           modalMapInstance.fitBounds(gpxObj.getBounds());
 
-          const distKm = (gpxObj.get_distance() / 1000).toFixed(1);
+          // Recalcula distância e elevação aplicando um filtro simples de ruído de GPS
+          let totalDistMeters = 0;
+          let totalElevationGain = 0;
+          let totalElevationLoss = 0;
+          const ELEVATION_THRESHOLD = 3; 
+          const DISTANCE_THRESHOLD = 2;
+
+          gpxObj.eachLayer(function(layer) {
+            if (layer instanceof L.Polyline) {
+              const latlngs = layer.getLatLngs();
+              if (latlngs.length >= 2) {
+                let lastValidLatLng = latlngs[0];
+                let lastValidAlt = latlngs[0].alt || 0;
+
+                for (let i = 1; i < latlngs.length; i++) {
+                  const current = latlngs[i];
+                  const dist = lastValidLatLng.distanceTo(current);
+
+                  if (dist >= DISTANCE_THRESHOLD) {
+                    totalDistMeters += dist;
+                    lastValidLatLng = current;
+                  }
+
+                  if (current.alt !== undefined) {
+                    const diff = current.alt - lastValidAlt;
+                    if (diff >= ELEVATION_THRESHOLD) {
+                      totalElevationGain += diff;
+                      lastValidAlt = current.alt;
+                    } else if (diff <= -ELEVATION_THRESHOLD) {
+                      totalElevationLoss += Math.abs(diff);
+                      lastValidAlt = current.alt;
+                    }
+                  }
+                }
+              }
+            }
+          });
+
+          const distKm = (totalDistMeters / 1000).toFixed(1);
           const distMi = (distKm * 0.621371).toFixed(2);
 
-          const gainM = Math.round(gpxObj.get_elevation_gain());
+          const gainM = Math.round(totalElevationGain);
           const gainFt = Math.round(gainM * 3.28084);
-          const lossM = Math.round(gpxObj.get_elevation_loss());
+          const lossM = Math.round(totalElevationLoss);
           const lossFt = Math.round(lossM * 3.28084);
 
           const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
