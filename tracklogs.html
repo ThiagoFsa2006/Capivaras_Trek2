@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tracklogs - Capivaras Trek</title>
+  <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   
   <style>
     /* ==========================================
-       ESTILOS GERAIS E ESTRUTURA GLOBAL
+       ESTILOS GERAIS E ESTRUTURA
        ========================================== */
     * {
       margin: 0;
@@ -35,15 +36,16 @@
       margin: 0 auto;
     }
 
-    /* --- HEADER / NAVBAR IGUAL À IMAGEM --- */
+    /* --- NAVBAR --- */
     .navbar {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      background-color: #112316; /* Verde escuro uniforme */
+      background-color: #1b3320;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
       z-index: 1000;
-      padding: 16px 0;
+      padding: 14px 0;
     }
 
     .nav-container {
@@ -60,7 +62,7 @@
     }
 
     .logo-img {
-      height: 38px;
+      height: 42px;
       width: auto;
       object-fit: contain;
     }
@@ -86,7 +88,8 @@
       transition: opacity 0.2s ease;
     }
 
-    .nav-links a:hover {
+    .nav-links a:hover,
+    .nav-links a.active {
       opacity: 0.8;
     }
 
@@ -122,41 +125,12 @@
       transform: translateY(-8.5px) rotate(-45deg);
     }
 
-    /* --- BANNER / HERO DO TOPO IGUAL À IMAGEM --- */
-    .hero-banner {
-      background-color: #112316; /* Mesmo verde escuro da nav */
-      padding: 140px 0 60px;
-      text-align: center;
-      color: #ffffff;
-    }
-
-    .hero-banner h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 16px;
-      color: #ffffff;
-    }
-
-    .hero-banner p {
-      max-width: 820px;
-      margin: 0 auto;
-      color: #e1e8e2;
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    /* --- SEÇÃO DOS CARDS --- */
-    .section-content {
-      padding: 50px 0 80px;
-    }
-
-    /* ==========================================
-       CARDS E MÁSCARA DO MAPA + ELEVAÇÃO
-       ========================================== */
+    /* --- CARDS E MÁSCARA DO MAPA + ELEVAÇÃO (INALTERADOS) --- */
     .tracklogs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 24px;
+      margin-top: 10px;
     }
 
     .tracklog-card {
@@ -277,7 +251,7 @@
         top: 68px;
         left: 0;
         width: 100%;
-        background-color: #112316;
+        background-color: #1b3320;
         flex-direction: column;
         padding: 24px 0;
         gap: 20px;
@@ -289,56 +263,51 @@
       .nav-links.active {
         transform: translateY(0);
       }
-
-      .hero-banner {
-        padding: 110px 0 40px;
-      }
-
-      .hero-banner h1 {
-        font-size: 1.8rem;
-      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
+  <!-- Header Fixo -->
   <header class="navbar">
     <div class="container nav-container">
       <a href="index.html" class="brand">
         <img src="logo.png" alt="Capivaras Trek Logo" class="logo-img">
         <span class="brand-name">Capivaras Trek</span>
       </a>
-      
+
       <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir Menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
 
+      <!-- Links de Navegação -->
       <nav class="nav-links" id="nav-links">
         <a href="index.html#home" onclick="closeMenu()">Home</a>
         <a href="index.html#sobre" onclick="closeMenu()">Sobre</a>
         <a href="trilhas.html" onclick="closeMenu()">Trilhas</a>
         <a href="galeria.html" onclick="closeMenu()">Galeria</a>
-        <a href="tracklogs.html" onclick="closeMenu()">Tracklogs</a>
+        <a href="tracklogs.html" class="active" onclick="closeMenu()">Tracklogs</a>
         <a href="calendario.html" onclick="closeMenu()">Calendário</a>
         <a href="contato.html" onclick="closeMenu()">Contato</a>
       </nav>
     </div>
   </header>
 
-  <!-- Banner do Topo Verde Escuro -->
-  <section class="hero-banner">
+  <!-- Banner do Topo (Identico ao da Galeria) -->
+  <section class="page-header section" style="padding-top: 110px; padding-bottom: 25px; background-color: #1b3320; color: #ffffff; text-align: center;">
     <div class="container">
-      <h1>Tracklogs & Rotas</h1>
-      <p>Confira o trajeto e o perfil de elevação de cada expedição realizada. Clique no botão para acessar os detalhes no Wikiloc.</p>
+      <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 6px;">Tracklogs & Rotas</h1>
+      <p style="max-width: 700px; margin: 0 auto; color: #d0e0d2; font-size: 1rem;">
+        Confira o trajeto e o perfil de elevação de cada expedição realizada. Clique no botão para acessar os detalhes no Wikiloc.
+      </p>
     </div>
   </section>
 
-  <!-- Conteúdo dos Cards -->
-  <main class="section-content">
+  <!-- Conteúdo Principal -->
+  <main class="section" style="padding-top: 30px;">
     <div class="container">
+
+      <!-- Grade de Cards (Exatamente como estava) -->
       <div class="tracklogs-grid">
 
         <!-- Card: Capivari Mirim -->
@@ -556,8 +525,8 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
-      <img src="logo.png" alt="Capivaras Trek" class="footer-logo">
       <div class="footer-brand">
+        <img src="logo.png" alt="Capivaras Trek Logo" class="footer-logo">
         <h3>Capivaras Trek</h3>
         <p>Vivendo a montanha de forma autêntica e segura.</p>
       </div>
