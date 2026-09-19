@@ -149,11 +149,11 @@
     }
 
     /* ==========================================
-       ESTILOS DOS CARDS DE TRACKLOGS COM MAPA
+       CARDS E MÁSCARA APENAS PARA O MAPA
        ========================================== */
     .tracklogs-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 24px;
       margin-top: 32px;
     }
@@ -175,18 +175,25 @@
       border-color: #2d7a3e;
     }
 
-    /* ÁREA DO MAPA INCORPORADO (IFRAME DO WIKILOC) */
-    .tracklog-map-container {
+    /* CONTAINER CORTADOR (Esconde títulos e rodapé do widget) */
+    .tracklog-map-wrapper {
+      position: relative;
       width: 100%;
-      height: 260px;
+      height: 190px; /* Altura fixa visível da área do mapa */
+      overflow: hidden;
       background-color: #eaf2eb;
       border-bottom: 1px solid #e1e8e2;
     }
 
-    .tracklog-map-container iframe {
-      width: 100%;
-      height: 100%;
+    /* IFRAME POSICIONADO PARA MOSTRAR SOMENTE O MAPA */
+    .tracklog-map-wrapper iframe {
+      position: absolute;
+      top: -48px;     /* Corta o cabeçalho/título do Wikiloc */
+      left: -2px;
+      width: 104%;    /* Esconde bordas laterais */
+      height: 380px;  /* Mantém o rodapé de textos fora do corte */
       border: none;
+      pointer-events: none; /* Permite rolar a página sem travar o scroll no mapa */
     }
 
     .tracklog-content {
@@ -200,7 +207,7 @@
       font-size: 1.15rem;
       color: #1b3320;
       font-weight: 700;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       line-height: 1.3;
     }
 
@@ -210,8 +217,8 @@
       align-items: center;
       font-size: 0.88rem;
       color: #556357;
-      margin-bottom: 18px;
-      padding-bottom: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
       border-bottom: 1px solid #f0f4f1;
     }
 
@@ -314,22 +321,22 @@
     </div>
   </header>
 
-  <!-- Conteúdo Principal de Tracklogs -->
+  <!-- Conteúdo Principal -->
   <main class="section">
     <div class="container">
       <div class="section-header">
         <h2>Tracklogs & Rotas</h2>
         <p class="section-desc">
-          Interaja com os mapas das nossas rotas diretamente abaixo ou clique no botão para abrir o trajeto completo no Wikiloc.
+          Confira o trajeto de cada expedição realizada. Clique no botão de cada card para acessar o tracklog completo diretamente no Wikiloc.
         </p>
       </div>
 
-      <!-- Grade de Cards de Tracklogs -->
+      <!-- Grade de Cards -->
       <div class="tracklogs-grid">
 
         <!-- Card: Capivari Mirim -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286517513&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -345,7 +352,7 @@
 
         <!-- Card: Tucum -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286515133&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -361,7 +368,7 @@
 
         <!-- Card: Caminho do Itupava -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286514935&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -377,7 +384,7 @@
 
         <!-- Card: Cerro Verde -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286515133&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -393,7 +400,7 @@
 
         <!-- Card: Circular Serra da Melança -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286453605&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -409,7 +416,7 @@
 
         <!-- Card: Acampamento Capivari Mirim -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457969&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -425,7 +432,7 @@
 
         <!-- Card: Itapiroca -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457628&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -441,7 +448,7 @@
 
         <!-- Card: Travessia dos Capivaris -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457425&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -457,7 +464,7 @@
 
         <!-- Card: Circular dos Capivaris -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457268&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -473,7 +480,7 @@
 
         <!-- Card: Araçatuba + Inferno Verde -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457074&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -489,7 +496,7 @@
 
         <!-- Card: Araçatuba + Baleia + Moréia -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286456315&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -505,7 +512,7 @@
 
         <!-- Card: Taipabuçu + Ferraria -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286456126&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
@@ -521,7 +528,7 @@
 
         <!-- Card: Jacutinga -->
         <article class="tracklog-card">
-          <div class="tracklog-map-container">
+          <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286455488&elevation=off&images=off&maptype=H" scrolling="no"></iframe>
           </div>
           <div class="tracklog-content">
