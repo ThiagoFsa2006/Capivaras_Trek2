@@ -125,12 +125,85 @@
       transform: translateY(-8.5px) rotate(-45deg);
     }
 
+    /* --- BARRA DE FILTRO E ORDENAÇÃO --- */
+    .filter-bar {
+      background: #ffffff;
+      border: 1px solid #e1e8e2;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 16px 10px 42px;
+      border: 1px solid #d4ded6;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #2b302a;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: #2d7a3e;
+      box-shadow: 0 0 0 3px rgba(45, 122, 62, 0.12);
+    }
+
+    .sort-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+    }
+
+    .sort-label {
+      font-weight: 700;
+      color: #1b3320;
+      font-size: 0.95rem;
+    }
+
+    .sort-select {
+      padding: 10px 16px;
+      border: 1px solid #d4ded6;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1b3320;
+      background-color: #ffffff;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    .sort-select:focus {
+      border-color: #2d7a3e;
+    }
+
     /* --- CARDS E MÁSCARA DO MAPA + ELEVAÇÃO --- */
     .tracklogs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 24px;
-      margin-top: 10px;
     }
 
     .tracklog-card {
@@ -299,6 +372,19 @@
       .nav-links.active {
         transform: translateY(0);
       }
+
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .sort-box {
+        justify-content: space-between;
+      }
+
+      .sort-select {
+        flex: 1;
+      }
     }
   </style>
 </head>
@@ -343,7 +429,23 @@
   <main class="section" style="padding-top: 30px;">
     <div class="container">
 
-      <!-- Grade de Cards onde os cards com linkwic serão inseridos -->
+      <!-- Barra de Filtro e Ordenação -->
+      <div class="filter-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" class="search-input" placeholder="Buscar por nome da trilha...">
+        </div>
+        <div class="sort-box">
+          <label for="sort-select" class="sort-label">Ordenar por:</label>
+          <select id="sort-select" class="sort-select">
+            <option value="recent">Mais recente primeiro</option>
+            <option value="oldest">Mais antigo primeiro</option>
+            <option value="name">Nome (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grade de Cards onde os cards serão renderizados -->
       <div class="tracklogs-grid" id="tracklogs-grid">
         <p style="text-align: center; grid-column: 1 / -1; color: #556357;">Carregando tracklogs...</p>
       </div>
@@ -380,9 +482,11 @@
     }
 
     /* ==========================================
-       LÓGICA: SÓ EXIBE CARDS COM LINKWIC PREENCHIDO
+       CARREGAMENTO, FILTRAGEM E ORDENAÇÃO
        ========================================== */
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSYLi9oSrKvebix3RSQ4L9705UZZS1z9duOlFyv8DzrTkAP34rniv2SEmi0NDfyK1KRjFns8UU8M3VI/pub?gid=0&single=true&output=csv';
+
+    let allTracklogs = [];
 
     function parseCSV(text) {
       const lines = text.split('\n');
@@ -411,78 +515,119 @@
       return match ? match[1] : null;
     }
 
-    async function renderTracklogs() {
+    // Função para converter "DD/MM/YYYY" em objeto Date para ordenação
+    function parseDate(dateStr) {
+      if (!dateStr || dateStr === '--/--/----') return new Date(0);
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+      }
+      return new Date(0);
+    }
+
+    function renderTracklogs() {
       const grid = document.getElementById('tracklogs-grid');
+      const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+      const sortOrder = document.getElementById('sort-select').value;
+
+      // 1. Filtrar itens com linkwic preenchido e que combinem com a busca
+      let filtered = allTracklogs.filter(item => {
+        const hasLink = item.linkwic && item.linkwic.trim() !== '';
+        const matchesSearch = item.nome.toLowerCase().includes(searchTerm);
+        return hasLink && matchesSearch;
+      });
+
+      // 2. Ordenação
+      filtered.sort((a, b) => {
+        if (sortOrder === 'recent') {
+          return parseDate(b.data) - parseDate(a.data);
+        } else if (sortOrder === 'oldest') {
+          return parseDate(a.data) - parseDate(b.data);
+        } else if (sortOrder === 'name') {
+          return a.nome.localeCompare(b.nome);
+        }
+        return 0;
+      });
+
+      // 3. Renderizar no HTML
+      grid.innerHTML = '';
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<p style="text-align: center; grid-column: 1 / -1; color: #556357;">Nenhuma trilha encontrada.</p>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const mapIframe = item.wikilocId 
+          ? `<iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=${item.wikilocId}&elevation=on&images=off&maptype=H" scrolling="no"></iframe>`
+          : `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#556357;">Mapa não disponível</div>`;
+
+        const cardHTML = `
+          <article class="tracklog-card">
+            <div class="tracklog-map-wrapper">
+              ${mapIframe}
+            </div>
+            <div class="tracklog-content">
+              <h3 class="tracklog-title">${item.nome}</h3>
+              <div class="tracklog-meta">
+                <span>📅 ${item.data}</span>
+              </div>
+
+              <div class="tracklog-stats-grid">
+                <div class="stat-item"><span class="stat-label">Distância</span><span class="stat-value">${item.distance}</span></div>
+                <div class="stat-item"><span class="stat-label">Tipo de Trilha</span><span class="stat-value">${item.trailtype}</span></div>
+                <div class="stat-item"><span class="stat-label">Ganho de Elevação</span><span class="stat-value">${item.elevationGain}</span></div>
+                <div class="stat-item"><span class="stat-label">Perda de Elevação</span><span class="stat-value">${item.elevationLoss}</span></div>
+                <div class="stat-item"><span class="stat-label">Elevação Máxima</span><span class="stat-value">${item.maxElevation}</span></div>
+                <div class="stat-item"><span class="stat-label">Elevação Mínima</span><span class="stat-value">${item.minElevation}</span></div>
+                <div class="stat-item full-width"><span class="stat-label">Tempo Estimado</span><span class="stat-value">${item.time}</span></div>
+              </div>
+
+              <a href="${item.linkwic}" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
+                Ver no Wikiloc ↗
+              </a>
+            </div>
+          </article>
+        `;
+
+        grid.insertAdjacentHTML('beforeend', cardHTML);
+      });
+    }
+
+    async function initTracklogs() {
       try {
         const response = await fetch(CSV_URL);
         if (!response.ok) return;
 
         const csvText = await response.text();
-        const data = parseCSV(csvText);
+        const rawData = parseCSV(csvText);
 
-        grid.innerHTML = ''; // Limpa o "Carregando..."
+        allTracklogs = rawData.map(row => ({
+          nome: row['nome'] || 'Sem Nome',
+          linkwic: row['linkwic'] ? row['linkwic'].trim() : '',
+          wikilocId: extractWikilocId(row['linkwic']),
+          data: row['data'] || row['dataTrilha'] || '--/--/----',
+          distance: row['distance'] || '--',
+          trailtype: row['trailtype'] || '--',
+          elevationGain: row['elevation_gain'] || '--',
+          elevationLoss: row['elevation_loss'] || '--',
+          maxElevation: row['max_elevation'] || row['max_eleva'] || '--',
+          minElevation: row['min_elevation'] || row['min_eleva'] || '--',
+          time: row['time'] || '--'
+        }));
 
-        data.forEach(row => {
-          const linkwic = row['linkwic'] ? row['linkwic'].trim() : '';
-
-          // REGRA DE NEGÓCIO: Se NÃO houver link na coluna linkwic, NÃO mostra o card
-          if (!linkwic || linkwic === '') {
-            return;
-          }
-
-          const nome = row['nome'] || 'Sem Nome';
-          const wikilocId = extractWikilocId(linkwic);
-          const dataTrilha = row['data'] || row['dataTrilha'] || '--/--/----';
-
-          const distance = row['distance'] || '--';
-          const trailtype = row['trailtype'] || '--';
-          const elevationGain = row['elevation_gain'] || '--';
-          const elevationLoss = row['elevation_loss'] || '--';
-          const maxElevation = row['max_elevation'] || row['max_eleva'] || '--';
-          const minElevation = row['min_elevation'] || row['min_eleva'] || '--';
-          const time = row['time'] || '--';
-
-          const mapIframe = wikilocId 
-            ? `<iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=${wikilocId}&elevation=on&images=off&maptype=H" scrolling="no"></iframe>`
-            : `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#556357;">Mapa não disponível</div>`;
-
-          const cardHTML = `
-            <article class="tracklog-card">
-              <div class="tracklog-map-wrapper">
-                ${mapIframe}
-              </div>
-              <div class="tracklog-content">
-                <h3 class="tracklog-title">${nome}</h3>
-                <div class="tracklog-meta">
-                  <span>📅 ${dataTrilha}</span>
-                </div>
-
-                <div class="tracklog-stats-grid">
-                  <div class="stat-item"><span class="stat-label">Distância</span><span class="stat-value">${distance}</span></div>
-                  <div class="stat-item"><span class="stat-label">Tipo de Trilha</span><span class="stat-value">${trailtype}</span></div>
-                  <div class="stat-item"><span class="stat-label">Ganho de Elevação</span><span class="stat-value">${elevationGain}</span></div>
-                  <div class="stat-item"><span class="stat-label">Perda de Elevação</span><span class="stat-value">${elevationLoss}</span></div>
-                  <div class="stat-item"><span class="stat-label">Elevação Máxima</span><span class="stat-value">${maxElevation}</span></div>
-                  <div class="stat-item"><span class="stat-label">Elevação Mínima</span><span class="stat-value">${minElevation}</span></div>
-                  <div class="stat-item full-width"><span class="stat-label">Tempo Estimado</span><span class="stat-value">${time}</span></div>
-                </div>
-
-                <a href="${linkwic}" target="_blank" rel="noopener noreferrer" class="btn-wikiloc">
-                  Ver no Wikiloc ↗
-                </a>
-              </div>
-            </article>
-          `;
-
-          grid.insertAdjacentHTML('beforeend', cardHTML);
-        });
+        renderTracklogs();
 
       } catch (err) {
         console.error('Erro ao ler dados da planilha:', err);
       }
     }
 
-    document.addEventListener('DOMContentLoaded', renderTracklogs);
+    // Event listeners para filtro e ordenação
+    document.getElementById('search-input').addEventListener('input', renderTracklogs);
+    document.getElementById('sort-select').addEventListener('change', renderTracklogs);
+
+    document.addEventListener('DOMContentLoaded', initTracklogs);
   </script>
 </body>
 </html>
