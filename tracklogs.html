@@ -149,11 +149,11 @@
     }
 
     /* ==========================================
-       CARDS E MÁSCARA EXCLUSIVA DO MAPA
+       CARDS E MÁSCARA DO MAPA + ELEVAÇÃO
        ========================================== */
     .tracklogs-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 24px;
       margin-top: 32px;
     }
@@ -175,11 +175,11 @@
       border-color: #2d7a3e;
     }
 
-    /* MÁSCARA CORTADORA DO IFRAME */
+    /* CONTAINER CORTADOR (Ajustado para mostrar mapa e perfil de elevação) */
     .tracklog-map-wrapper {
       position: relative;
       width: 100%;
-      height: 180px; /* Janela visível focada no mapa */
+      height: 250px; /* Altura ajustada para caber o mapa e o gráfico de elevação */
       overflow: hidden;
       background-color: #eaf2eb;
       border-bottom: 1px solid #e1e8e2;
@@ -188,12 +188,12 @@
     /* ENQUADRAMENTO DO IFRAME DO WIKILOC */
     .tracklog-map-wrapper iframe {
       position: absolute;
-      top: -55px;     /* Esconde o título/cabeçalho superior */
+      top: -55px;     /* Esconde o título superior do Wikiloc */
       left: -5px;
       width: calc(100% + 10px);
-      height: 500px;  /* Mantém o gráfico de elevação e dados fora da janela visível */
+      height: 500px;  /* Mantém os textos de rodapé fora da área visível */
       border: none;
-      pointer-events: none; /* Mantém a rolagem da página fluida no mobile/desktop */
+      pointer-events: none; /* Mantém a rolagem da página fluida */
     }
 
     .tracklog-content {
@@ -327,7 +327,7 @@
       <div class="section-header">
         <h2>Tracklogs & Rotas</h2>
         <p class="section-desc">
-          Confira o trajeto de cada expedição realizada. Clique no botão de cada card para acessar o tracklog completo diretamente no Wikiloc.
+          Confira o trajeto e o perfil de elevação de cada expedição realizada. Clique no botão para acessar os detalhes no Wikiloc.
         </p>
       </div>
 
