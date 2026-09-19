@@ -354,7 +354,7 @@
 
     .trilha-card {
       width: 100%;
-      height: 160px; /* Altura compacta fixa */
+      height: 220px; /* Aumentada a altura para acomodar foto 220px e resumo */
       background: #ffffff;
       border: 1px solid #dcdfdc;
       border-radius: 12px;
@@ -373,10 +373,10 @@
       border-color: #2d7a3e;
     }
 
-    /* PROPORÇÃO QUADRADA 1:1 PARA A IMAGEM NO CARD */
+    /* PROPORÇÃO AUMENTADA (220px x 220px) QUADRADA 1:1 */
     .trilha-img-box {
-      width: 160px;
-      height: 160px;
+      width: 220px;
+      height: 220px;
       aspect-ratio: 1 / 1;
       flex-shrink: 0;
       background: #eef2ef;
@@ -431,20 +431,33 @@
 
     .trilha-titulo {
       color: #1b3320;
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 800;
-      margin: 2px 0 0 0;
+      margin: 2px 0 4px 0;
       letter-spacing: -0.3px;
       line-height: 1.2;
+    }
+
+    /* ESTILO PARA O RESUMO (MÁXIMO DE 3 LINHAS) */
+    .trilha-resumo {
+      color: #556357;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* LAYOUT DAS DUAS LINHAS DE INFORMAÇÕES NO CARD */
     .trilha-details-grid {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       width: 100%;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       color: #3d4a3f;
     }
 
@@ -484,7 +497,7 @@
       text-overflow: ellipsis;
     }
 
-    /* ESTILOS DO MODAL COM TODAS AS INFORMAÇÕES E FOTO MAIOR */
+    /* ESTILOS DO MODAL COM TODAS AS INFORMAÇÕES E FOTO EXPANDIDA */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -543,7 +556,7 @@
       }
       .trilha-img-box {
         width: 100%;
-        height: 200px;
+        height: 220px;
         aspect-ratio: auto;
       }
       .details-row {
@@ -1054,9 +1067,10 @@
                   <span class="badge-nivel" style="background-color: ${badgeColor};">${t.nivel || 'Moderado'}</span>
                 </div>
                 <h3 class="trilha-titulo">${t.nome}</h3>
+                ${t.resumo ? `<p class="trilha-resumo">${t.resumo}</p>` : ''}
               </div>
               
-              <!-- DUAS LINHAS DE INFORMAÇÕES CONFORME SOLICITADO -->
+              <!-- DUAS LINHAS DE INFORMAÇÕES METADADOS -->
               <div class="trilha-details-grid">
                 
                 <!-- LINHA 1 -->
@@ -1104,7 +1118,7 @@
       }).join('');
     }
 
-    /* MODAL POP-UP (EXIBE TODAS AS INFORMAÇÕES E FOTO MAIOR) */
+    /* MODAL POP-UP (EXIBE TODAS AS INFORMAÇÕES E FOTO EXPANDIDA AUMENTADA) */
     const modal = document.getElementById('trilhaModal');
     const modalClose = document.getElementById('modalClose');
 
