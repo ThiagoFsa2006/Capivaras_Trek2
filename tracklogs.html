@@ -56,8 +56,9 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
+    /* Ampliado a área do Mapa no Card */
     .card-header-map {
-      height: 190px;
+      height: 260px;
       width: 100%;
       background-color: #e5ebe6;
       border-bottom: 1px solid #dcdfdc;
@@ -76,13 +77,13 @@
       color: #1b3320;
       font-size: 1.25rem;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .tracklog-meta {
       list-style: none;
       padding: 0;
-      margin: 10px 0 16px 0;
+      margin: 4px 0 16px 0;
       font-size: 0.9rem;
       color: #3d4a3f;
       display: flex;
@@ -445,7 +446,6 @@
         const csvText = await res.text();
         const rows = parseCSV(csvText);
 
-        // Exibe cards se possuírem arquivo gpx OU link do wikiloc
         const validItems = rows.filter(r => {
           const gpx = r.gpxfile ? r.gpxfile.trim() : '';
           const wic = (r.linkwic || r.linkwikiloc || '').trim();
@@ -491,9 +491,6 @@
           return {
             ...item,
             gpxText: null,
-            distKm: 'N/A',
-            gainM: 'N/A',
-            durationStr: 'N/A',
             dateStr: 'Data N/A',
             timestamp: 0
           };
@@ -517,15 +514,6 @@
 
             gpx.on('loaded', function(e) {
               const gpxObj = e.target;
-              
-              const distKm = (gpxObj.get_distance() / 1000).toFixed(1);
-              const gainM = Math.round(gpxObj.get_elevation_gain());
-              const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
-              
-              const hours = Math.floor(durMs / 3600000);
-              const mins = Math.floor((durMs % 3600000) / 60000);
-              const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-
               let dateObj = gpxObj.get_start_time();
               let dateStr = 'Data N/A';
               let timestamp = 0;
@@ -544,9 +532,6 @@
               resolve({
                 ...item,
                 gpxText: gpxText,
-                distKm: `${distKm} km`,
-                gainM: `${gainM.toLocaleString()} m`,
-                durationStr: durationStr,
                 dateStr: dateStr,
                 timestamp: timestamp
               });
@@ -558,9 +543,6 @@
               resolve({
                 ...item,
                 gpxText: gpxText,
-                distKm: 'N/A',
-                gainM: 'N/A',
-                durationStr: 'N/A',
                 dateStr: 'Data N/A',
                 timestamp: 0
               });
@@ -574,9 +556,6 @@
           return {
             ...item,
             gpxText: null,
-            distKm: 'N/A',
-            gainM: 'N/A',
-            durationStr: 'N/A',
             dateStr: 'Data N/A',
             timestamp: 0
           };
@@ -604,9 +583,6 @@
                 <h3 class="tracklog-title">${item.title}</h3>
                 <ul class="tracklog-meta">
                   <li>📅 <strong>Data:</strong> ${item.dateStr}</li>
-                  <li>📏 <strong>Distância:</strong> ${item.distKm}</li>
-                  <li>📈 <strong>Ganho de Elevação:</strong> ${item.gainM}</li>
-                  <li>⏱️ <strong>Duração Total:</strong> ${item.durationStr}</li>
                 </ul>
               </div>
 
@@ -636,7 +612,6 @@
         const mapElem = document.getElementById(`cardMap_${idx}`);
         if (!mapElem) return;
 
-        // Renderiza o mapa apenas via GPX local
         if (item.gpxText) {
           const miniMap = L.map(`cardMap_${idx}`, {
             zoomControl: false,
