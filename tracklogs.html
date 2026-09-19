@@ -56,9 +56,8 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
-    /* Área ampliada para o Mapa no Card */
     .card-header-map {
-      height: 260px;
+      height: 240px;
       width: 100%;
       background-color: #e5ebe6;
       border-bottom: 1px solid #dcdfdc;
@@ -77,21 +76,20 @@
       color: #1b3320;
       font-size: 1.25rem;
       font-weight: 800;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .tracklog-meta {
       list-style: none;
       padding: 0;
-      margin: 4px 0 16px 0;
-      font-size: 0.9rem;
+      margin: 10px 0 16px 0;
+      font-size: 0.88rem;
       color: #3d4a3f;
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
 
-    /* Grid de Ações dos Cards */
     .card-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -115,7 +113,6 @@
       gap: 6px;
     }
 
-    /* Botão Wikiloc */
     .btn-wikiloc {
       background-color: #2e7d32;
       color: #ffffff;
@@ -135,7 +132,6 @@
       cursor: not-allowed;
     }
 
-    /* Botão GPX */
     .btn-gpx {
       background-color: #1b3320;
       color: #ffffff;
@@ -202,7 +198,6 @@
       border: 1px solid #ccc;
     }
 
-    /* Estatísticas GPX */
     .garmin-stats-row {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -300,7 +295,7 @@
   <main class="section" style="padding-top: 20px;">
     <div class="container">
       <div class="tracklog-grid" id="tracklogsContainer">
-        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Carregando dados da planilha e arquivos GPX...</p>
+        <p style="text-align: center; grid-column: 1/-1; color: #556357;">Carregando arquivos GPX...</p>
       </div>
     </div>
   </main>
@@ -310,7 +305,6 @@
     <div class="modal-content-garmin">
       <button class="modal-close" id="modalClose">&times;</button>
       
-      <!-- Título da Trilha no Modal -->
       <h2 class="modal-header-title" id="modalTrilhaTitle">Detalhes da Trilha</h2>
 
       <!-- Mapa -->
@@ -382,24 +376,11 @@
     let modalMapInstance = null;
     let chartInstance = null;
 
-    // Extrai a URL do Wikiloc para o botão de acesso externo
-    function extractWikilocUrl(cellValue, trackTitle) {
+    function extractWikilocUrl(cellValue) {
       if (!cellValue) return '';
       const str = cellValue.trim();
-      
-      if (str.startsWith('http://') || str.startsWith('https://')) {
-        return str;
-      }
-      
       const match = str.match(/https?:\/\/[^\s"'>]+/i);
-      if (match) return match[0];
-
-      if (str.length > 0) {
-        const query = encodeURIComponent(str.replace(/^Wikiloc\s*\|\s*/i, ''));
-        return `https://pt.wikiloc.com/wikiloc/spatialArtifacts.do?event=search&term=${query}`;
-      }
-
-      return '';
+      return match ? match[0] : (str.startsWith('http') ? str : '');
     }
 
     function parseCSV(text) {
@@ -412,14 +393,11 @@
         let inQuotes = false;
         for (let i = 0; i < line.length; i++) {
           const char = line[i];
-          if (char === '"') {
-            inQuotes = !inQuotes;
-          } else if (char === ',' && !inQuotes) {
+          if (char === '"') inQuotes = !inQuotes;
+          else if (char === ',' && !inQuotes) {
             result.push(current.trim().replace(/^"|"$/g, ''));
             current = '';
-          } else {
-            current += char;
-          }
+          } else current += char;
         }
         result.push(current.trim().replace(/^"|"$/g, ''));
         return result;
@@ -430,9 +408,7 @@
       return lines.slice(1).map(line => {
         const values = splitLine(line);
         const obj = {};
-        headers.forEach((header, index) => {
-          obj[header] = values[index] || '';
-        });
+        headers.forEach((header, index) => obj[header] = values[index] || '');
         return obj;
       });
     }
@@ -441,16 +417,12 @@
       const container = document.getElementById('tracklogsContainer');
       try {
         const res = await fetch(GOOGLE_SHEET_PAGINA1_URL);
-        if (!res.ok) throw new Error('Falha ao carregar CSV da planilha');
+        if (!res.ok) throw new Error('Falha ao carregar a planilha');
 
         const csvText = await res.text();
         const rows = parseCSV(csvText);
 
-        const validItems = rows.filter(r => {
-          const gpx = r.gpxfile ? r.gpxfile.trim() : '';
-          const wic = (r.linkwic || r.linkwikiloc || '').trim();
-          return gpx !== '' || wic !== '';
-        }).map(r => {
+        const validItems = rows.filter(r => (r.gpxfile || '').trim() !== '' || (r.linkwic || r.linkwikiloc || '').trim() !== '').map(r => {
           let fileName = r.gpxfile ? r.gpxfile.trim() : '';
           if (fileName && !fileName.toLowerCase().endsWith('.gpx')) {
             fileName += '.gpx';
@@ -458,12 +430,11 @@
           
           const rawWic = r.linkwic || r.linkwikiloc || '';
           const titleName = r.nome || (fileName ? fileName.replace(/\.gpx$/i, '') : 'Trilha sem nome');
-          const wikilocUrl = extractWikilocUrl(rawWic, titleName);
 
           return {
             title: titleName,
             filename: fileName,
-            linkwic: wikilocUrl,
+            linkwic: extractWikilocUrl(rawWic),
             downloadUrl: fileName ? `tracklogs/${encodeURIComponent(fileName)}` : null
           };
         });
@@ -477,10 +448,11 @@
 
       } catch (err) {
         console.error('Erro ao ler a planilha:', err);
-        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: red;">Erro ao carregar os dados da planilha.</p>';
+        container.innerHTML = '<p style="text-align: center; grid-column: 1/-1; color: red;">Erro ao carregar dados.</p>';
       }
     }
 
+    // Processa o arquivo GPX local diretamente
     async function processAndSortTracks(items) {
       const tempDiv = document.createElement('div');
       document.body.appendChild(tempDiv);
@@ -491,8 +463,7 @@
           return {
             ...item,
             gpxText: null,
-            dateStr: 'Data N/A',
-            timestamp: 0
+            distKm: '--', gainM: '--', lossM: '--', maxAlt: '--', minAlt: '--', durationStr: '--', dateStr: 'Data N/A', timestamp: 0
           };
         }
 
@@ -514,6 +485,62 @@
 
             gpx.on('loaded', function(e) {
               const gpxObj = e.target;
+              
+              // Cálculo filtrado de distância e ganho de elevação
+              let totalDistMeters = 0;
+              let totalElevationGain = 0;
+              let totalElevationLoss = 0;
+              let maxAlt = -Infinity;
+              let minAlt = Infinity;
+
+              const ELEVATION_THRESHOLD = 3; 
+              const DISTANCE_THRESHOLD = 2;
+
+              gpxObj.eachLayer(function(layer) {
+                if (layer instanceof L.Polyline) {
+                  const latlngs = layer.getLatLngs();
+                  if (latlngs.length >= 2) {
+                    let lastValidLatLng = latlngs[0];
+                    let lastValidAlt = latlngs[0].alt || 0;
+
+                    latlngs.forEach(pt => {
+                      if (pt.alt !== undefined) {
+                        if (pt.alt > maxAlt) maxAlt = pt.alt;
+                        if (pt.alt < minAlt) minAlt = pt.alt;
+                      }
+                    });
+
+                    for (let i = 1; i < latlngs.length; i++) {
+                      const current = latlngs[i];
+                      const dist = lastValidLatLng.distanceTo(current);
+
+                      if (dist >= DISTANCE_THRESHOLD) {
+                        totalDistMeters += dist;
+                        lastValidLatLng = current;
+                      }
+
+                      if (current.alt !== undefined) {
+                        const diff = current.alt - lastValidAlt;
+                        if (diff >= ELEVATION_THRESHOLD) {
+                          totalElevationGain += diff;
+                          lastValidAlt = current.alt;
+                        } else if (diff <= -ELEVATION_THRESHOLD) {
+                          totalElevationLoss += Math.abs(diff);
+                          lastValidAlt = current.alt;
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+
+              const distKm = (totalDistMeters / 1000).toFixed(1);
+              const durMs = gpxObj.get_total_time() || gpxObj.get_moving_time();
+              
+              const hours = Math.floor(durMs / 3600000);
+              const mins = Math.floor((durMs % 3600000) / 60000);
+              const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+
               let dateObj = gpxObj.get_start_time();
               let dateStr = 'Data N/A';
               let timestamp = 0;
@@ -532,6 +559,12 @@
               resolve({
                 ...item,
                 gpxText: gpxText,
+                distKm: `${distKm} km`,
+                gainM: `${Math.round(totalElevationGain).toLocaleString()} m`,
+                lossM: `${Math.round(totalElevationLoss).toLocaleString()} m`,
+                maxAlt: maxAlt !== -Infinity ? `${Math.round(maxAlt)} m` : '--',
+                minAlt: minAlt !== Infinity ? `${Math.round(minAlt)} m` : '--',
+                durationStr: durationStr,
                 dateStr: dateStr,
                 timestamp: timestamp
               });
@@ -541,10 +574,7 @@
               map.remove();
               mapContainer.remove();
               resolve({
-                ...item,
-                gpxText: gpxText,
-                dateStr: 'Data N/A',
-                timestamp: 0
+                ...item, gpxText: gpxText, distKm: '--', gainM: '--', lossM: '--', maxAlt: '--', minAlt: '--', durationStr: '--', dateStr: 'Data N/A', timestamp: 0
               });
             });
 
@@ -554,10 +584,7 @@
         } catch (err) {
           console.error(`Erro ao carregar ${item.filename}:`, err);
           return {
-            ...item,
-            gpxText: null,
-            dateStr: 'Data N/A',
-            timestamp: 0
+            ...item, gpxText: null, distKm: '--', gainM: '--', lossM: '--', maxAlt: '--', minAlt: '--', durationStr: '--', dateStr: 'Data N/A', timestamp: 0
           };
         }
       });
@@ -581,8 +608,15 @@
             <div class="tracklog-info">
               <div>
                 <h3 class="tracklog-title">${item.title}</h3>
+                
                 <ul class="tracklog-meta">
                   <li>📅 <strong>Data:</strong> ${item.dateStr}</li>
+                  <li>📏 <strong>Distância:</strong> ${item.distKm}</li>
+                  <li>📈 <strong>Ganho de Elevação:</strong> ${item.gainM}</li>
+                  <li>📉 <strong>Perda de Elevação:</strong> ${item.lossM}</li>
+                  <li>🏔️ <strong>Altitude Máxima:</strong> ${item.maxAlt}</li>
+                  <li>🏞️ <strong>Altitude Mínima:</strong> ${item.minAlt}</li>
+                  <li>⏱️ <strong>Duração Total:</strong> ${item.durationStr}</li>
                 </ul>
               </div>
 
@@ -614,25 +648,15 @@
 
         if (item.gpxText) {
           const miniMap = L.map(`cardMap_${idx}`, {
-            zoomControl: false,
-            dragging: false,
-            touchZoom: false,
-            scrollWheelZoom: false,
-            doubleClickZoom: false,
-            boxZoom: false,
-            attributionControl: false
+            zoomControl: false, dragging: false, touchZoom: false,
+            scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, attributionControl: false
           }).setView([-25.4284, -49.2733], 10);
 
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
 
           const gpx = new L.GPX(item.gpxText, {
             async: true,
-            marker_options: {
-              startIconUrl: null,
-              endIconUrl: null,
-              shadowUrl: null,
-              wptIconUrls: { '': null }
-            }
+            marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null, wptIconUrls: { '': null } }
           });
 
           gpx.on('loaded', function(e) {
@@ -668,12 +692,7 @@
 
         const gpx = new L.GPX(track.gpxText, {
           async: true,
-          marker_options: {
-            startIconUrl: null,
-            endIconUrl: null,
-            shadowUrl: null,
-            wptIconUrls: { '': null }
-          },
+          marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null, wptIconUrls: { '': null } },
           polyline_options: { color: '#0000FF', opacity: 0.9, weight: 4 }
         });
 
@@ -681,7 +700,6 @@
           const gpxObj = e.target;
           modalMapInstance.fitBounds(gpxObj.getBounds());
 
-          // Recalcula distância e elevação aplicando um filtro simples de ruído de GPS
           let totalDistMeters = 0;
           let totalElevationGain = 0;
           let totalElevationLoss = 0;
