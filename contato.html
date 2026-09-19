@@ -13,8 +13,8 @@
     /* Estilos específicos da página de Contato */
     .contact-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 25px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
       margin-top: 30px;
     }
 
@@ -22,7 +22,7 @@
       background-color: #ffffff;
       border: 1px solid #dcdfdc;
       border-radius: 10px;
-      padding: 30px 24px;
+      padding: 30px 20px;
       text-align: center;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
       transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -58,16 +58,21 @@
       color: #25d366;
     }
 
+    .contact-icon-wrapper.wikiloc-bg {
+      background: rgba(76, 175, 80, 0.15);
+      color: #4caf50;
+    }
+
     .contact-card h3 {
       color: #1b3320;
-      font-size: 1.4rem;
+      font-size: 1.25rem;
       font-weight: 800;
       margin-bottom: 8px;
     }
 
     .contact-card p {
       color: #556357;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       margin-bottom: 20px;
       line-height: 1.5;
     }
@@ -76,12 +81,12 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
-      padding: 12px 20px;
+      padding: 12px 14px;
       border-radius: 6px;
       font-weight: 700;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       text-decoration: none;
       transition: all 0.2s ease;
     }
@@ -112,6 +117,16 @@
       transform: scale(1.02);
     }
 
+    .btn-wikiloc {
+      background-color: #4caf50;
+      color: #ffffff;
+    }
+
+    .btn-wikiloc:hover {
+      background-color: #43a047;
+      transform: scale(1.02);
+    }
+
     /* Card Transparência / Comunidade */
     .community-box {
       background-color: #1b3320;
@@ -135,6 +150,19 @@
       margin: 0 auto;
       font-size: 0.98rem;
       line-height: 1.6;
+    }
+
+    /* Regras de Responsividade */
+    @media (max-width: 1100px) {
+      .contact-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -182,10 +210,10 @@
   <main class="section" style="padding-top: 40px; padding-bottom: 60px;">
     <div class="container">
 
-      <!-- Grade de Cards de Contato -->
+      <!-- Grade de Cards de Contato (4 Colunas) -->
       <div class="contact-grid">
 
-        <!-- Card Instagram -->
+        <!-- Card 1: Instagram -->
         <article class="contact-card">
           <div>
             <div class="contact-icon-wrapper insta-bg">
@@ -194,7 +222,7 @@
               </svg>
             </div>
             <h3>Instagram Oficial</h3>
-            <p>Contato sobre Instagram e outros canais. Acompanhe nossos registros e atualizações em tempo real.</p>
+            <p>Acompanhe nossos registros, fotos e atualizações em tempo real nas redes.</p>
           </div>
           <a href="https://www.instagram.com/capivaras_trek?stkn=MWF0bjI2d3V1anRoMQ==" target="_blank" rel="noopener noreferrer" class="btn-contact btn-instagram">
             <svg viewBox="0 0 24 24">
@@ -204,7 +232,7 @@
           </a>
         </article>
 
-        <!-- Card WhatsApp - Dan Roy -->
+        <!-- Card 2: WhatsApp - Dan Roy -->
         <article class="contact-card">
           <div>
             <div class="contact-icon-wrapper whats-bg">
@@ -223,7 +251,7 @@
           </a>
         </article>
 
-        <!-- Card WhatsApp - Thiago Farias -->
+        <!-- Card 3: WhatsApp - Thiago Farias -->
         <article class="contact-card">
           <div>
             <div class="contact-icon-wrapper whats-bg">
@@ -239,6 +267,25 @@
               <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
             </svg>
             Conversar com Thiago
+          </a>
+        </article>
+
+        <!-- Card 4: Wikiloc -->
+        <article class="contact-card">
+          <div>
+            <div class="contact-icon-wrapper wikiloc-bg">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-5l-2.5 2.5L7 12.5l5-5 5 5-1.5 1.5L13 11.5v5h-2z"/>
+              </svg>
+            </div>
+            <h3>Wikiloc Oficial</h3>
+            <p>Acesse nossos tracklogs completos, rotas de expedições e mapeamento das trilhas.</p>
+          </div>
+          <a href="https://www.wikiloc.com/wikiloc/user.do?id=15150739" target="_blank" rel="noopener noreferrer" class="btn-contact btn-wikiloc">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-5l-2.5 2.5L7 12.5l5-5 5 5-1.5 1.5L13 11.5v5h-2z"/>
+            </svg>
+            Ver Perfil no Wikiloc
           </a>
         </article>
 
