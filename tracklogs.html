@@ -123,39 +123,109 @@
       transform: translateY(-8.5px) rotate(-45deg);
     }
 
-    /* --- SEÇÃO PRINCIPAL --- */
-    .section {
-      padding: 120px 0 80px;
-    }
-
-    .section-header {
+    /* --- CABEÇALHO ESCURO (HERO HEADER) --- */
+    .hero-page {
+      background-color: #1b3320;
+      color: #ffffff;
+      padding: 120px 0 60px;
       text-align: center;
-      margin-bottom: 35px;
     }
 
-    .section-header h2 {
-      font-size: 2.2rem;
-      color: #1b3320;
-      margin-bottom: 16px;
+    .hero-page h1 {
+      font-size: 2.5rem;
       font-weight: 800;
+      margin-bottom: 12px;
+      color: #ffffff;
     }
 
-    .section-desc {
-      max-width: 820px;
+    .hero-page p {
+      max-width: 750px;
       margin: 0 auto;
-      color: #3d4a3f;
-      font-size: 1.1rem;
-      line-height: 1.7;
+      color: #d1e0d3;
+      font-size: 1.05rem;
     }
 
-    /* ==========================================
-       CARDS E MÁSCARA DO MAPA + ELEVAÇÃO
-       ========================================== */
+    /* --- SEÇÃO DE FILTROS --- */
+    .filter-section {
+      margin-top: -30px;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .filter-card {
+      background: #ffffff;
+      border: 1px solid #e1e8e2;
+      border-radius: 12px;
+      padding: 16px 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      border: 1px solid #d0dad1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: #2d7a3e;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #88968a;
+    }
+
+    .sort-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sort-box label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1b3320;
+      white-space: nowrap;
+    }
+
+    .sort-box select {
+      padding: 10px 16px;
+      border: 1px solid #d0dad1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      background-color: #fff;
+      cursor: pointer;
+    }
+
+    /* --- SEÇÃO DOS CARDS --- */
+    .section {
+      padding: 0 0 80px;
+    }
+
     .tracklogs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 24px;
-      margin-top: 32px;
     }
 
     .tracklog-card {
@@ -175,25 +245,23 @@
       border-color: #2d7a3e;
     }
 
-    /* CONTAINER CORTADOR (Aumentado para 320px para caber Mapa + Gráfico de Elevação) */
     .tracklog-map-wrapper {
       position: relative;
       width: 100%;
-      height: 290px;
+      height: 285px;
       overflow: hidden;
       background-color: #eaf2eb;
       border-bottom: 1px solid #e1e8e2;
     }
 
-    /* ENQUADRAMENTO DO IFRAME DO WIKILOC */
     .tracklog-map-wrapper iframe {
       position: absolute;
-      top: -59px;     /* Corta o título/cabeçalho do Wikiloc */
+      top: -46px;
       left: -5px;
       width: calc(100% + 10px);
-      height: 480px;  /* Altura interna suficiente para empurrar os textos inferiores para fora */
+      height: 480px;
       border: none;
-      pointer-events: none; /* Mantém a rolagem fluida da página */
+      pointer-events: none;
     }
 
     .tracklog-content {
@@ -321,21 +389,40 @@
     </div>
   </header>
 
-  <!-- Conteúdo Principal -->
+  <!-- Cabeçalho Escuro da Página -->
+  <section class="hero-page">
+    <div class="container">
+      <h1>Tracklogs & Rotas</h1>
+      <p>Confira o trajeto e o perfil de elevação de cada expedição realizada. Clique no botão para acessar os detalhes no Wikiloc.</p>
+    </div>
+  </section>
+
+  <!-- Filtros e Busca -->
+  <div class="container filter-section">
+    <div class="filter-card">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar por nome da trilha..." oninput="filterAndSortCards()">
+      </div>
+      <div class="sort-box">
+        <label for="sortSelect">Ordenar por:</label>
+        <select id="sortSelect" onchange="filterAndSortCards()">
+          <option value="recent">Mais recente primeiro</option>
+          <option value="oldest">Mais antigo primeiro</option>
+          <option value="az">Nome (A - Z)</option>
+          <option value="za">Nome (Z - A)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal de Cards -->
   <main class="section">
     <div class="container">
-      <div class="section-header">
-        <h2>Tracklogs & Rotas</h2>
-        <p class="section-desc">
-          Confira o trajeto e o perfil de elevação de cada expedição realizada. Clique no botão para acessar os detalhes no Wikiloc.
-        </p>
-      </div>
+      <div class="tracklogs-grid" id="tracklogsGrid">
 
-      <!-- Grade de Cards -->
-      <div class="tracklogs-grid">
-
-        <!-- Card: Capivari Mirim -->
-        <article class="tracklog-card">
+        <!-- Capivari Mirim -->
+        <article class="tracklog-card" data-title="Capivari Mirim" data-date="2025-03-29">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286517513&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -350,8 +437,8 @@
           </div>
         </article>
 
-        <!-- Card: Tucum -->
-        <article class="tracklog-card">
+        <!-- Tucum -->
+        <article class="tracklog-card" data-title="Tucum" data-date="2025-04-19">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286515133&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -366,8 +453,8 @@
           </div>
         </article>
 
-        <!-- Card: Caminho do Itupava -->
-        <article class="tracklog-card">
+        <!-- Caminho do Itupava -->
+        <article class="tracklog-card" data-title="Caminho do Itupava" data-date="2025-07-05">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286514935&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -382,8 +469,8 @@
           </div>
         </article>
 
-        <!-- Card: Cerro Verde -->
-        <article class="tracklog-card">
+        <!-- Cerro Verde -->
+        <article class="tracklog-card" data-title="Cerro Verde" data-date="2025-07-19">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286515133&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -398,8 +485,8 @@
           </div>
         </article>
 
-        <!-- Card: Circular Serra da Melança -->
-        <article class="tracklog-card">
+        <!-- Circular Serra da Melança -->
+        <article class="tracklog-card" data-title="Circular Serra da Melança" data-date="2025-08-17">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286453605&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -414,8 +501,8 @@
           </div>
         </article>
 
-        <!-- Card: Acampamento Capivari Mirim -->
-        <article class="tracklog-card">
+        <!-- Acampamento Capivari Mirim -->
+        <article class="tracklog-card" data-title="Acampamento Capivari Mirim" data-date="2026-04-20">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457969&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -430,8 +517,8 @@
           </div>
         </article>
 
-        <!-- Card: Itapiroca -->
-        <article class="tracklog-card">
+        <!-- Itapiroca -->
+        <article class="tracklog-card" data-title="Itapiroca" data-date="2026-06-06">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457628&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -446,8 +533,8 @@
           </div>
         </article>
 
-        <!-- Card: Travessia dos Capivaris -->
-        <article class="tracklog-card">
+        <!-- Travessia dos Capivaris -->
+        <article class="tracklog-card" data-title="Travessia dos Capivaris" data-date="2026-06-13">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457425&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -462,8 +549,8 @@
           </div>
         </article>
 
-        <!-- Card: Circular dos Capivaris -->
-        <article class="tracklog-card">
+        <!-- Circular dos Capivaris -->
+        <article class="tracklog-card" data-title="Circular dos Capivaris" data-date="2026-07-18">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457268&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -478,8 +565,8 @@
           </div>
         </article>
 
-        <!-- Card: Araçatuba + Inferno Verde -->
-        <article class="tracklog-card">
+        <!-- Araçatuba + Inferno Verde -->
+        <article class="tracklog-card" data-title="Araçatuba + Inferno Verde" data-date="2026-07-25">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286457074&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -494,8 +581,8 @@
           </div>
         </article>
 
-        <!-- Card: Araçatuba + Baleia + Moréia -->
-        <article class="tracklog-card">
+        <!-- Araçatuba + Baleia + Moréia -->
+        <article class="tracklog-card" data-title="Araçatuba + Baleia + Moréia" data-date="2026-08-16">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286456315&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -510,8 +597,8 @@
           </div>
         </article>
 
-        <!-- Card: Taipabuçu + Ferraria -->
-        <article class="tracklog-card">
+        <!-- Taipabuçu + Ferraria -->
+        <article class="tracklog-card" data-title="Taipabuçu + Ferraria" data-date="2026-08-22">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286456126&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -526,8 +613,8 @@
           </div>
         </article>
 
-        <!-- Card: Jacutinga -->
-        <article class="tracklog-card">
+        <!-- Jacutinga -->
+        <article class="tracklog-card" data-title="Jacutinga" data-date="2026-08-29">
           <div class="tracklog-map-wrapper">
             <iframe src="https://www.wikiloc.com/wikiloc/embedv2.do?id=286455488&elevation=on&images=off&maptype=H" scrolling="no"></iframe>
           </div>
@@ -573,6 +660,48 @@
       mobileBtn.classList.remove('active');
       navLinks.classList.remove('active');
     }
+
+    /* Função de Filtro e Ordenação Dinâmica */
+    function filterAndSortCards() {
+      const grid = document.getElementById('tracklogsGrid');
+      const cards = Array.from(grid.getElementsByClassName('tracklog-card'));
+      const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
+      const sortValue = document.getElementById('sortSelect').value;
+
+      // 1. Filtragem por busca
+      cards.forEach(card => {
+        const title = card.getAttribute('data-title').toLowerCase();
+        if (title.includes(searchValue)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // 2. Ordenação
+      cards.sort((a, b) => {
+        const titleA = a.getAttribute('data-title').toLowerCase();
+        const titleB = b.getAttribute('data-title').toLowerCase();
+        const dateA = new Date(a.getAttribute('data-date'));
+        const dateB = new Date(b.getAttribute('data-date'));
+
+        if (sortValue === 'recent') {
+          return dateB - dateA; // Mais recente primeiro
+        } else if (sortValue === 'oldest') {
+          return dateA - dateB; // Mais antigo primeiro
+        } else if (sortValue === 'az') {
+          return titleA.localeCompare(titleB);
+        } else if (sortValue === 'za') {
+          return titleB.localeCompare(titleA);
+        }
+      });
+
+      // Remonta os cards na ordem correta
+      cards.forEach(card => grid.appendChild(card));
+    }
+
+    // Executa a ordenação padrão (Mais recente) assim que carrega a página
+    document.addEventListener('DOMContentLoaded', filterAndSortCards);
   </script>
 </body>
 </html>
