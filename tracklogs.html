@@ -149,7 +149,7 @@
     }
 
     /* ==========================================
-       CARDS E MÁSCARA APENAS PARA O MAPA
+       CARDS E ENQUADRAMENTO APENAS DO MAPA
        ========================================== */
     .tracklogs-grid {
       display: grid;
@@ -175,25 +175,25 @@
       border-color: #2d7a3e;
     }
 
-    /* CONTAINER CORTADOR (Esconde títulos e rodapé do widget) */
+    /* MÁSCARA DO MAPA (Corta topo, bordas e textos inferiores do widget) */
     .tracklog-map-wrapper {
       position: relative;
       width: 100%;
-      height: 190px; /* Altura fixa visível da área do mapa */
+      height: 160px; /* Altura exata da janela de visualização */
       overflow: hidden;
       background-color: #eaf2eb;
       border-bottom: 1px solid #e1e8e2;
     }
 
-    /* IFRAME POSICIONADO PARA MOSTRAR SOMENTE O MAPA */
+    /* POSICIONAMENTO E CORTE DA CAIXA DO IFRAME */
     .tracklog-map-wrapper iframe {
       position: absolute;
-      top: -48px;     /* Corta o cabeçalho/título do Wikiloc */
+      top: -68px;    /* Puxa para cima para esconder o topo branco e títulos */
       left: -2px;
-      width: 104%;    /* Esconde bordas laterais */
-      height: 380px;  /* Mantém o rodapé de textos fora do corte */
+      width: 104%;   /* Remove margens laterais */
+      height: 240px; /* Ajusta a altura interna deixando os textos de baixo fora do corte */
       border: none;
-      pointer-events: none; /* Permite rolar a página sem travar o scroll no mapa */
+      pointer-events: none; /* Mantém o scroll fluido da tela sem travar no iframe */
     }
 
     .tracklog-content {
