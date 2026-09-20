@@ -541,38 +541,46 @@
 
     /* --- LÓGICA DO CARROSSEL HERO (PÁGINA 3) --- */
     async function loadHomeCarousel() {
-      const slidesContainer = document.getElementById('slidesContainer');
-      try {
-        const response = await fetch(GOOGLE_SHEET_PAGINA3_URL);
-        if (!response.ok) throw new Error('Erro ao buscar dados do carrossel');
-        
-        const csvText = await response.text();
-        const parsed = parseCSV(csvText);
-        
-        // Filtra garantindo que o link exista e não seja apenas espaço em branco
-        const slidesData = parsed
-          .map(item => {
-            // Encontra a chave 'link' independente de pequenos espaços no cabeçalho
-            const linkKey = Object.keys(item).find(k => k.trim() === 'link') || 'link';
-            const textoKey = Object.keys(item).find(k => k.trim() === 'texto') || 'texto';
-            
-            return {
-              link: (item[linkKey] || '').trim(),
-              texto: (item[textoKey] || '').trim()
-            };
-          })
-          .filter(item => item.link !== '' && item.link.startsWith('http'));
-    
-        if (slidesData.length > 0) {
-          renderCarousel(slidesData);
-        } else {
-          slidesContainer.innerHTML = '<div style="padding-top: 100px; text-align: center; color: #fff;">Nenhuma imagem cadastrada na Página 3.</div>';
-        }
-      } catch (err) {
-        console.error("Erro ao carregar imagens do carrossel:", err);
-        slidesContainer.innerHTML = '<div style="padding-top: 100px; text-align: center; color: #fff;">Erro ao carregar o carrossel.</div>';
+    const slidesContainer = document.getElementById('slidesContainer');
+  
+    // Imagens locais do repositório para usar de fallback
+    const fallbackSlides = [
+      { link: 'banner_home.jpg', texto: 'Capivaras Trek' },
+      { link: 'banner_home1.jpg', texto: 'Capivaras Trek' },
+      { link: 'banner_home2.jpg', texto: 'Capivaras Trek' }
+    ];
+  
+    try {
+      const response = await fetch(GOOGLE_SHEET_PAGINA3_URL);
+      if (!response.ok) throw new Error('Erro ao buscar dados do carrossel');
+      
+      const csvText = await response.text();
+      const parsed = parseCSV(csvText);
+      
+      const slidesData = parsed
+        .map(item => {
+          const linkKey = Object.keys(item).find(k => k.trim() === 'link') || 'link';
+          const textoKey = Object.keys(item).find(k => k.trim() === 'texto') || 'texto';
+          
+          return {
+            link: (item[linkKey] || '').trim(),
+            texto: (item[textoKey] || '').trim()
+          };
+        })
+        .filter(item => item.link !== '' && item.link.startsWith('http'));
+  
+      // Se houver imagens válidas na planilha, renderiza elas; se não, usa as locais
+      if (slidesData.length > 0) {
+        renderCarousel(slidesData);
+      } else {
+        renderCarousel(fallbackSlides);
       }
+    } catch (err) {
+      console.error("Erro ao carregar imagens do carrossel, utilizando fallback local:", err);
+      // Em caso de erro de conexão/requisição, também renderiza os banners locais
+      renderCarousel(fallbackSlides);
     }
+  }
 
     function renderCarousel(slides) {
       const slidesContainer = document.getElementById('slidesContainer');
