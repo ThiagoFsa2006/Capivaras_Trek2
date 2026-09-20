@@ -548,11 +548,21 @@
         
         const csvText = await response.text();
         const parsed = parseCSV(csvText);
-        const slidesData = parsed.map(item => ({
-          link: item['link'] || '',
-          texto: item['texto'] || ''
-        })).filter(item => item.link !== '');
-
+        
+        // Filtra garantindo que o link exista e não seja apenas espaço em branco
+        const slidesData = parsed
+          .map(item => {
+            // Encontra a chave 'link' independente de pequenos espaços no cabeçalho
+            const linkKey = Object.keys(item).find(k => k.trim() === 'link') || 'link';
+            const textoKey = Object.keys(item).find(k => k.trim() === 'texto') || 'texto';
+            
+            return {
+              link: (item[linkKey] || '').trim(),
+              texto: (item[textoKey] || '').trim()
+            };
+          })
+          .filter(item => item.link !== '' && item.link.startsWith('http'));
+    
         if (slidesData.length > 0) {
           renderCarousel(slidesData);
         } else {
