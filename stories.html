@@ -130,7 +130,7 @@
       transform: translateY(-2px);
     }
 
-    /* Estilização e limitação de tamanho dos ícones do Footer */
+    /* Estilização dos ícones do Footer */
     .footer-social-icons {
       display: flex;
       justify-content: center;
@@ -204,7 +204,7 @@
     <div class="section-header">
       <h2>Capivara Stories</h2>
       <p class="section-desc">
-        Baixe nossas molduras transparentes em alta resolução (1080x1920) e publique suas fotos de trilha no Instagram com a marca oficial do Capivaras Trek!
+        Baixe nossas molduras e artes em alta resolução (1080x1920) e publique suas fotos de trilha no Instagram com a marca oficial do Capivaras Trek!
       </p>
     </div>
 
@@ -212,53 +212,17 @@
     <div class="instructions-card">
       <h3>📲 Como usar no Instagram Stories:</h3>
       <ol class="instructions-list">
-        <li>Escolha um modelo abaixo e clique no botão <strong>Baixar PNG</strong>.</li>
+        <li>Escolha um modelo abaixo e clique no botão de download.</li>
         <li>Abra o <strong>Instagram Stories</strong> no seu celular e selecione a foto da sua trilha.</li>
         <li>Toque no ícone de <strong>Stickers (Figurinhas)</strong> e selecione a opção <strong>Adicionar Foto</strong> (com o ícone de +).</li>
-        <li>Selecione a moldura PNG baixada e ajuste-a na tela sobre a sua foto.</li>
+        <li>Selecione a imagem baixada e ajuste-a na tela sobre a sua foto.</li>
         <li>Marque o nosso perfil <strong>@capivaras_trek</strong> e publique!</li>
       </ol>
     </div>
 
-    <!-- Grade dos 3 Modelos -->
-    <div class="models-grid">
-
-      <!-- Modelo 1 -->
-      <article class="model-card">
-        <div class="preview-box">
-          <img src="Imagens/stories_modelo1.png" alt="Modelo Topo & Vinheta" class="preview-img" onerror="this.src='Imagens/logo.png'; this.style.width='60%'; this.style.height='auto';">
-        </div>
-        <h4>Modelo 1: Topo & Vinheta</h4>
-        <p>Logo centralizada no topo acompanhada de um suave gradiente escuro superior.</p>
-        <a href="Imagens/stories_modelo1.png" download="CapivarasTrek_Stories_Topo.png" class="btn-download">
-          <span>📥</span> Baixar PNG
-        </a>
-      </article>
-
-      <!-- Modelo 2 -->
-      <article class="model-card">
-        <div class="preview-box">
-          <img src="Imagens/stories_modelo2.png" alt="Modelo Tarja Inferior" class="preview-img" onerror="this.src='Imagens/logo.png'; this.style.width='60%'; this.style.height='auto';">
-        </div>
-        <h4>Modelo 2: Base & Perfil</h4>
-        <p>Gradiente na base com a marca e a identificação do perfil @capivaras_trek.</p>
-        <a href="Imagens/stories_modelo2.png" download="CapivarasTrek_Stories_Base.png" class="btn-download">
-          <span>📥</span> Baixar PNG
-        </a>
-      </article>
-
-      <!-- Modelo 3 -->
-      <article class="model-card">
-        <div class="preview-box">
-          <img src="Imagens/stories_modelo3.png" alt="Modelo Selo Cume" class="preview-img" onerror="this.src='Imagens/logo.png'; this.style.width='60%'; this.style.height='auto';">
-        </div>
-        <h4>Modelo 3: Selo de Cume</h4>
-        <p>Selo discreto no canto inferior para destacar fotos de montanha e conquistas.</p>
-        <a href="Imagens/stories_modelo3.png" download="CapivarasTrek_Stories_Selo.png" class="btn-download">
-          <span>📥</span> Baixar PNG
-        </a>
-      </article>
-
+    <!-- Grade Dinâmica dos Modelos -->
+    <div class="models-grid" id="modelsGrid">
+      <!-- Gerado via JavaScript -->
     </div>
   </main>
 
@@ -290,6 +254,7 @@
   </footer>
 
   <script>
+    // Menu Mobile
     const mobileBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
 
@@ -302,6 +267,65 @@
       mobileBtn.classList.remove('active');
       navLinks.classList.remove('active');
     }
+
+    // LISTA DE MODELOS (Adicione aqui os novos modelos no futuro)
+    const modelosStories = [
+      {
+        titulo: "Modelo 1: Topo & Vinheta",
+        descricao: "Logo centralizada no topo acompanhada de um suave gradiente escuro superior.",
+        arquivo: "Imagens/stories_modelo1.png",
+        nomeDownload: "CapivarasTrek_Stories_Topo.png",
+        formato: "PNG"
+      },
+      {
+        titulo: "Modelo 2: Base & Perfil",
+        descricao: "Gradiente na base com a marca e a identificação do perfil @capivaras_trek.",
+        arquivo: "Imagens/stories_modelo2.png",
+        nomeDownload: "CapivarasTrek_Stories_Base.png",
+        formato: "PNG"
+      },
+      {
+        titulo: "Modelo 3: Selo de Cume",
+        descricao: "Selo discreto no canto inferior para destacar fotos de montanha e conquistas.",
+        arquivo: "Imagens/stories_modelo3.png",
+        nomeDownload: "CapivarasTrek_Stories_Selo.png",
+        formato: "PNG"
+      },
+      {
+        titulo: "Modelo 4: Especial / Arte",
+        descricao: "Arte especial em alta definição em formato JPG para Stories.",
+        arquivo: "Imagens/stories_modelo4.jpg",
+        nomeDownload: "CapivarasTrek_Stories_Modelo4.jpg",
+        formato: "JPG"
+      }
+    ];
+
+    // Função para renderizar os cards dinamicamente
+    function renderModels() {
+      const grid = document.getElementById('modelsGrid');
+      grid.innerHTML = '';
+
+      modelosStories.forEach(model => {
+        const card = document.createElement('article');
+        card.className = 'model-card';
+
+        card.innerHTML = `
+          <div class="preview-box">
+            <img src="${model.arquivo}" alt="${model.titulo}" class="preview-img" onerror="this.src='Imagens/logo.png'; this.style.width='60%'; this.style.height='auto';">
+          </div>
+          <h4>${model.titulo}</h4>
+          <p>${model.descricao}</p>
+          <a href="${model.arquivo}" download="${model.nomeDownload}" class="btn-download">
+            <span>📥</span> Baixar ${model.formato}
+          </a>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Executa ao carregar a página
+    document.addEventListener('DOMContentLoaded', renderModels);
   </script>
 </body>
 </html>
