@@ -18,68 +18,70 @@
     .instructions-card {
       background-color: #eaf2eb;
       border-left: 5px solid #2d7a3e;
-      padding: 24px 28px;
+      padding: 20px 24px;
       border-radius: 8px;
       max-width: 900px;
-      margin: 0 auto 40px auto;
+      margin: 0 auto 30px auto;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .instructions-card h3 {
       color: #1b3320;
-      font-size: 1.3rem;
-      margin-bottom: 12px;
+      font-size: 1.15rem;
+      margin-bottom: 10px;
       font-weight: 700;
     }
 
     .instructions-list {
       color: #3d4a3f;
-      font-size: 0.98rem;
-      line-height: 1.7;
+      font-size: 0.92rem;
+      line-height: 1.6;
       margin-left: 20px;
     }
 
     .instructions-list li {
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
+    /* Grade ajustada para comportar mais cards por linha */
     .models-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 30px;
-      max-width: 1100px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      max-width: 1200px;
       margin: 0 auto;
     }
 
+    /* Card mais compacto */
     .model-card {
       background: #ffffff;
       border: 1px solid #e1e8e2;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 14px;
       text-align: center;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .model-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
     }
 
-    /* Preview no formato 9:16 */
+    /* Preview no formato 9:16 otimizado */
     .preview-box {
       width: 100%;
       aspect-ratio: 9 / 16;
       background-color: #1b3320;
       background-image: linear-gradient(45deg, #1f2d21 25%, transparent 25%), linear-gradient(-45deg, #1f2d21 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1f2d21 75%), linear-gradient(-45deg, transparent 75%, #1f2d21 75%);
-      background-size: 20px 20px;
-      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-      border-radius: 8px;
-      margin-bottom: 16px;
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+      border-radius: 6px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -96,16 +98,16 @@
 
     .model-card h4 {
       color: #1b3320;
-      font-size: 1.15rem;
+      font-size: 1rem;
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .model-card p {
       color: #556357;
-      font-size: 0.9rem;
-      margin-bottom: 16px;
-      line-height: 1.4;
+      font-size: 0.82rem;
+      margin-bottom: 12px;
+      line-height: 1.35;
       flex-grow: 1;
     }
 
@@ -113,13 +115,13 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       background-color: #2d7a3e;
       color: #ffffff;
       text-decoration: none;
       font-weight: 700;
-      font-size: 0.95rem;
-      padding: 12px 20px;
+      font-size: 0.85rem;
+      padding: 9px 14px;
       border-radius: 6px;
       width: 100%;
       transition: background-color 0.2s ease, transform 0.2s ease;
@@ -127,7 +129,7 @@
 
     .btn-download:hover {
       background-color: #1b3320;
-      transform: translateY(-2px);
+      transform: translateY(-1px);
     }
 
     /* Estilização dos ícones do Footer */
@@ -159,13 +161,27 @@
       fill: #ffffff !important;
     }
 
-    @media (max-width: 992px) {
+    /* Responsividade */
+    @media (min-width: 1400px) {
       .models-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(5, 1fr); /* 5 modelos por linha em telas grandes */
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 1100px) {
+      .models-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .models-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
       .models-grid {
         grid-template-columns: 1fr;
       }
@@ -268,39 +284,39 @@
       navLinks.classList.remove('active');
     }
 
-    // LISTA DE MODELOS (Adicione aqui os novos modelos no futuro)
+    // LISTA DE MODELOS
     const modelosStories = [
       {
         titulo: "Modelo 1: Topo & Vinheta",
-        descricao: "Logo centralizada no topo acompanhada de um suave gradiente escuro superior.",
+        descricao: "Logo no topo com gradiente suave.",
         arquivo: "Imagens/stories_modelo1.png",
         nomeDownload: "CapivarasTrek_Stories_Topo.png",
         formato: "PNG"
       },
       {
-        titulo: "Modelo 2: Base & Perfil - Branco",
-        descricao: "Gradiente na base com a marca e a identificação do perfil @capivaras_trek.",
+        titulo: "Modelo 2: Base Branco",
+        descricao: "Gradiente na base com @capivaras_trek.",
         arquivo: "Imagens/stories_modelo2.png",
         nomeDownload: "CapivarasTrek_Stories_Base.png",
         formato: "PNG"
       },
       {
-        titulo: "Modelo 3: Base & Perfil - Verde",
-        descricao: "Selo discreto no canto inferior para destacar fotos de montanha e conquistas.",
+        titulo: "Modelo 3: Base Verde",
+        descricao: "Selo no canto inferior para destaques.",
         arquivo: "Imagens/stories_modelo3.png",
         nomeDownload: "CapivarasTrek_Stories_Selo.png",
         formato: "PNG"
       },
       {
-        titulo: "Modelo 4: Especial / Arte",
-        descricao: "Arte especial em alta definição em formato JPG para Stories.",
+        titulo: "Modelo 4: Especial JPG",
+        descricao: "Arte em alta definição para Stories.",
         arquivo: "Imagens/stories_modelo4.jpg",
         nomeDownload: "CapivarasTrek_Stories_Modelo4.jpg",
         formato: "JPG"
       }
     ];
 
-    // Função para renderizar os cards dinamicamente
+    // Renderização dos cards
     function renderModels() {
       const grid = document.getElementById('modelsGrid');
       grid.innerHTML = '';
@@ -324,7 +340,6 @@
       });
     }
 
-    // Executa ao carregar a página
     document.addEventListener('DOMContentLoaded', renderModels);
   </script>
 </body>
