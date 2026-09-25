@@ -43,16 +43,17 @@
       margin-bottom: 4px;
     }
 
-    /* Grade ajustada para comportar mais cards por linha */
+    /* Contêiner em Flexbox centralizado para criar alinhamento simétrico independente da quantidade */
     .models-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 20px;
       max-width: 1200px;
       margin: 0 auto;
     }
 
-    /* Card mais compacto */
+    /* Tamanho do card ajustado dinamicamente no layout Flex */
     .model-card {
       background: #ffffff;
       border: 1px solid #e1e8e2;
@@ -65,6 +66,11 @@
       padding: 14px;
       text-align: center;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      width: calc(25% - 15px); /* Padrão 4 colunas em telas normais */
+      min-width: 220px;
+      max-width: 260px;
+      flex-grow: 0;
+      flex-shrink: 0;
     }
 
     .model-card:hover {
@@ -162,28 +168,23 @@
     }
 
     /* Responsividade */
-    @media (min-width: 1400px) {
-      .models-grid {
-        grid-template-columns: repeat(5, 1fr); /* 5 modelos por linha em telas grandes */
-      }
-    }
-
-    @media (max-width: 1100px) {
-      .models-grid {
-        grid-template-columns: repeat(3, 1fr);
+    @media (max-width: 992px) {
+      .model-card {
+        width: calc(33.333% - 14px);
       }
     }
 
     @media (max-width: 768px) {
-      .models-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
+      .model-card {
+        width: calc(50% - 10px);
+        min-width: unset;
       }
     }
 
     @media (max-width: 480px) {
-      .models-grid {
-        grid-template-columns: 1fr;
+      .model-card {
+        width: 100%;
+        max-width: 320px;
       }
     }
   </style>
@@ -236,7 +237,7 @@
       </ol>
     </div>
 
-    <!-- Grade Dinâmica dos Modelos -->
+    <!-- Grade Dinâmica com Centralização Simétrica -->
     <div class="models-grid" id="modelsGrid">
       <!-- Gerado via JavaScript -->
     </div>
